@@ -6,7 +6,7 @@
  * See terms of license at gnu.org.
  */
 
-package net.ar.fpetrola.humo;
+package ar.net.fpetrola.humo;
 
 import java.awt.BorderLayout;
 import java.io.File;
