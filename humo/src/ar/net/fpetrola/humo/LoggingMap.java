@@ -8,10 +8,10 @@
 
 package ar.net.fpetrola.humo;
 
-import java.util.HashMap;
+import java.util.TreeMap;
 
 @SuppressWarnings("serial")
-public class LoggingMap extends HashMap<String, String>
+public class LoggingMap extends TreeMap<String, String>
 {
     private ParserListener parserListener;
 
