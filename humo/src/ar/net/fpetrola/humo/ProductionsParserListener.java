@@ -16,7 +16,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class ProductionsParserListener implements ParserListener
 {
     private DefaultMutableTreeNode root;
-    private Map<String, DefaultMutableTreeNode> nodes = new HashMap<String, DefaultMutableTreeNode>();
+    private Map<CharSequence, DefaultMutableTreeNode> nodes = new HashMap<CharSequence, DefaultMutableTreeNode>();
     private int productionsCount = 0;
 
     public ProductionsParserListener(String filename)
@@ -24,7 +24,7 @@ public class ProductionsParserListener implements ParserListener
         this.root = new DefaultMutableTreeNode("Productions of: " + filename);
     }
     
-    public void endProductionCreation(String name, String value)
+    public void endProductionCreation(CharSequence name, CharSequence value)
     {
         productionsCount++;
 
@@ -51,7 +51,7 @@ public class ProductionsParserListener implements ParserListener
         this.root = productionsRoot;
     }
 
-    public void startProductionCreation(String name)
+    public void startProductionCreation(CharSequence name)
     {
     }
 }

@@ -17,13 +17,13 @@ public class ParserListenerMultiplexer implements ParserListener
         this.parserListeners = parserListener;
     }
 
-    public void endProductionCreation(String name, String value)
+    public void endProductionCreation(CharSequence name, CharSequence value)
     {
         for (ParserListener parserListener : parserListeners)
             parserListener.endProductionCreation(name, value);
     }
 
-    public void startProductionCreation(String name)
+    public void startProductionCreation(CharSequence name)
     {
         for (ParserListener parserListener : parserListeners)
             parserListener.startProductionCreation(name);

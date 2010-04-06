@@ -11,7 +11,7 @@ package ar.net.fpetrola.humo;
 import java.util.TreeMap;
 
 @SuppressWarnings("serial")
-public class LoggingMap extends TreeMap<String, String>
+public class LoggingMap extends TreeMap<CharSequence, CharSequence>
 {
     private ParserListener parserListener;
 
@@ -20,27 +20,34 @@ public class LoggingMap extends TreeMap<String, String>
         this.parserListener = parserListener;
     }
 
-    public synchronized String get(Object key)
+    public synchronized CharSequence get(Object key)
     {
-        String o = super.get(key);
-        log("uso: " + (String) key + " = " + (String) o + "");
+        CharSequence o = super.get(new ClearCharSequence((CharSequence) key));
+        log("uso: " +  key + " = " + o + "");
         return o;
     }
-    public synchronized String remove(Object key)
+
+    public static String clearText(String aText)
     {
-        String o = super.remove(key);
+        return aText.replaceAll("[\\x0D \\x0A \\x20  \\x09]", "");
+    }
+    
+    public synchronized CharSequence remove(Object key)
+    {
+        CharSequence o = super.remove(key);
         log((String) key + "{}");
         return o;
     }
-    public synchronized String put(String key, String value)
+    
+    public synchronized CharSequence put(CharSequence key, CharSequence value)
     {
         parserListener.endProductionCreation(key, value);
-
+        
         log((String) key);
         log("{");
         log("\t" + (String) value);
         log("}\n");
-        String o = super.put(key, value);
+        CharSequence o = super.put(new ClearCharSequence(key), new ClearCharSequence(value));
         return o;
     }
 

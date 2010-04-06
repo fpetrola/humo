@@ -10,6 +10,6 @@ package ar.net.fpetrola.humo;
 
 public interface ParserListener
 {
-    void startProductionCreation(String aName);
-    void endProductionCreation(String aName, String aValue);
+    void startProductionCreation(CharSequence aName);
+    void endProductionCreation(CharSequence aName, CharSequence aValue);
 }

@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class HumoParser
 {
-    protected Map<String, String> productions = new HashMap<String, String>();
+    protected Map<CharSequence, CharSequence> productions = new HashMap<CharSequence, CharSequence>();
 
     public int parse(StringBuilder sourcecode, int first)
     {
@@ -25,12 +25,12 @@ public class HumoParser
             if (currentChar == '{')
             {
                 current = parse(sourcecode, last);
-                productions.put(sourcecode.substring(first, last - 1), sourcecode.substring(last, current));
+                productions.put(sourcecode.subSequence(first, last - 1), sourcecode.subSequence(last, current));
                 last = first = ++current;
             }
             else
             {
-                String production = productions.get(sourcecode.substring(current, last));
+                CharSequence production = productions.get(sourcecode.subSequence(current, last));
                 if (production != null)
                 {
                     StringBuilder value = new StringBuilder(production);

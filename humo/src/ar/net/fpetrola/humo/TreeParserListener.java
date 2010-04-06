@@ -29,11 +29,11 @@ public class TreeParserListener implements ParserListener
         root = new DefaultMutableTreeNode("Humo source file: " + filename);
         nodes.push(root);
     }
-    public void startProductionCreation(String name)
+    public void startProductionCreation(CharSequence name)
     {
         nodes.push(new DefaultMutableTreeNode(name));
     }
-    public void endProductionCreation(String name, String value)
+    public void endProductionCreation(CharSequence name, CharSequence value)
     {
         nodes.peek().add(new DefaultMutableTreeNode(value));
         DefaultMutableTreeNode child = nodes.pop();
