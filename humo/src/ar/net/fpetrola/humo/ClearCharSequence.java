@@ -37,11 +37,6 @@ public class ClearCharSequence implements CharSequence, Comparable<CharSequence>
         return charSequence;
     }
 
-    public boolean equals(Object obj)
-    {
-        return LoggingMap.clearText(obj.toString()).equals(LoggingMap.clearText(toString()));
-    }
-
     public int compareTo(CharSequence o)
     {
         return LoggingMap.clearText(o.toString()).compareTo(LoggingMap.clearText(toString()));

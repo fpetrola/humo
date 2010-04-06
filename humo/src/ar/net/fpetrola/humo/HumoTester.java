@@ -33,7 +33,7 @@ public class HumoTester
         StringBuilder sourceCode = new StringBuilder(new Scanner(new File(filename)).useDelimiter("\\Z").next());
 
         JTextArea textArea = new JTextArea(sourceCode.toString());
-        TreeParserListener treeParserListener = new TreeParserListener(filename);
+        ExecutionParserListener treeParserListener = new ExecutionParserListener(filename);
         ProductionsParserListener productionsParserListener = new ProductionsParserListener(filename);
         ListenedParser parser = new ListenedParser(new ParserListenerMultiplexer(treeParserListener, productionsParserListener), textArea);
 

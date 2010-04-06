@@ -11,7 +11,7 @@ import java.util.Stack;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-public class TreeParserListener implements ParserListener
+public class ExecutionParserListener implements ParserListener
 {
     protected Stack<DefaultMutableTreeNode> nodes = new Stack<DefaultMutableTreeNode>();
     protected DefaultMutableTreeNode root;
@@ -24,9 +24,9 @@ public class TreeParserListener implements ParserListener
     {
         this.root = root;
     }
-    public TreeParserListener(String filename)
+    public ExecutionParserListener(String filename)
     {
-        root = new DefaultMutableTreeNode("Humo source file: " + filename);
+        root = new DefaultMutableTreeNode("Execution of: " + filename);
         nodes.push(root);
     }
     public void startProductionCreation(CharSequence name)
