@@ -14,10 +14,20 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class TreeParserListener implements ParserListener
 {
     protected Stack<DefaultMutableTreeNode> nodes = new Stack<DefaultMutableTreeNode>();
+    protected DefaultMutableTreeNode root;
 
-    public TreeParserListener(DefaultMutableTreeNode aRoot)
+    public DefaultMutableTreeNode getRoot()
     {
-        nodes.push(aRoot);
+        return root;
+    }
+    public void setRoot(DefaultMutableTreeNode root)
+    {
+        this.root = root;
+    }
+    public TreeParserListener(String filename)
+    {
+        root = new DefaultMutableTreeNode("Humo source file: " + filename);
+        nodes.push(root);
     }
     public void startProductionCreation(String name)
     {

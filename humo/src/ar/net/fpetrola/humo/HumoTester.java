@@ -23,16 +23,19 @@ public class HumoTester
 {
     public static void main(String[] args) throws FileNotFoundException, IOException
     {
-        args = new String[] { "tests/prueba+de+objetos2.humo" };
+        if (args.length == 0)
+            args = new String[] { "tests/prueba+de+objetos2.humo" };
 
-        StringBuilder sourceCode = new StringBuilder(new Scanner(new File(args[0])).useDelimiter("\\Z").next().replaceAll("[\\x0D \\x0A \\x20  \\x09]", ""));
+        String filename = args[0];
 
-        DefaultMutableTreeNode executionRoot = new DefaultMutableTreeNode("Humo source file: " + args[0]);
-        DefaultMutableTreeNode productionsRoot = new DefaultMutableTreeNode("Productions of: " + args[0]);
-        ListenedParser parser = new ListenedParser(new ParserListenerMultiplexer(new TreeParserListener(executionRoot), new ProductionsParserListener(productionsRoot)));
+        StringBuilder sourceCode = new StringBuilder(new Scanner(new File(filename)).useDelimiter("\\Z").next().replaceAll("[\\x0D \\x0A \\x20  \\x09]", ""));
+
+        TreeParserListener treeParserListener = new TreeParserListener(filename);
+        ProductionsParserListener productionsParserListener = new ProductionsParserListener(filename);
+        ListenedParser parser = new ListenedParser(new ParserListenerMultiplexer(treeParserListener, productionsParserListener));
 
         parser.getLoggingMap().log("begin parsing");
-        showTree(executionRoot, productionsRoot);
+        showTree(treeParserListener.getRoot(), productionsParserListener.getRoot());
         parser.parse(sourceCode, 0);
         parser.getLoggingMap().log("end parsing");
     }
