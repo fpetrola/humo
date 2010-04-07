@@ -27,11 +27,6 @@ public class LoggingMap extends TreeMap<CharSequence, CharSequence>
         return o;
     }
 
-    public static String clearText(String aText)
-    {
-        return aText.replaceAll("[\\x0D \\x0A \\x20  \\x09]", "");
-    }
-    
     public synchronized CharSequence remove(Object key)
     {
         CharSequence o = super.remove(key);
@@ -53,11 +48,11 @@ public class LoggingMap extends TreeMap<CharSequence, CharSequence>
 
     public void log(String t)
     {
-        StringBuffer sb = new StringBuffer();
+//        StringBuffer sb = new StringBuffer();
         //        for (int primero = 0; primero < parser.getDepth(); primero++)
         //            sb.append("\t");
 
-        System.out.println(sb.toString() + t);
+//        System.out.println(sb.toString() + t);
     }
 
 }

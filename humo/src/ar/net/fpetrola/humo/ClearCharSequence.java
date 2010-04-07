@@ -39,6 +39,11 @@ public class ClearCharSequence implements CharSequence, Comparable<CharSequence>
 
     public int compareTo(CharSequence o)
     {
-        return LoggingMap.clearText(o.toString()).compareTo(LoggingMap.clearText(toString()));
+        return clearText(o.toString()).compareTo(clearText(toString()));
+    }
+
+    public static String clearText(String aText)
+    {
+        return aText.replaceAll("[\\x0D \\x0A \\x20  \\x09]", "");
     }
 }

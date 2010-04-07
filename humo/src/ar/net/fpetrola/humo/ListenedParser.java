@@ -8,17 +8,18 @@
 
 package ar.net.fpetrola.humo;
 
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
+import javax.swing.text.StyledDocument;
 
 public class ListenedParser extends HumoParser
 {
     protected ParserListener parserListener;
-    private final JTextArea textArea;
+    private JTextPane textPane;
 
-    public ListenedParser(ParserListener parserListener, JTextArea textArea)
+    public ListenedParser(ParserListener parserListener, JTextPane textPane)
     {
         this.parserListener = parserListener;
-        this.textArea = textArea;
+        this.textPane = textPane;
         productions = new LoggingMap(parserListener);
     }
 
@@ -28,7 +29,19 @@ public class ListenedParser extends HumoParser
             parserListener.startProductionCreation("");
 
         int result = super.parse(sourcecode, first);
-        textArea.setText(sourcecode.toString());
+        HumoTester.configureTextPane(sourcecode, textPane);
+        StyledDocument styledDocument = (StyledDocument) textPane.getDocument();
+        styledDocument.setCharacterAttributes(first, 2, styledDocument.getStyle("Cursor"), false);
+        try
+        {
+            Thread.sleep(100);
+        }
+        catch (InterruptedException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
         return result;
     }
 

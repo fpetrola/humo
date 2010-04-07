@@ -18,10 +18,14 @@ public class HumoParser
     public int parse(StringBuilder sourcecode, int first)
     {
         int last = first, current = first;
+        int last2= sourcecode.length();
 
         for (char currentChar; last < sourcecode.length() && (currentChar = sourcecode.charAt(last)) != '}';)
         {
             last++;
+            if (last > last2)
+                current= last2;
+            
             if (currentChar == '{')
             {
                 current = parse(sourcecode, last);
@@ -33,10 +37,9 @@ public class HumoParser
                 CharSequence production = productions.get(sourcecode.subSequence(current, last));
                 if (production != null)
                 {
-                    StringBuilder value = new StringBuilder(production);
-                    parse(value, 0);
-                    sourcecode.replace(current, last, value.toString());
-                    last = current += value.length();
+                    sourcecode.replace(current, last, production.toString());
+                    last= current; 
+                    last2= current+production.length();
                 }
             }
         }
