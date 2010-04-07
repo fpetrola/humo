@@ -19,9 +19,8 @@ public class HumoParser
     {
         int last = first, current = first;
 
-        for (char currentChar; last < sourcecode.length() && (currentChar = sourcecode.charAt(last)) != '}';)
+        for (char currentChar; last < sourcecode.length() && (currentChar = sourcecode.charAt(last++)) != '}';)
         {
-            last++;
             if (currentChar == '{')
             {
                 current = parse(sourcecode, last);
@@ -41,6 +40,6 @@ public class HumoParser
             }
         }
 
-        return last;
+        return last - 1;
     }
 }

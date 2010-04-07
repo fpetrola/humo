@@ -29,19 +29,21 @@ public class ListenedParser extends HumoParser
             parserListener.startProductionCreation("");
 
         int result = super.parse(sourcecode, first);
-        HumoTester.configureTextPane(sourcecode, textPane);
-        StyledDocument styledDocument = (StyledDocument) textPane.getDocument();
-        styledDocument.setCharacterAttributes(first, 2, styledDocument.getStyle("Cursor"), false);
-        try
+
+        if (sourcecode.length() > 50)
         {
-            Thread.sleep(100);
+            HumoTester.configureTextPane(sourcecode, textPane);
+            StyledDocument styledDocument = (StyledDocument) textPane.getDocument();
+            styledDocument.setCharacterAttributes(first, 2, styledDocument.getStyle("Cursor"), false);
+            try
+            {
+                Thread.sleep(100);
+            }
+            catch (InterruptedException e)
+            {
+            }
         }
-        catch (InterruptedException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        
+
         return result;
     }
 
