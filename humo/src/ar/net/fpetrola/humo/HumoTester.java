@@ -10,7 +10,6 @@ package ar.net.fpetrola.humo;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.io.File;
 import java.util.Scanner;
 
 import javax.swing.JComponent;
