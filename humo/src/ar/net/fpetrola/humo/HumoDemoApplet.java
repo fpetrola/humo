@@ -8,7 +8,7 @@ public class HumoDemoApplet extends Applet
     {
 	try
 	{
-	    HumoTester.main(new String[] { "/prueba+de+objetos2.humo" });
+	    HumoTester.main(new String[0]);
 	}
 	catch (Exception e)
 	{

@@ -8,15 +8,23 @@
 
 package ar.net.fpetrola.humo;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Scanner;
 
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
@@ -30,86 +38,130 @@ public class HumoTester
 {
     public static void main(String[] args) throws Exception
     {
-        if (args.length == 0)
-            args = new String[] { "/prueba+de+objetos2.humo" };
+	if (args.length == 0)
+	    args= new String[] { "/1i.humo" };
 
-        String filename = args[0];
+	String filename= args[0];
 
+	StringBuilder sourceCode= new StringBuilder(new Scanner(HumoTester.class.getResourceAsStream(filename)).useDelimiter("\\Z").next());
 
-        StringBuilder sourceCode = new StringBuilder(new Scanner(HumoTester.class.getResourceAsStream(filename)).useDelimiter("\\Z").next());
+	JTextPane textPane= new JTextPane();
+	createTextPane(textPane, sourceCode);
 
-        JTextPane textPane = new JTextPane();
-        createTextPane(textPane, sourceCode);
+	ExecutionParserListener treeParserListener= new ExecutionParserListener(filename);
+	ProductionsParserListener productionsParserListener= new ProductionsParserListener(filename);
+	DebuggingParserListener debuggingParserListener= new DebuggingParserListener();
+	ListenedParser parser= new ListenedParser(new ParserListenerMultiplexer(treeParserListener, productionsParserListener, debuggingParserListener), textPane);
 
-        ExecutionParserListener treeParserListener = new ExecutionParserListener(filename);
-        ProductionsParserListener productionsParserListener = new ProductionsParserListener(filename);
-        ListenedParser parser = new ListenedParser(new ParserListenerMultiplexer(treeParserListener, productionsParserListener), textPane);
+	parser.getLoggingMap().log("begin parsing");
+	showTree(sourceCode, treeParserListener.getRoot(), productionsParserListener.getRoot(), textPane, debuggingParserListener);
+	parser.parse(sourceCode, 0);
+	parser.getLoggingMap().log("end parsing");
 
-        parser.getLoggingMap().log("begin parsing");
-        showTree(sourceCode, treeParserListener.getRoot(), productionsParserListener.getRoot(), textPane);
-        parser.parse(sourceCode, 0);
-        parser.getLoggingMap().log("end parsing");
     }
 
     public static JTextPane createTextPane(JTextPane textPane, StringBuilder sourceCode)
     {
-        StyleContext sc = new StyleContext();
-        Style defaultStyle = sc.getStyle(StyleContext.DEFAULT_STYLE);
-        StyleConstants.setFontFamily(defaultStyle, "monospaced");
+	StyleContext sc= new StyleContext();
+	Style defaultStyle= sc.getStyle(StyleContext.DEFAULT_STYLE);
+	StyleConstants.setFontFamily(defaultStyle, "monospaced");
+	StyleConstants.setFontSize(defaultStyle, 11);
+	StyleConstants.setBold(defaultStyle, true);
 
-        Style cursorStyle = sc.addStyle("Cursor", null);
-        StyleConstants.setForeground(cursorStyle, Color.RED);
-        StyleConstants.setFontFamily(cursorStyle, "monospaced");
-        StyleConstants.setBold(cursorStyle, true);
+	Style cursorStyle= sc.addStyle("Cursor", null);
+	StyleConstants.setForeground(cursorStyle, Color.RED);
+	StyleConstants.setFontFamily(cursorStyle, "monospaced");
+	StyleConstants.setFontSize(cursorStyle, 11);
+	StyleConstants.setBold(cursorStyle, true);
 
-        Style heading2Style = sc.addStyle("Heading2", null);
-        StyleConstants.setForeground(heading2Style, Color.BLACK);
-        StyleConstants.setFontFamily(heading2Style, "monospaced");
-        StyleConstants.setBold(heading2Style, true);
+	Style heading2Style= sc.addStyle("Heading2", null);
+	StyleConstants.setForeground(heading2Style, Color.BLACK);
+	StyleConstants.setFontFamily(heading2Style, "monospaced");
+	StyleConstants.setFontSize(heading2Style, 11);
+	StyleConstants.setBold(heading2Style, true);
 
-        DefaultStyledDocument doc = new DefaultStyledDocument(sc);
-        textPane.setDocument(doc);
+	DefaultStyledDocument doc= new DefaultStyledDocument(sc);
+	textPane.setDocument(doc);
 
-        configureTextPane(sourceCode, textPane);
-        return textPane;
+	configureTextPane(sourceCode, textPane);
+	textPane.setFont(new Font("Monospaced", Font.PLAIN, 11));
+
+	return textPane;
     }
 
     public static void configureTextPane(StringBuilder sourceCode, JTextPane textPane)
     {
-        try
-        {
-            StyledDocument doc = (StyledDocument) textPane.getDocument();
-            Style heading2Style = doc.getStyle("Heading2");
-            doc.remove(0, doc.getLength());
-            doc.insertString(0, sourceCode.toString(), null);
-            for (int i = 0; i < sourceCode.length(); i++)
-            {
-                if (sourceCode.charAt(i) == '{' || sourceCode.charAt(i) == '}')
-                    doc.setCharacterAttributes(i, 1, heading2Style, false);
-            }
-        }
-        catch (BadLocationException e)
-        {
-            throw new RuntimeException(e);
-        }
+	try
+	{
+	    StyledDocument doc= (StyledDocument) textPane.getDocument();
+	    Style heading2Style= doc.getStyle("Heading2");
+	    doc.remove(0, doc.getLength());
+	    doc.insertString(0, sourceCode.toString(), null);
+	    for (int i= 0; i < sourceCode.length(); i++)
+	    {
+		if (sourceCode.charAt(i) == '{' || sourceCode.charAt(i) == '}')
+		    doc.setCharacterAttributes(i, 1, heading2Style, false);
+	    }
+	}
+	catch (BadLocationException e)
+	{
+	    throw new RuntimeException(e);
+	}
     }
 
-    public static void showTree(StringBuilder sourceCode, DefaultMutableTreeNode executionRoot, DefaultMutableTreeNode productionsRoot, JComponent textComponent)
+    public static void showTree(StringBuilder sourceCode, DefaultMutableTreeNode executionRoot, DefaultMutableTreeNode productionsRoot, JComponent textComponent, final DebuggingParserListener debuggingParserListener)
     {
-        JFrame jframe = new JFrame();
-        jframe.setLocation(100, 100);
-//        jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JScrollPane tree1 = new JScrollPane(new JTree(executionRoot));
-        tree1.setPreferredSize(new Dimension(300, 300));
-        JScrollPane tree2 = new JScrollPane(new JTree(productionsRoot));
-        JComponent textPanel = new JScrollPane(textComponent);
-        JSplitPane treesSplitPane= new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, tree1, tree2);
-        treesSplitPane.setPreferredSize(new Dimension(1000, 300));
+	JFrame jframe= new JFrame();
+	jframe.setLocation(100, 100);
+	//jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	JScrollPane tree1= new JScrollPane(new JTree(executionRoot));
+	tree1.setPreferredSize(new Dimension(300, 300));
+	JScrollPane tree2= new JScrollPane(new JTree(productionsRoot));
+	JComponent textPanel= new JScrollPane(textComponent);
+	JSplitPane treesSplitPane= new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, tree1, tree2);
+	treesSplitPane.setPreferredSize(new Dimension(1000, 300));
 	JSplitPane verticalSplitPane= new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, treesSplitPane, textPanel);
 	verticalSplitPane.setDividerLocation(200);
-	jframe.setContentPane(verticalSplitPane);
 
-        jframe.setSize(800, 1000);
-        jframe.setVisible(true);
+	jframe.setSize(800, 1000);
+	jframe.setVisible(true);
+
+	JToolBar toolBar= new JToolBar("Still draggable");
+	JButton pauseButton= new JButton("pause");
+	pauseButton.addActionListener(new ActionListener()
+	{
+	    public void actionPerformed(ActionEvent e)
+	    {
+		debuggingParserListener.stop();
+	    }
+	});
+
+	toolBar.add(pauseButton);
+	JButton stepButton= new JButton("step");
+	stepButton.addActionListener(new ActionListener()
+	{
+	    public void actionPerformed(ActionEvent e)
+	    {
+		debuggingParserListener.step();
+	    }
+	});
+	toolBar.add(stepButton);
+	JButton continueButton= new JButton("continue");
+	continueButton.addActionListener(new ActionListener()
+	{
+	    public void actionPerformed(ActionEvent e)
+	    {
+		debuggingParserListener.continueExecution();
+	    }
+	});
+	toolBar.add(continueButton);
+
+	toolBar.add(new JTextField());
+
+	JPanel mainPanel= new JPanel(new BorderLayout());
+	mainPanel.add(toolBar, BorderLayout.PAGE_START);
+	mainPanel.add(verticalSplitPane, BorderLayout.CENTER);
+
+	jframe.setContentPane(mainPanel);
     }
 }
