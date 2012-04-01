@@ -9,6 +9,7 @@
 package ar.net.fpetrola.humo;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.io.File;
 import java.util.Scanner;
 
@@ -101,7 +102,9 @@ public class HumoTester
         JScrollPane tree1 = new JScrollPane(new JTree(executionRoot));
         JScrollPane tree2 = new JScrollPane(new JTree(productionsRoot));
         JComponent textPanel = new JScrollPane(textComponent);
-        jframe.setContentPane(new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, tree1, tree2), textPanel));
+        JSplitPane treesSplitPane= new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, tree1, tree2);
+        treesSplitPane.setMinimumSize(new Dimension(100, 400));
+	jframe.setContentPane(new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, treesSplitPane, textPanel));
 
         jframe.setSize(800, 1000);
         jframe.setVisible(true);
