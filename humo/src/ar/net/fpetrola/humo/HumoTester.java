@@ -97,7 +97,7 @@ public class HumoTester
     public static void showTree(StringBuilder sourceCode, DefaultMutableTreeNode executionRoot, DefaultMutableTreeNode productionsRoot, JComponent textComponent)
     {
         JFrame jframe = new JFrame();
-        jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JScrollPane tree1 = new JScrollPane(new JTree(executionRoot));
         JScrollPane tree2 = new JScrollPane(new JTree(productionsRoot));
         JComponent textPanel = new JScrollPane(textComponent);
