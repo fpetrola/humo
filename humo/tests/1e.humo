@@ -12,15 +12,15 @@ programa
 	sistema:ayudantes1
 	{
 		(**){(*)}
-		[te{[t}mp]{emp]}  
-		[comen{[come}tario]{ntario]}  
+		[te{[t}mp]{emp]}
+		[comen{[come}tario]{ntario]}
 		[nada]{}
 		<*>{%}
 		<**{<*}
 	}
-		
+
 	<clase> del
-	{ 
+	{
 		<metodo> del=>( %del::head %del::tail )
 		{
 			head=>%del::head %del::tail tail=>%del::head %del::tail
@@ -28,7 +28,7 @@ programa
 				head2=>%del::head %del::tail tail2=>%del::head %del::tail
 			}
 		}
-	
+
 		head=>%del::head %del::tail {%del::head}
 		tail=>%del::head %del::tail {%del::tail}
 		head2=>%del::head %del::tail {h}
@@ -41,20 +41,20 @@ programa
 
 	<clase> math
 	{
-		<metodo> math.incr 
+		<metodo> math.incr
 		{
 			(**)resultado{%incr::valor.incr}
 		}
-		<metodo> math.decr 
+		<metodo> math.decr
 		{
 			(**)resultado{%decr::valor.decr}
 		}
 
-		<funcion> 000+ {(**)resultado{0} (**)acarreo{0}} 
-		<funcion> 001+ {(**)resultado{1} (**)acarreo{0}} 
-		<funcion> 010+ {(**)resultado{1} (**)acarreo{0}} 
-		<funcion> 011+ {(**)resultado{0} (**)acarreo{1}} 
-		
+		<funcion> 000+ {(**)resultado{0} (**)acarreo{0}}
+		<funcion> 001+ {(**)resultado{1} (**)acarreo{0}}
+		<funcion> 010+ {(**)resultado{1} (**)acarreo{0}}
+		<funcion> 011+ {(**)resultado{0} (**)acarreo{1}}
+
 		<funcion> 100+ {(**)resultado{1} (**)acarreo{0}}
 		<funcion> 101+ {(**)resultado{0} (**)acarreo{1}}
 		<funcion> 110+ {(**)resultado{0} (**)acarreo{1}}
@@ -69,7 +69,7 @@ programa
 
 		<*>del::head{%resul} <*>del::tail{tado} [temp]{nuevo del}
 	}
-	
+
 	sistema:ayudantes2
 	{
 		(*){%}
@@ -84,7 +84,7 @@ programa
 			<**>del::head{<*>nibble::nombre} <**>del::tail{.inc} 			[temp]{<**>nuevo del}
 			<**>del::head{<*>nibble::nombre} <**>del::tail{.esCero} 		[temp]{<**>nuevo del}
 		}
-		
+
 		<metodo> nibble::nombre.setValor
 		{
 			[temp]borra_metodos
@@ -94,7 +94,7 @@ programa
 				[temp]{<*>del=>(%nibble::nombre.inc)}
 				[temp]{<*>del=>(%nibble::nombre.esCero)}
 			}
-	
+
 			<metodo> nibble::nombre.dec
 			{
 				<****>decr::valor {<*>nibble::nombre.getValor}
@@ -102,7 +102,7 @@ programa
 				[temp]borra_getValor{<**>del=>(%nibble::nombre.getValor)}
 				<*>nibble::nombre.getValor {%resultado}
 				[temp]borra_resultado{<***>del->(%resultado)}
-			} 
+			}
 			[temp]borra_getValor {<*>del=>(%nibble::nombre.getValor)}
 
 			<metodo> nibble::nombre.inc
@@ -112,18 +112,18 @@ programa
 				[temp]borra_getValor{<**>del=>(%nibble::nombre.getValor)}
 				<*>nibble::nombre.getValor {%resultado}
 				[temp]borra_resultado{<***>del->(%resultado)}
-			} 
+			}
 			[temp]borra_getValor {<*>del=>(%nibble::nombre.getValor)}
-			
+
 			<metodo> nibble::nombre.esCero{<*>nibble::nombre.getValor.esCero}
 			<metodo> nibble::nombre.getValor {%nibble::numero}
 		}
 	}
-	
-	
+
+
 	[comentario]cargo_nombre{(*)nibble::nombre{%n1}}
 	[comentario]creo_nibble{nuevo nibble}
-		
+
 	[comentario]cargo_numero{(*)nibble::numero{5}}
 	[comentario]seteo_el_valor{%n1.setValor}
 	[comentario]lo_decremento{%n1.dec}
@@ -131,5 +131,5 @@ programa
 	[comentario]cargo_numero{(*)nibble::numero{11}}
 	[comentario]seteo_el_valor{%n1.setValor}
 	[comentario]lo_incremento{%n1.inc}
-	
+
 }
