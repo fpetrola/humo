@@ -103,7 +103,7 @@ public class HumoTester
         JScrollPane tree2 = new JScrollPane(new JTree(productionsRoot));
         JComponent textPanel = new JScrollPane(textComponent);
         JSplitPane treesSplitPane= new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, tree1, tree2);
-        treesSplitPane.setMinimumSize(new Dimension(100, 400));
+        treesSplitPane.setSize(new Dimension(100, 300));
 	jframe.setContentPane(new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, treesSplitPane, textPanel));
 
         jframe.setSize(800, 1000);

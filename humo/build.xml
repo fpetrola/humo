@@ -1,7 +1,7 @@
 <project>
 
 	<target name="clean">
-		<delete dir="build" />
+		<delete dir="bin" />
 	</target>
 
 	<target name="jar">
