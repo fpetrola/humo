@@ -1,5 +1,5 @@
 /*
- * Humo Language 
+ * Humo Language
  * Copyright (C) 2002-2010, Fernando Damian Petrola
  *
  * Distributable under GPL license.
@@ -39,5 +39,8 @@ public class ExecutionParserListener implements ParserListener
         DefaultMutableTreeNode child = nodes.pop();
         child.setUserObject(name);
         nodes.peek().add(child);
+    }
+    public void getProduction(CharSequence key, CharSequence value)
+    {
     }
 }

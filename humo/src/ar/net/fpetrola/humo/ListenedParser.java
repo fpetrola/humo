@@ -1,5 +1,5 @@
 /*
- * Humo Language 
+ * Humo Language
  * Copyright (C) 2002-2010, Fernando Damian Petrola
  *
  * Distributable under GPL license.
@@ -28,21 +28,23 @@ public class ListenedParser extends HumoParser
         if (first != 0)
             parserListener.startProductionCreation("");
 
-        int result = super.parse(sourcecode, first);
 
         if (sourcecode.length() > 50)
         {
             HumoTester.configureTextPane(sourcecode, textPane);
             StyledDocument styledDocument = (StyledDocument) textPane.getDocument();
-            styledDocument.setCharacterAttributes(first, 2, styledDocument.getStyle("Cursor"), false);
+            int nextCurly= Math.min(sourcecode.substring(first).indexOf('{'), sourcecode.substring(first).indexOf('}'));
+            styledDocument.setCharacterAttributes(first, nextCurly, styledDocument.getStyle("Cursor"), false);
             try
             {
-                Thread.sleep(100);
+                Thread.sleep(10);
             }
             catch (InterruptedException e)
             {
             }
         }
+
+        int result = super.parse(sourcecode, first);
 
         return result;
     }

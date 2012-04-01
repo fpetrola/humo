@@ -12,7 +12,7 @@ public class DebuggingParserListener implements ParserListener
 
     public void endProductionCreation(CharSequence aName, CharSequence aValue)
     {
-	performStep();
+	//performStep();
     }
 
     private void performStep()
@@ -40,5 +40,10 @@ public class DebuggingParserListener implements ParserListener
     {
 	step= true;
 	pause= false;
+    }
+
+    public void getProduction(CharSequence key, CharSequence value)
+    {
+//	performStep();
     }
 }

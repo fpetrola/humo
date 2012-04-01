@@ -1,5 +1,5 @@
 /*
- * Humo Language 
+ * Humo Language
  * Copyright (C) 2002-2010, Fernando Damian Petrola
  *
  * Distributable under GPL license.
@@ -23,7 +23,7 @@ public class ProductionsParserListener implements ParserListener
     {
         this.root = new DefaultMutableTreeNode("Productions of: " + filename);
     }
-    
+
     public void endProductionCreation(CharSequence name, CharSequence value)
     {
         productionsCount++;
@@ -52,6 +52,10 @@ public class ProductionsParserListener implements ParserListener
     }
 
     public void startProductionCreation(CharSequence name)
+    {
+    }
+
+    public void getProduction(CharSequence key, CharSequence value)
     {
     }
 }

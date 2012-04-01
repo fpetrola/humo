@@ -1,5 +1,5 @@
 /*
- * Humo Language 
+ * Humo Language
  * Copyright (C) 2002-2010, Fernando Damian Petrola
  *
  * Distributable under GPL license.
@@ -24,6 +24,7 @@ public class LoggingMap extends TreeMap<CharSequence, CharSequence>
     {
         CharSequence o = super.get(new ClearCharSequence((CharSequence) key));
         log("uso: " +  key + " = " + o + "");
+        parserListener.getProduction((CharSequence) key, o);
         return o;
     }
 
@@ -33,11 +34,11 @@ public class LoggingMap extends TreeMap<CharSequence, CharSequence>
         log((String) key + "{}");
         return o;
     }
-    
+
     public synchronized CharSequence put(CharSequence key, CharSequence value)
     {
         parserListener.endProductionCreation(key, value);
-        
+
         log((String) key);
         log("{");
         log("\t" + (String) value);

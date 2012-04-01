@@ -1,5 +1,5 @@
 /*
- * Humo Language 
+ * Humo Language
  * Copyright (C) 2002-2010, Fernando Damian Petrola
  *
  * Distributable under GPL license.
@@ -12,4 +12,5 @@ public interface ParserListener
 {
     void startProductionCreation(CharSequence aName);
     void endProductionCreation(CharSequence aName, CharSequence aValue);
+    void getProduction(CharSequence key, CharSequence value);
 }
