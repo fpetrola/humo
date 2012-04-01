@@ -5,8 +5,8 @@
 	</target>
 
 	<target name="jar">
-		<mkdir dir="demo/jar" />
-		<jar destfile="demo/jar/humo.jar" basedir="bin">
+		<mkdir dir="demo" />
+		<jar destfile="demo/humo.jar" basedir="bin">
 			<manifest>
 				<attribute name="Main-Class" value="ar.net.fpetrola.humo.HumoTester" />
 			</manifest>
@@ -14,7 +14,7 @@
 	</target>
 
 	<target name="run">
-		<java jar="demo/jar/humo.jar" fork="true" />
+		<java jar="demo/humo.jar" fork="true" />
 	</target>
 
 </project>
