@@ -97,13 +97,13 @@ public class HumoTester
     public static void showTree(StringBuilder sourceCode, DefaultMutableTreeNode executionRoot, DefaultMutableTreeNode productionsRoot, JComponent textComponent)
     {
         JFrame jframe = new JFrame();
-//        jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JScrollPane tree1 = new JScrollPane(new JTree(executionRoot));
         JScrollPane tree2 = new JScrollPane(new JTree(productionsRoot));
         JComponent textPanel = new JScrollPane(textComponent);
         jframe.setContentPane(new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, tree1, tree2), textPanel));
 
-//        jframe.setSize(800, 1000);
+        jframe.setSize(800, 1000);
         jframe.setVisible(true);
     }
 }
