@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="" href="">
+    <information>
+        <title>Humo Demo</title>
+        <vendor>fpetrola</vendor>
+    </information>
+    <resources>
+        <!-- Application Resources -->
+        <j2se version="1.5+"
+              href="http://java.sun.com/products/autodl/j2se" />
+        <jar href="http://humo.googlecode.com/svn/trunk/humo/demo/humo.jar" main="true" />
+    </resources>
+    <applet-desc
+         name="Humo Demo"
+         main-class="ar.net.fpetrola.humo.HumoDemoApplet"
+         width="564" height="452">
+     </applet-desc>
+     <update check="background"/>
+</jnlp>
