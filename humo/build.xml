@@ -1,0 +1,20 @@
+<project>
+
+	<target name="clean">
+		<delete dir="build" />
+	</target>
+
+	<target name="jar">
+		<mkdir dir="demo/jar" />
+		<jar destfile="demo/jar/humo.jar" basedir="bin">
+			<manifest>
+				<attribute name="Main-Class" value="ar.net.fpetrola.humo.HumoTester" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="run">
+		<java jar="demo/jar/humo.jar" fork="true" />
+	</target>
+
+</project>

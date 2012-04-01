@@ -1,5 +1,5 @@
 /*
- * Humo Language 
+ * Humo Language
  * Copyright (C) 2002-2010, Fernando Damian Petrola
  *
  * Distributable under GPL license.
@@ -31,11 +31,12 @@ public class HumoTester
     public static void main(String[] args) throws Exception
     {
         if (args.length == 0)
-            args = new String[] { "tests/prueba+de+objetos2.humo" };
+            args = new String[] { "/prueba+de+objetos2.humo" };
 
         String filename = args[0];
 
-        StringBuilder sourceCode = new StringBuilder(new Scanner(new File(filename)).useDelimiter("\\Z").next());
+
+        StringBuilder sourceCode = new StringBuilder(new Scanner(HumoTester.class.getResourceAsStream(filename)).useDelimiter("\\Z").next());
 
         JTextPane textPane = new JTextPane();
         createTextPane(textPane, sourceCode);
@@ -60,7 +61,7 @@ public class HumoTester
         StyleConstants.setForeground(cursorStyle, Color.RED);
         StyleConstants.setFontFamily(cursorStyle, "monospaced");
         StyleConstants.setBold(cursorStyle, true);
-        
+
         Style heading2Style = sc.addStyle("Heading2", null);
         StyleConstants.setForeground(heading2Style, Color.BLACK);
         StyleConstants.setFontFamily(heading2Style, "monospaced");
