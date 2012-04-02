@@ -17,27 +17,63 @@ public class ParserListenerMultiplexer implements ParserListener
 	this.parserListeners= parserListener;
     }
 
-    public void endProductionCreation(CharSequence name, CharSequence value)
+    public void afterParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar, CharSequence name, CharSequence value)
     {
 	for (ParserListener parserListener : parserListeners)
-	    parserListener.endProductionCreation(name, value);
+	    parserListener.afterParseProductionBody(sourcecode, first, current, last, currentChar, name, value);
     }
 
-    public void startProductionCreation(CharSequence name)
+    public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder production)
     {
 	for (ParserListener parserListener : parserListeners)
-	    parserListener.startProductionCreation(name);
+	    parserListener.afterProductionFound(sourcecode, first, current, last, currentChar, name, production);
     }
 
-    public void getProduction(CharSequence key, CharSequence value)
+    public void afterProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition)
     {
 	for (ParserListener parserListener : parserListeners)
-	    parserListener.getProduction(key, value);
+	    parserListener.afterProductionReplacement(sourcecode, first, current, last, currentChar, value, startPosition, endPosition);
     }
 
-    public void parseEnded()
+    public void beforeParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar)
     {
 	for (ParserListener parserListener : parserListeners)
-	    parserListener.parseEnded();
+	    parserListener.beforeParseProductionBody(sourcecode, first, current, last, currentChar);
+    }
+
+    public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition)
+    {
+	for (ParserListener parserListener : parserListeners)
+	    parserListener.beforeProductionReplacement(sourcecode, first, current, last, currentChar, value, startPosition, endPosition);
+    }
+
+    public void beforeProductionSearch(StringBuilder sourcecode, int first, int current, int last, char currentChar)
+    {
+	for (ParserListener parserListener : parserListeners)
+	    parserListener.beforeProductionSearch(sourcecode, first, current, last, currentChar);
+    }
+
+    public void endParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
+    {
+	for (ParserListener parserListener : parserListeners)
+	    parserListener.endParsingLoop(sourcecode, first, current, last, currentChar);
+    }
+
+    public void endProductionParsing(StringBuilder sourcecode, int first, int current, int last)
+    {
+	for (ParserListener parserListener : parserListeners)
+	    parserListener.endProductionParsing(sourcecode, first, current, last);
+    }
+
+    public void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
+    {
+	for (ParserListener parserListener : parserListeners)
+	    parserListener.startParsingLoop(sourcecode, first, current, last, currentChar);
+    }
+
+    public void startProductionParsing(StringBuilder sourcecode, int first)
+    {
+	for (ParserListener parserListener : parserListeners)
+	    parserListener.startProductionParsing(sourcecode, first);
     }
 }

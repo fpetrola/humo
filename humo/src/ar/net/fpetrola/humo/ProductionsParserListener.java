@@ -41,7 +41,7 @@ public class ProductionsParserListener extends DefaultParserListener implements 
 	return productionsTree;
     }
 
-    public void endProductionCreation(CharSequence name, CharSequence value)
+    public void afterParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar, CharSequence name, CharSequence value)
     {
 	productionsCount++;
 

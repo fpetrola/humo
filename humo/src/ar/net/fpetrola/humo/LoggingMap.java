@@ -13,47 +13,41 @@ import java.util.TreeMap;
 @SuppressWarnings("serial")
 public class LoggingMap extends TreeMap<CharSequence, CharSequence>
 {
-    private ParserListener parserListener;
-
-    public LoggingMap(ParserListener parserListener)
+    public LoggingMap()
     {
-        this.parserListener = parserListener;
     }
 
     public synchronized CharSequence get(Object key)
     {
-        CharSequence o = super.get(new ClearCharSequence((CharSequence) key));
-        log("uso: " +  key + " = " + o + "");
-        parserListener.getProduction((CharSequence) key, o);
-        return o;
+	CharSequence o= super.get(new ClearCharSequence((CharSequence) key));
+	log("uso: " + key + " = " + o + "");
+	return o;
     }
 
     public synchronized CharSequence remove(Object key)
     {
-        CharSequence o = super.remove(key);
-        log((String) key + "{}");
-        return o;
+	CharSequence o= super.remove(key);
+	log((String) key + "{}");
+	return o;
     }
 
     public synchronized CharSequence put(CharSequence key, CharSequence value)
     {
-        parserListener.endProductionCreation(key, value);
-
-        log((String) key);
-        log("{");
-        log("\t" + (String) value);
-        log("}\n");
-        CharSequence o = super.put(new ClearCharSequence(ClearCharSequence.clearText(new StringBuilder(key).toString())), new ClearCharSequence(value));
-        return o;
+	log((String) key);
+	log("{");
+	log("\t" + (String) value);
+	log("}\n");
+	CharSequence o= super.put(new ClearCharSequence(ClearCharSequence.clearText(new StringBuilder(key).toString())), new ClearCharSequence(value));
+	return o;
     }
 
     public void log(String t)
     {
-//        StringBuffer sb = new StringBuffer();
-        //        for (int primero = 0; primero < parser.getDepth(); primero++)
-        //            sb.append("\t");
+	//        StringBuffer sb = new StringBuffer();
+	//        for (int primero = 0; primero < parser.getDepth(); primero++)
+	//            sb.append("\t");
 
-//        System.out.println(sb.toString() + t);
+	//        System.out.println(sb.toString() + t);
     }
 
 }

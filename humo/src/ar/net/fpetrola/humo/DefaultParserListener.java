@@ -5,20 +5,34 @@ public class DefaultParserListener implements ParserListener
     public DefaultParserListener()
     {
     }
-
-    public void startProductionCreation(CharSequence aName)
+    public void startProductionParsing(StringBuilder sourcecode, int first)
     {
     }
-
-    public void endProductionCreation(CharSequence aName, CharSequence aValue)
+    public void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
     {
     }
-
-    public void getProduction(CharSequence key, CharSequence value)
+    public void endParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
     {
     }
-
-    public void parseEnded()
+    public void beforeParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar)
+    {
+    }
+    public void beforeProductionSearch(StringBuilder sourcecode, int first, int current, int last, char currentChar)
+    {
+    }
+    public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder production)
+    {
+    }
+    public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition)
+    {
+    }
+    public void afterProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition)
+    {
+    }
+    public void endProductionParsing(StringBuilder sourcecode, int first, int current, int last)
+    {
+    }
+    public void afterParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar, CharSequence name, CharSequence value)
     {
     }
 }

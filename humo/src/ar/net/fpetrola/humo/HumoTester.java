@@ -58,11 +58,10 @@ public class HumoTester
 	JTextField textField= new JTextField(aFilename);
 	JCheckBox skipSmall= new JCheckBox("skip small productions (<50)");
 
-
 	ExecutionParserListener treeParserListener= new ExecutionParserListener();
 	ProductionsParserListener productionsParserListener= new ProductionsParserListener();
-	DebuggingParserListener debuggingParserListener= new DebuggingParserListener(skipSmall.getModel());
-	ListenedParser parser= new ListenedParser(new ParserListenerMultiplexer(treeParserListener, productionsParserListener, debuggingParserListener), textPane, skipSmall);
+	DebuggingParserListener debuggingParserListener= new DebuggingParserListener(skipSmall.getModel(), textPane);
+	ListenedParser parser= new ListenedParser(new ParserListenerMultiplexer(treeParserListener, productionsParserListener, debuggingParserListener));
 
 	parser.getLoggingMap().log("begin parsing");
 	boolean initialized= false;
@@ -77,15 +76,16 @@ public class HumoTester
 
 	    treeParserListener.init(file, !initialized, sourceCode);
 	    productionsParserListener.init(file, !initialized);
+	    debuggingParserListener.init(file, sourceCode, !initialized);
 
 	    ((DefaultTreeModel) treeParserListener.getExecutionTree().getModel()).reload();
-	    ((DefaultTreeModel) treeParserListener.getUsedProductionsTree().getModel()).reload();
+	    ((DefaultTreeModel) debuggingParserListener.getUsedProductionsTree().getModel()).reload();
 	    ((DefaultTreeModel) productionsParserListener.getProductionsTree().getModel()).reload();
 
 	    createTextPane(sourceCode, textPane);
 	    if (!initialized)
 	    {
-		showTree(parser, sourceCode, textPane, debuggingParserListener, treeParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe, textField, skipSmall);
+		showTree(parser, sourceCode, textPane, debuggingParserListener, debuggingParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe, textField, skipSmall);
 		initialized= true;
 	    }
 	    parser.init();
@@ -218,8 +218,8 @@ public class HumoTester
 		if (e.getNewLeadSelectionPath() != null)
 		{
 		    Object lastPathComponent= e.getNewLeadSelectionPath().getLastPathComponent();
-		    CharSequence sourcecode= (CharSequence) ((StacktraceTreeNode) lastPathComponent).getValue();
-		    configureTextPane(new StringBuilder(sourcecode), textComponent);
+		    StacktraceTreeNode stacktraceTreeNode= (StacktraceTreeNode) lastPathComponent;
+		    debuggingParserListener.updateFrame(stacktraceTreeNode.getFrame().getProduction(), stacktraceTreeNode.getFrame().getFirst());
 		}
 	    }
 	});

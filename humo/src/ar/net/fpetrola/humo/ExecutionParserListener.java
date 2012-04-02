@@ -18,10 +18,6 @@ public class ExecutionParserListener extends DefaultParserListener implements Pa
 {
     protected Stack<DefaultMutableTreeNode> nodes;
     protected DefaultMutableTreeNode root;
-
-    protected Stack<DefaultMutableTreeNode> usedProductionsStack;
-    protected DefaultMutableTreeNode usedProductionsStackRoot;
-
     protected JTree executionTree;
 
     public JTree getExecutionTree()
@@ -29,16 +25,6 @@ public class ExecutionParserListener extends DefaultParserListener implements Pa
 	return executionTree;
     }
 
-    protected JTree stacktraceTree;
-
-    public DefaultMutableTreeNode getUsedProductionsStackRoot()
-    {
-	return usedProductionsStackRoot;
-    }
-    public void setUsedProductionsStackRoot(DefaultMutableTreeNode usedProductionsStackRoot)
-    {
-	this.usedProductionsStackRoot= usedProductionsStackRoot;
-    }
     public DefaultMutableTreeNode getRoot()
     {
 	return root;
@@ -54,56 +40,24 @@ public class ExecutionParserListener extends DefaultParserListener implements Pa
     public void init(String filename, boolean createComponents, CharSequence sourcecode)
     {
 	nodes= new Stack<DefaultMutableTreeNode>();
-	usedProductionsStack= new Stack<DefaultMutableTreeNode>();
 	root= new DefaultMutableTreeNode("Execution of: " + filename);
-	usedProductionsStackRoot= new StacktraceTreeNode("Call stack of: " + filename, sourcecode);
 	nodes.push(root);
-	usedProductionsStack.push(usedProductionsStackRoot);
 	if (createComponents)
 	{
-	    stacktraceTree= new JTree();
 	    executionTree= new JTree();
 	}
 
-	stacktraceTree.setModel(new DefaultTreeModel(usedProductionsStackRoot));
 	executionTree.setModel(new DefaultTreeModel(root));
     }
-    public void startProductionCreation(CharSequence name)
+
+    public void afterParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar, CharSequence name, CharSequence value)
     {
 	nodes.push(new DefaultMutableTreeNode(name));
 	((DefaultTreeModel) executionTree.getModel()).reload();
-    }
-    public void endProductionCreation(CharSequence name, CharSequence value)
-    {
 	nodes.peek().add(new DefaultMutableTreeNode(value));
 	DefaultMutableTreeNode child= nodes.pop();
 	child.setUserObject(name);
 	nodes.peek().add(child);
 	((DefaultTreeModel) executionTree.getModel()).reload();
-    }
-
-    public void getProduction(CharSequence key, CharSequence value)
-    {
-	if (value != null)
-	{
-	    DefaultMutableTreeNode node= new StacktraceTreeNode(key, value);
-	    usedProductionsStack.push(node);
-	    usedProductionsStackRoot.add(usedProductionsStack.peek());
-	    ((DefaultTreeModel) stacktraceTree.getModel()).reload();
-	}
-    }
-
-    public void parseEnded()
-    {
-	if (usedProductionsStack.size() > 1)
-	{
-	    usedProductionsStackRoot.remove(usedProductionsStack.peek());
-	    usedProductionsStack.pop();
-	    ((DefaultTreeModel) stacktraceTree.getModel()).reload();
-	}
-    }
-    public JTree getUsedProductionsTree()
-    {
-	return stacktraceTree;
     }
 }
