@@ -39,7 +39,7 @@ public class HumoTester
     public static void main(String[] args) throws Exception
     {
 	if (args.length == 0)
-	    args= new String[] { "/prueba+de+objetos2.humo" };
+	    args= new String[] { "prueba+de+objetos2.humo" };
 
 	String filename= args[0];
 
@@ -66,7 +66,7 @@ public class HumoTester
 
 	    debuggingParserListener.stop();
 	    String file= textField.getText();
-	    StringBuilder sourceCode= new StringBuilder(new Scanner(HumoTester.class.getResourceAsStream(file)).useDelimiter("\\Z").next());
+	    StringBuilder sourceCode= new StringBuilder(new Scanner(HumoTester.class.getResourceAsStream("/" + file)).useDelimiter("\\Z").next());
 
 	    treeParserListener.init(file, !initialized);
 	    productionsParserListener.init(file, !initialized);
