@@ -104,9 +104,9 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
 
     public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder value)
     {
-	performStep();
-	if (sourcecode != null && sourcecode != null && (sourcecode.length() > skipThreshold || !skipSmall.isSelected()))
+	if (showFrame(value))
 	{
+	    performStep();
 	    updateFrame(sourcecode, first);
 	}
 	ProductionFrame frame= new ProductionFrame(value);
@@ -120,14 +120,15 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
 
     public void updateFrame(StringBuilder sourcecode, int first)
     {
-	if (sourcecode.length() > skipThreshold || !skipSmall.isSelected())
+	if (showFrame(sourcecode))
 	{
 	    HumoTester.configureTextPane(sourcecode, textPane);
 	    StyledDocument styledDocument= (StyledDocument) textPane.getDocument();
 	    int openCurly= sourcecode.substring(first).indexOf('{');
 	    int closeCurly= sourcecode.substring(first).indexOf('}');
-	    int nextCurly= Math.min(openCurly > 0 ? openCurly : Integer.MAX_VALUE, closeCurly> 0 ? closeCurly : Integer.MAX_VALUE);
-	    styledDocument.setCharacterAttributes(first, nextCurly, styledDocument.getStyle("Cursor"), false);
+	    int nextCurly= Math.min(openCurly > 0 ? openCurly : Integer.MAX_VALUE, closeCurly > 0 ? closeCurly : Integer.MAX_VALUE);
+	    int delta= openCurly == nextCurly ? 1 : 0;
+	    styledDocument.setCharacterAttributes(first + delta, nextCurly - delta, styledDocument.getStyle("Cursor"), false);
 
 	    int caretPosition= first;
 	    if (styledDocument.getLength() > caretPosition + 300)
@@ -146,17 +147,18 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
 
     public void afterProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition)
     {
-	if (sourcecode != null && sourcecode != null && (sourcecode.length() > skipThreshold || !skipSmall.isSelected()))
+	if (showFrame(sourcecode))
 	{
-	    updateFrame(sourcecode, first);
 	    performStep();
+	    updateFrame(sourcecode, first);
 	}
     }
 
     public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition)
     {
-	if (sourcecode != null && sourcecode != null && (sourcecode.length() > skipThreshold || !skipSmall.isSelected()))
+	if (showFrame(sourcecode))
 	{
+	    performStep();
 	    updateFrame(sourcecode, first);
 	}
 	productionFrames.pop();
@@ -225,5 +227,18 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
     public JTree getUsedProductionsTree()
     {
 	return stacktraceTree;
+    }
+
+    public void endProductionParsing(StringBuilder sourcecode, int first, int current, int last)
+    {
+	if (showFrame(sourcecode))
+	{
+	    updateFrame(sourcecode, first);
+	    performStep();
+	}
+    }
+    private boolean showFrame(StringBuilder sourcecode)
+    {
+	return sourcecode != null && (sourcecode.length() > skipThreshold || !skipSmall.isSelected());
     }
 }
