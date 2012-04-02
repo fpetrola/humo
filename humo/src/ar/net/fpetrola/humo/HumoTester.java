@@ -10,6 +10,7 @@ package ar.net.fpetrola.humo;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -39,7 +40,7 @@ public class HumoTester
     public static void main(String[] args) throws Exception
     {
 	if (args.length == 0)
-	    args= new String[] { "/1i.humo" };
+	    args= new String[] { "/prueba+de+objetos2.humo" };
 
 	String filename= args[0];
 
@@ -54,7 +55,8 @@ public class HumoTester
 	ListenedParser parser= new ListenedParser(new ParserListenerMultiplexer(treeParserListener, productionsParserListener, debuggingParserListener), textPane);
 
 	parser.getLoggingMap().log("begin parsing");
-	showTree(sourceCode, treeParserListener.getRoot(), productionsParserListener.getRoot(), textPane, debuggingParserListener);
+
+	showTree(sourceCode,  textPane, debuggingParserListener, treeParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree());
 	parser.parse(sourceCode, 0);
 	parser.getLoggingMap().log("end parsing");
 
@@ -109,21 +111,31 @@ public class HumoTester
 	}
     }
 
-    public static void showTree(StringBuilder sourceCode, DefaultMutableTreeNode executionRoot, DefaultMutableTreeNode productionsRoot, JComponent textComponent, final DebuggingParserListener debuggingParserListener)
+    public static void showTree(StringBuilder sourceCode, JTextPane textComponent, final DebuggingParserListener debuggingParserListener, JTree stacktraceTree, JTree executionTree, JTree productionsTree)
     {
 	JFrame jframe= new JFrame();
 	jframe.setLocation(100, 100);
 	//jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	JScrollPane tree1= new JScrollPane(new JTree(executionRoot));
-	tree1.setPreferredSize(new Dimension(300, 300));
-	JScrollPane tree2= new JScrollPane(new JTree(productionsRoot));
+
+	JScrollPane tree1= new JScrollPane(executionTree);
+	executionTree.setPreferredSize(new Dimension(300, 300));
+
+	final JScrollPane stacktraceTreePanel= new JScrollPane(stacktraceTree);
+	stacktraceTree.setPreferredSize(new Dimension(300, 300));
+
+	JScrollPane tree2= new JScrollPane(productionsTree);
+	tree2.setPreferredSize(new Dimension(300, 300));
 	JComponent textPanel= new JScrollPane(textComponent);
-	JSplitPane treesSplitPane= new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, tree1, tree2);
+	JSplitPane newRightComponent= new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, tree2, stacktraceTreePanel);
+	newRightComponent.setDividerLocation(300);
+	JSplitPane treesSplitPane= new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, tree1, newRightComponent);
+	treesSplitPane.setDividerLocation(300);
+
 	treesSplitPane.setPreferredSize(new Dimension(1000, 300));
 	JSplitPane verticalSplitPane= new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, treesSplitPane, textPanel);
 	verticalSplitPane.setDividerLocation(200);
 
-	jframe.setSize(800, 1000);
+	jframe.setSize(900, 1000);
 	jframe.setVisible(true);
 
 	JToolBar toolBar= new JToolBar("Still draggable");

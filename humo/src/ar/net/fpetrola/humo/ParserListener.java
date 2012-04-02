@@ -13,4 +13,5 @@ public interface ParserListener
     void startProductionCreation(CharSequence aName);
     void endProductionCreation(CharSequence aName, CharSequence aValue);
     void getProduction(CharSequence key, CharSequence value);
+    void parseEnded();
 }

@@ -34,4 +34,10 @@ public class ParserListenerMultiplexer implements ParserListener
 	for (ParserListener parserListener : parserListeners)
 	    parserListener.getProduction(key, value);
     }
+
+    public void parseEnded()
+    {
+	for (ParserListener parserListener : parserListeners)
+	    parserListener.parseEnded();
+    }
 }

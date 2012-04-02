@@ -1,6 +1,6 @@
 package ar.net.fpetrola.humo;
 
-public class DebuggingParserListener implements ParserListener
+public class DebuggingParserListener extends DefaultParserListener implements ParserListener
 {
     private volatile boolean pause;
     private volatile boolean step;
@@ -8,11 +8,6 @@ public class DebuggingParserListener implements ParserListener
     public void startProductionCreation(CharSequence aName)
     {
 	performStep();
-    }
-
-    public void endProductionCreation(CharSequence aName, CharSequence aValue)
-    {
-	//performStep();
     }
 
     private void performStep()
@@ -44,6 +39,7 @@ public class DebuggingParserListener implements ParserListener
 
     public void getProduction(CharSequence key, CharSequence value)
     {
-//	performStep();
+	if (value != null && value != null && value.length() > 50)
+	    performStep();
     }
 }

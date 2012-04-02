@@ -43,7 +43,7 @@ public class LoggingMap extends TreeMap<CharSequence, CharSequence>
         log("{");
         log("\t" + (String) value);
         log("}\n");
-        CharSequence o = super.put(new ClearCharSequence(key), new ClearCharSequence(value));
+        CharSequence o = super.put(new ClearCharSequence(ClearCharSequence.clearText(new StringBuilder(key).toString())), new ClearCharSequence(value));
         return o;
     }
 
