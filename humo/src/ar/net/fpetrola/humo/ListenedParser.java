@@ -15,6 +15,17 @@ public class ListenedParser extends HumoParser
 {
     protected ParserListener parserListener;
     private JTextPane textPane;
+    protected boolean disabled;
+
+    public boolean isDisabled()
+    {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled)
+    {
+        this.disabled= disabled;
+    }
 
     public ListenedParser(ParserListener parserListener, JTextPane textPane)
     {
@@ -25,6 +36,9 @@ public class ListenedParser extends HumoParser
 
     public int parse(StringBuilder sourcecode, int first)
     {
+	if (disabled)
+	    return 0;
+
 	if (first != 0)
 	    parserListener.startProductionCreation("");
 
@@ -49,7 +63,15 @@ public class ListenedParser extends HumoParser
 	    }
 	}
 
-	int result= super.parse(sourcecode, first);
+	int result;
+	try
+	{
+	    result= super.parse(sourcecode, first);
+	}
+	catch (Exception e)
+	{
+	    return 0;
+	}
 
 	if (first == 0)
 	    parserListener.parseEnded();

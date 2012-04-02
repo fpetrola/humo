@@ -10,7 +10,6 @@ package ar.net.fpetrola.humo;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -33,7 +32,6 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 public class HumoTester
 {
@@ -44,6 +42,12 @@ public class HumoTester
 
 	String filename= args[0];
 
+	JFrame jframe= new JFrame();
+	createEnvironment(filename, jframe);
+    }
+
+    private static void createEnvironment(String filename, JFrame jframe)
+    {
 	StringBuilder sourceCode= new StringBuilder(new Scanner(HumoTester.class.getResourceAsStream(filename)).useDelimiter("\\Z").next());
 
 	JTextPane textPane= new JTextPane();
@@ -53,13 +57,13 @@ public class HumoTester
 	ProductionsParserListener productionsParserListener= new ProductionsParserListener(filename);
 	DebuggingParserListener debuggingParserListener= new DebuggingParserListener();
 	ListenedParser parser= new ListenedParser(new ParserListenerMultiplexer(treeParserListener, productionsParserListener, debuggingParserListener), textPane);
+	debuggingParserListener.stop();
 
 	parser.getLoggingMap().log("begin parsing");
 
-	showTree(sourceCode,  textPane, debuggingParserListener, treeParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree());
+	showTree(parser, sourceCode, textPane, debuggingParserListener, treeParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe);
 	parser.parse(sourceCode, 0);
 	parser.getLoggingMap().log("end parsing");
-
     }
 
     public static JTextPane createTextPane(JTextPane textPane, StringBuilder sourceCode)
@@ -111,9 +115,9 @@ public class HumoTester
 	}
     }
 
-    public static void showTree(StringBuilder sourceCode, JTextPane textComponent, final DebuggingParserListener debuggingParserListener, JTree stacktraceTree, JTree executionTree, JTree productionsTree)
+    public static void showTree(final ListenedParser parser, StringBuilder sourceCode, JTextPane textComponent, final DebuggingParserListener debuggingParserListener, JTree stacktraceTree, JTree executionTree, JTree productionsTree, final JFrame jframe)
     {
-	JFrame jframe= new JFrame();
+	//	jframe.removeAll();
 	jframe.setLocation(100, 100);
 	//jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -168,7 +172,19 @@ public class HumoTester
 	});
 	toolBar.add(continueButton);
 
-	toolBar.add(new JTextField());
+	final JTextField textField= new JTextField();
+	toolBar.add(textField);
+
+	JButton loadButton= new JButton("load source file");
+	loadButton.addActionListener(new ActionListener()
+	{
+	    public void actionPerformed(ActionEvent e)
+	    {
+//		parser.setDisabled(true);
+//		debuggingParserListener.continueExecution();
+	    }
+	});
+	toolBar.add(loadButton);
 
 	JPanel mainPanel= new JPanel(new BorderLayout());
 	mainPanel.add(toolBar, BorderLayout.PAGE_START);
