@@ -18,14 +18,22 @@ import javax.swing.tree.DefaultTreeModel;
 public class ProductionsParserListener extends DefaultParserListener implements ParserListener
 {
     private DefaultMutableTreeNode root;
-    private Map<CharSequence, DefaultMutableTreeNode> nodes= new HashMap<CharSequence, DefaultMutableTreeNode>();
+    private Map<CharSequence, DefaultMutableTreeNode> nodes;
     private int productionsCount= 0;
     protected JTree productionsTree;
 
-    public ProductionsParserListener(String filename)
+    public ProductionsParserListener()
     {
+    }
+
+    public void init(String filename, boolean createComponents)
+    {
+	nodes= new HashMap<CharSequence, DefaultMutableTreeNode>();
 	this.root= new DefaultMutableTreeNode("Productions of: " + filename);
-	productionsTree= new JTree(root);
+	if (createComponents)
+	    productionsTree= new JTree(root);
+
+	productionsTree.setModel(new DefaultTreeModel(root));
     }
 
     public JTree getProductionsTree()

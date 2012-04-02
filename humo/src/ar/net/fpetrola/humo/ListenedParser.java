@@ -19,12 +19,12 @@ public class ListenedParser extends HumoParser
 
     public boolean isDisabled()
     {
-        return disabled;
+	return disabled;
     }
 
     public void setDisabled(boolean disabled)
     {
-        this.disabled= disabled;
+	this.disabled= disabled;
     }
 
     public ListenedParser(ParserListener parserListener, JTextPane textPane)
@@ -50,8 +50,8 @@ public class ListenedParser extends HumoParser
 	    styledDocument.setCharacterAttributes(first, nextCurly, styledDocument.getStyle("Cursor"), false);
 
 	    int caretPosition= first;
-//	    if (caretPosition < 200 )
-//		caretPosition+= 200;
+	    if (textPane.getDocument().getLength() > caretPosition + 300)
+		caretPosition+= 300;
 
 	    textPane.setCaretPosition(caretPosition);
 	    try
@@ -81,5 +81,10 @@ public class ListenedParser extends HumoParser
     public LoggingMap getLoggingMap()
     {
 	return (LoggingMap) productions;
+    }
+
+    public void init()
+    {
+	productions.clear();
     }
 }

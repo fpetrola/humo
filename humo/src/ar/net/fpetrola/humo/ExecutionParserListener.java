@@ -16,18 +16,19 @@ import javax.swing.tree.DefaultTreeModel;
 
 public class ExecutionParserListener extends DefaultParserListener implements ParserListener
 {
-    protected Stack<DefaultMutableTreeNode> nodes= new Stack<DefaultMutableTreeNode>();
+    protected Stack<DefaultMutableTreeNode> nodes;
     protected DefaultMutableTreeNode root;
 
-    protected Stack<DefaultMutableTreeNode> usedProductionsStack= new Stack<DefaultMutableTreeNode>();
+    protected Stack<DefaultMutableTreeNode> usedProductionsStack;
     protected DefaultMutableTreeNode usedProductionsStackRoot;
 
     protected JTree executionTree;
 
     public JTree getExecutionTree()
     {
-        return executionTree;
+	return executionTree;
     }
+
     protected JTree stacktraceTree;
 
     public DefaultMutableTreeNode getUsedProductionsStackRoot()
@@ -46,14 +47,26 @@ public class ExecutionParserListener extends DefaultParserListener implements Pa
     {
 	this.root= root;
     }
-    public ExecutionParserListener(String filename)
+    public ExecutionParserListener()
     {
+    }
+
+    public void init(String filename, boolean createComponents)
+    {
+	nodes= new Stack<DefaultMutableTreeNode>();
+	usedProductionsStack= new Stack<DefaultMutableTreeNode>();
 	root= new DefaultMutableTreeNode("Execution of: " + filename);
-	nodes.push(root);
 	usedProductionsStackRoot= new DefaultMutableTreeNode("Call stack of: " + filename);
+	nodes.push(root);
 	usedProductionsStack.push(usedProductionsStackRoot);
-	stacktraceTree= new JTree(usedProductionsStackRoot);
-	executionTree= new JTree(root);
+	if (createComponents)
+	{
+	    stacktraceTree= new JTree();
+	    executionTree= new JTree();
+	}
+
+	stacktraceTree.setModel(new DefaultTreeModel(usedProductionsStackRoot));
+	executionTree.setModel(new DefaultTreeModel(root));
     }
     public void startProductionCreation(CharSequence name)
     {

@@ -32,6 +32,7 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
+import javax.swing.tree.DefaultTreeModel;
 
 public class HumoTester
 {
@@ -46,27 +47,47 @@ public class HumoTester
 	createEnvironment(filename, jframe);
     }
 
-    private static void createEnvironment(String filename, JFrame jframe)
+    private static void createEnvironment(String aFilename, JFrame jframe)
     {
-	StringBuilder sourceCode= new StringBuilder(new Scanner(HumoTester.class.getResourceAsStream(filename)).useDelimiter("\\Z").next());
-
 	JTextPane textPane= new JTextPane();
-	createTextPane(textPane, sourceCode);
+	JTextField textField= new JTextField(aFilename);
 
-	ExecutionParserListener treeParserListener= new ExecutionParserListener(filename);
-	ProductionsParserListener productionsParserListener= new ProductionsParserListener(filename);
+	ExecutionParserListener treeParserListener= new ExecutionParserListener();
+	ProductionsParserListener productionsParserListener= new ProductionsParserListener();
 	DebuggingParserListener debuggingParserListener= new DebuggingParserListener();
 	ListenedParser parser= new ListenedParser(new ParserListenerMultiplexer(treeParserListener, productionsParserListener, debuggingParserListener), textPane);
-	debuggingParserListener.stop();
 
 	parser.getLoggingMap().log("begin parsing");
+	boolean initialized= false;
 
-	showTree(parser, sourceCode, textPane, debuggingParserListener, treeParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe);
-	parser.parse(sourceCode, 0);
-	parser.getLoggingMap().log("end parsing");
+	while (true)
+	{
+	    parser.setDisabled(false);
+
+	    debuggingParserListener.stop();
+	    String file= textField.getText();
+	    StringBuilder sourceCode= new StringBuilder(new Scanner(HumoTester.class.getResourceAsStream(file)).useDelimiter("\\Z").next());
+
+	    treeParserListener.init(file, !initialized);
+	    productionsParserListener.init(file, !initialized);
+
+	    ((DefaultTreeModel) treeParserListener.getExecutionTree().getModel()).reload();
+	    ((DefaultTreeModel) treeParserListener.getUsedProductionsTree().getModel()).reload();
+	    ((DefaultTreeModel) productionsParserListener.getProductionsTree().getModel()).reload();
+
+	    createTextPane(sourceCode, textPane);
+	    if (!initialized)
+	    {
+		showTree(parser, sourceCode, textPane, debuggingParserListener, treeParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe, textField);
+		initialized= true;
+	    }
+	    parser.init();
+	    parser.parse(sourceCode, 0);
+	    parser.getLoggingMap().log("end parsing");
+	}
     }
 
-    public static JTextPane createTextPane(JTextPane textPane, StringBuilder sourceCode)
+    public static JTextPane createTextPane(StringBuilder sourceCode, JTextPane textPane)
     {
 	StyleContext sc= new StyleContext();
 	Style defaultStyle= sc.getStyle(StyleContext.DEFAULT_STYLE);
@@ -115,9 +136,8 @@ public class HumoTester
 	}
     }
 
-    public static void showTree(final ListenedParser parser, StringBuilder sourceCode, JTextPane textComponent, final DebuggingParserListener debuggingParserListener, JTree stacktraceTree, JTree executionTree, JTree productionsTree, final JFrame jframe)
+    public static void showTree(final ListenedParser parser, StringBuilder sourceCode, JTextPane textComponent, final DebuggingParserListener debuggingParserListener, JTree stacktraceTree, JTree executionTree, JTree productionsTree, final JFrame jframe, JTextField textField)
     {
-	//	jframe.removeAll();
 	jframe.setLocation(100, 100);
 	//jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -172,7 +192,6 @@ public class HumoTester
 	});
 	toolBar.add(continueButton);
 
-	final JTextField textField= new JTextField();
 	toolBar.add(textField);
 
 	JButton loadButton= new JButton("load source file");
@@ -180,8 +199,8 @@ public class HumoTester
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
-//		parser.setDisabled(true);
-//		debuggingParserListener.continueExecution();
+		parser.setDisabled(true);
+		debuggingParserListener.continueExecution();
 	    }
 	});
 	toolBar.add(loadButton);
