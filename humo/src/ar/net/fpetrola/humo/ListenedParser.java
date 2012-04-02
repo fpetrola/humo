@@ -8,6 +8,7 @@
 
 package ar.net.fpetrola.humo;
 
+import javax.swing.JCheckBox;
 import javax.swing.JTextPane;
 import javax.swing.text.StyledDocument;
 
@@ -16,6 +17,7 @@ public class ListenedParser extends HumoParser
     protected ParserListener parserListener;
     private JTextPane textPane;
     protected boolean disabled;
+    private final JCheckBox skipSmall;
 
     public boolean isDisabled()
     {
@@ -27,10 +29,11 @@ public class ListenedParser extends HumoParser
 	this.disabled= disabled;
     }
 
-    public ListenedParser(ParserListener parserListener, JTextPane textPane)
+    public ListenedParser(ParserListener parserListener, JTextPane textPane, JCheckBox skipSmall)
     {
 	this.parserListener= parserListener;
 	this.textPane= textPane;
+	this.skipSmall= skipSmall;
 	productions= new LoggingMap(parserListener);
     }
 
@@ -42,7 +45,7 @@ public class ListenedParser extends HumoParser
 	if (first != 0)
 	    parserListener.startProductionCreation("");
 
-	if (sourcecode.length() > 50)
+	if (sourcecode.length() > 50 || !skipSmall.isSelected())
 	{
 	    HumoTester.configureTextPane(sourcecode, textPane);
 	    StyledDocument styledDocument= (StyledDocument) textPane.getDocument();

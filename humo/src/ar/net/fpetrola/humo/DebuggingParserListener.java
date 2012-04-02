@@ -1,9 +1,17 @@
 package ar.net.fpetrola.humo;
 
+import javax.swing.ButtonModel;
+
 public class DebuggingParserListener extends DefaultParserListener implements ParserListener
 {
     private volatile boolean pause;
     private volatile boolean step;
+    private final ButtonModel skipSmall;
+
+    public DebuggingParserListener(ButtonModel skipSmall)
+    {
+	this.skipSmall= skipSmall;
+    }
 
     public void startProductionCreation(CharSequence aName)
     {
@@ -39,7 +47,7 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
 
     public void getProduction(CharSequence key, CharSequence value)
     {
-	if (value != null && value != null && value.length() > 50)
+	if (value != null && value != null && (value.length() > 50 || !skipSmall.isSelected()))
 	    performStep();
     }
 }

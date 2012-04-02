@@ -51,12 +51,12 @@ public class ExecutionParserListener extends DefaultParserListener implements Pa
     {
     }
 
-    public void init(String filename, boolean createComponents)
+    public void init(String filename, boolean createComponents, CharSequence sourcecode)
     {
 	nodes= new Stack<DefaultMutableTreeNode>();
 	usedProductionsStack= new Stack<DefaultMutableTreeNode>();
 	root= new DefaultMutableTreeNode("Execution of: " + filename);
-	usedProductionsStackRoot= new DefaultMutableTreeNode("Call stack of: " + filename);
+	usedProductionsStackRoot= new StacktraceTreeNode("Call stack of: " + filename, sourcecode);
 	nodes.push(root);
 	usedProductionsStack.push(usedProductionsStackRoot);
 	if (createComponents)
@@ -86,7 +86,8 @@ public class ExecutionParserListener extends DefaultParserListener implements Pa
     {
 	if (value != null)
 	{
-	    usedProductionsStack.push(new DefaultMutableTreeNode(key));
+	    DefaultMutableTreeNode node= new StacktraceTreeNode(key, value);
+	    usedProductionsStack.push(node);
 	    usedProductionsStackRoot.add(usedProductionsStack.peek());
 	    ((DefaultTreeModel) stacktraceTree.getModel()).reload();
 	}

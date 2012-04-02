@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.util.Scanner;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -26,13 +27,17 @@ import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
 
 public class HumoTester
 {
@@ -51,11 +56,13 @@ public class HumoTester
     {
 	JTextPane textPane= new JTextPane();
 	JTextField textField= new JTextField(aFilename);
+	JCheckBox skipSmall= new JCheckBox("skip small productions (<50)");
+
 
 	ExecutionParserListener treeParserListener= new ExecutionParserListener();
 	ProductionsParserListener productionsParserListener= new ProductionsParserListener();
-	DebuggingParserListener debuggingParserListener= new DebuggingParserListener();
-	ListenedParser parser= new ListenedParser(new ParserListenerMultiplexer(treeParserListener, productionsParserListener, debuggingParserListener), textPane);
+	DebuggingParserListener debuggingParserListener= new DebuggingParserListener(skipSmall.getModel());
+	ListenedParser parser= new ListenedParser(new ParserListenerMultiplexer(treeParserListener, productionsParserListener, debuggingParserListener), textPane, skipSmall);
 
 	parser.getLoggingMap().log("begin parsing");
 	boolean initialized= false;
@@ -68,7 +75,7 @@ public class HumoTester
 	    String file= textField.getText();
 	    StringBuilder sourceCode= new StringBuilder(new Scanner(HumoTester.class.getResourceAsStream("/" + file)).useDelimiter("\\Z").next());
 
-	    treeParserListener.init(file, !initialized);
+	    treeParserListener.init(file, !initialized, sourceCode);
 	    productionsParserListener.init(file, !initialized);
 
 	    ((DefaultTreeModel) treeParserListener.getExecutionTree().getModel()).reload();
@@ -78,7 +85,7 @@ public class HumoTester
 	    createTextPane(sourceCode, textPane);
 	    if (!initialized)
 	    {
-		showTree(parser, sourceCode, textPane, debuggingParserListener, treeParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe, textField);
+		showTree(parser, sourceCode, textPane, debuggingParserListener, treeParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe, textField, skipSmall);
 		initialized= true;
 	    }
 	    parser.init();
@@ -136,7 +143,7 @@ public class HumoTester
 	}
     }
 
-    public static void showTree(final ListenedParser parser, StringBuilder sourceCode, JTextPane textComponent, final DebuggingParserListener debuggingParserListener, JTree stacktraceTree, JTree executionTree, JTree productionsTree, final JFrame jframe, JTextField textField)
+    public static void showTree(final ListenedParser parser, StringBuilder sourceCode, final JTextPane textComponent, final DebuggingParserListener debuggingParserListener, JTree stacktraceTree, JTree executionTree, JTree productionsTree, final JFrame jframe, JTextField textField, JCheckBox skipSmall)
     {
 	jframe.setLocation(100, 100);
 	//jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -203,7 +210,24 @@ public class HumoTester
 		debuggingParserListener.continueExecution();
 	    }
 	});
+
+	stacktraceTree.addTreeSelectionListener(new TreeSelectionListener()
+	{
+	    public void valueChanged(TreeSelectionEvent e)
+	    {
+		if (e.getNewLeadSelectionPath() != null)
+		{
+		    Object lastPathComponent= e.getNewLeadSelectionPath().getLastPathComponent();
+		    CharSequence sourcecode= (CharSequence) ((StacktraceTreeNode) lastPathComponent).getValue();
+		    configureTextPane(new StringBuilder(sourcecode), textComponent);
+		}
+	    }
+	});
+
 	toolBar.add(loadButton);
+
+	skipSmall.setSelected(true);
+	toolBar.add(skipSmall);
 
 	JPanel mainPanel= new JPanel(new BorderLayout());
 	mainPanel.add(toolBar, BorderLayout.PAGE_START);
