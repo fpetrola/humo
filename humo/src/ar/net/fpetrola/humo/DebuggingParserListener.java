@@ -3,16 +3,17 @@ package ar.net.fpetrola.humo;
 import java.util.Stack;
 
 import javax.swing.ButtonModel;
+import javax.swing.JSpinner;
 import javax.swing.JTextPane;
 import javax.swing.JTree;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
 import javax.swing.text.StyledDocument;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 public class DebuggingParserListener extends DefaultParserListener implements ParserListener
 {
-    private int skipThreshold= 50;
-
     public class ProductionFrame
     {
 	protected StringBuilder production;
@@ -74,6 +75,7 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
     protected Stack<DefaultMutableTreeNode> usedProductionsStack;
     protected DefaultMutableTreeNode usedProductionsStackRoot;
     protected JTree stacktraceTree;
+    private final JSpinner skipSizeSpinner;
 
     public DefaultMutableTreeNode getUsedProductionsStackRoot()
     {
@@ -83,10 +85,11 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
     {
 	this.usedProductionsStackRoot= usedProductionsStackRoot;
     }
-    public DebuggingParserListener(ButtonModel skipSmall, JTextPane textPane)
+    public DebuggingParserListener(ButtonModel skipSmall, JTextPane textPane, JSpinner skipSizeSpinner)
     {
 	this.skipSmall= skipSmall;
 	this.textPane= textPane;
+	this.skipSizeSpinner= skipSizeSpinner;
     }
 
     public void init(String filename, StringBuilder sourcecode, boolean createComponents)
@@ -104,11 +107,6 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
 
     public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder value)
     {
-	if (showFrame(value))
-	{
-	    performStep();
-	    updateFrame(sourcecode, first);
-	}
 	ProductionFrame frame= new ProductionFrame(value);
 	productionFrames.push(frame);
 
@@ -116,32 +114,43 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
 	usedProductionsStack.push(node);
 	usedProductionsStackRoot.add(usedProductionsStack.peek());
 	((DefaultTreeModel) stacktraceTree.getModel()).reload();
+
+	if (showFrame(value))
+	{
+	    performStep();
+	    updateFrame(productionFrames.peek());
+	}
     }
 
-    public void updateFrame(StringBuilder sourcecode, int first)
+    public void beforeParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar)
     {
-	if (showFrame(sourcecode))
+	// TODO Auto-generated method stub
+	super.beforeParseProductionBody(sourcecode, first, current, last, currentChar);
+    }
+
+    public void updateFrame(ProductionFrame productionFrame)
+    {
+	StringBuilder productionValue= productionFrame.getProduction();
+
+	HumoTester.configureTextPane(productionValue, textPane);
+	StyledDocument styledDocument= (StyledDocument) textPane.getDocument();
+	int openCurly= productionValue.substring(productionFrame.getFirst()).indexOf('{');
+	int closeCurly= productionValue.substring(productionFrame.getFirst()).indexOf('}');
+	int nextCurly= Math.min(openCurly > 0 ? openCurly : Integer.MAX_VALUE, closeCurly > 0 ? closeCurly : Integer.MAX_VALUE);
+	int delta= openCurly == nextCurly ? 1 : 0;
+	styledDocument.setCharacterAttributes(productionFrame.getFirst() + delta, nextCurly - delta, styledDocument.getStyle("Cursor"), false);
+
+	int caretPosition= productionFrame.getFirst();
+	if (styledDocument.getLength() > caretPosition + 300)
+	    caretPosition+= 300;
+
+	textPane.setCaretPosition(caretPosition);
+	try
 	{
-	    HumoTester.configureTextPane(sourcecode, textPane);
-	    StyledDocument styledDocument= (StyledDocument) textPane.getDocument();
-	    int openCurly= sourcecode.substring(first).indexOf('{');
-	    int closeCurly= sourcecode.substring(first).indexOf('}');
-	    int nextCurly= Math.min(openCurly > 0 ? openCurly : Integer.MAX_VALUE, closeCurly > 0 ? closeCurly : Integer.MAX_VALUE);
-	    int delta= openCurly == nextCurly ? 1 : 0;
-	    styledDocument.setCharacterAttributes(first + delta, nextCurly - delta, styledDocument.getStyle("Cursor"), false);
-
-	    int caretPosition= first;
-	    if (styledDocument.getLength() > caretPosition + 300)
-		caretPosition+= 300;
-
-	    textPane.setCaretPosition(caretPosition);
-	    try
-	    {
-		Thread.sleep(10);
-	    }
-	    catch (InterruptedException e)
-	    {
-	    }
+	    Thread.sleep(10);
+	}
+	catch (InterruptedException e)
+	{
 	}
     }
 
@@ -150,23 +159,49 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
 	if (showFrame(sourcecode))
 	{
 	    performStep();
-	    updateFrame(sourcecode, first);
+	    //	    updateFrame(sourcecode, first);
+	}
+
+	try
+	{
+	    StyledDocument doc= (StyledDocument) textPane.getDocument();
+	    int length= endPosition - startPosition;
+	    doc.remove(startPosition, length);
+	    doc.insertString(startPosition, value.toString(), null);
+
+	    Style heading2Style= doc.getStyle("Heading2");
+	    for (int i= startPosition; i < startPosition + value.length(); i++)
+	    {
+		if (sourcecode.charAt(i) == '{' || sourcecode.charAt(i) == '}')
+		    doc.setCharacterAttributes(i, 1, heading2Style, false);
+	    }
+	}
+	catch (BadLocationException e)
+	{
+	    e.printStackTrace();
 	}
     }
 
     public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition)
     {
-	if (showFrame(sourcecode))
-	{
-	    performStep();
-	    updateFrame(sourcecode, first);
-	}
 	productionFrames.pop();
 	if (usedProductionsStack.size() > 1)
 	{
-	    usedProductionsStackRoot.remove(usedProductionsStack.peek());
-	    usedProductionsStack.pop();
-	    ((DefaultTreeModel) stacktraceTree.getModel()).reload();
+	    try
+	    {
+		usedProductionsStackRoot.remove(usedProductionsStack.peek());
+		usedProductionsStack.pop();
+		((DefaultTreeModel) stacktraceTree.getModel()).reload();
+	    }
+	    catch (Exception e)
+	    {
+		e.printStackTrace();
+	    }
+	}
+	if (showFrame(sourcecode))
+	{
+	    performStep();
+	    updateFrame(productionFrames.peek());
 	}
     }
 
@@ -209,7 +244,10 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
     public void startProductionParsing(StringBuilder sourcecode, int first)
     {
 	super.startProductionParsing(sourcecode, first);
-	updateFrame(sourcecode, first);
+	if (showFrame(sourcecode))
+	{
+	    updateFrame(productionFrames.peek());
+	}
     }
 
     public void step()
@@ -233,12 +271,12 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
     {
 	if (showFrame(sourcecode))
 	{
-	    updateFrame(sourcecode, first);
+	    updateFrame(productionFrames.peek());
 	    performStep();
 	}
     }
     private boolean showFrame(StringBuilder sourcecode)
     {
-	return sourcecode != null && (sourcecode.length() > skipThreshold || !skipSmall.isSelected());
+	return sourcecode != null && (sourcecode.length() > (Integer) skipSizeSpinner.getValue() || !skipSmall.isSelected());
     }
 }

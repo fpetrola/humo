@@ -22,11 +22,13 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.text.BadLocationException;
@@ -35,9 +37,7 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
 
 public class HumoTester
 {
@@ -55,12 +55,13 @@ public class HumoTester
     private static void createEnvironment(String aFilename, JFrame jframe)
     {
 	JTextPane textPane= new JTextPane();
-	JTextField textField= new JTextField(aFilename);
-	JCheckBox skipSmall= new JCheckBox("skip small productions (<50)");
+	JTextField filenameTextField= new JTextField(aFilename);
+	JSpinner skipSizeSpinner= new JSpinner(new SpinnerNumberModel(50, 0, 100000, 1000));
+	JCheckBox skipSmall= new JCheckBox("skip productions smaller than:");
 
 	ExecutionParserListener treeParserListener= new ExecutionParserListener();
 	ProductionsParserListener productionsParserListener= new ProductionsParserListener();
-	DebuggingParserListener debuggingParserListener= new DebuggingParserListener(skipSmall.getModel(), textPane);
+	DebuggingParserListener debuggingParserListener= new DebuggingParserListener(skipSmall.getModel(), textPane, skipSizeSpinner);
 	ListenedParser parser= new ListenedParser(new ParserListenerMultiplexer(treeParserListener, productionsParserListener, debuggingParserListener));
 
 	parser.getLoggingMap().log("begin parsing");
@@ -71,7 +72,7 @@ public class HumoTester
 	    parser.setDisabled(false);
 
 	    debuggingParserListener.stop();
-	    String file= textField.getText();
+	    String file= filenameTextField.getText();
 	    StringBuilder sourceCode= new StringBuilder(new Scanner(HumoTester.class.getResourceAsStream("/" + file)).useDelimiter("\\Z").next());
 
 	    treeParserListener.init(file, !initialized, sourceCode);
@@ -85,7 +86,7 @@ public class HumoTester
 	    createTextPane(sourceCode, textPane);
 	    if (!initialized)
 	    {
-		showTree(parser, sourceCode, textPane, debuggingParserListener, debuggingParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe, textField, skipSmall);
+		showTree(parser, sourceCode, textPane, debuggingParserListener, debuggingParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe, filenameTextField, skipSmall, skipSizeSpinner);
 		initialized= true;
 	    }
 	    parser.init();
@@ -143,7 +144,7 @@ public class HumoTester
 	}
     }
 
-    public static void showTree(final ListenedParser parser, StringBuilder sourceCode, final JTextPane textComponent, final DebuggingParserListener debuggingParserListener, JTree stacktraceTree, JTree executionTree, JTree productionsTree, final JFrame jframe, JTextField textField, JCheckBox skipSmall)
+    public static void showTree(final ListenedParser parser, StringBuilder sourceCode, final JTextPane textComponent, final DebuggingParserListener debuggingParserListener, JTree stacktraceTree, JTree executionTree, JTree productionsTree, final JFrame jframe, JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner)
     {
 	jframe.setLocation(100, 100);
 	//jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -219,7 +220,7 @@ public class HumoTester
 		{
 		    Object lastPathComponent= e.getNewLeadSelectionPath().getLastPathComponent();
 		    StacktraceTreeNode stacktraceTreeNode= (StacktraceTreeNode) lastPathComponent;
-		    debuggingParserListener.updateFrame(stacktraceTreeNode.getFrame().getProduction(), stacktraceTreeNode.getFrame().getFirst());
+		    debuggingParserListener.updateFrame(stacktraceTreeNode.getFrame());
 		}
 	    }
 	});
@@ -227,7 +228,16 @@ public class HumoTester
 	toolBar.add(loadButton);
 
 	skipSmall.setSelected(true);
+	skipSmall.addActionListener(new ActionListener()
+	{
+	    public void actionPerformed(ActionEvent e)
+	    {
+		skipSizeSpinner.setEnabled(skipSmall.isSelected());
+	    }
+	});
+
 	toolBar.add(skipSmall);
+	toolBar.add(skipSizeSpinner);
 
 	JPanel mainPanel= new JPanel(new BorderLayout());
 	mainPanel.add(toolBar, BorderLayout.PAGE_START);
