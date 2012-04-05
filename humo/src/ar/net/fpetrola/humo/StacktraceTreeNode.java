@@ -2,7 +2,6 @@ package ar.net.fpetrola.humo;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import ar.net.fpetrola.humo.DebuggingParserListener.ProductionFrame;
 
 public class StacktraceTreeNode extends DefaultMutableTreeNode
 {

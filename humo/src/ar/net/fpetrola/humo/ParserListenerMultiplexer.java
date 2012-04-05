@@ -41,10 +41,10 @@ public class ParserListenerMultiplexer implements ParserListener
 	    parserListener.beforeParseProductionBody(sourcecode, first, current, last, currentChar);
     }
 
-    public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition)
+    public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition, StringBuilder name)
     {
 	for (ParserListener parserListener : parserListeners)
-	    parserListener.beforeProductionReplacement(sourcecode, first, current, last, currentChar, value, startPosition, endPosition);
+	    parserListener.beforeProductionReplacement(sourcecode, first, current, last, currentChar, value, startPosition, endPosition, name);
     }
 
     public void beforeProductionSearch(StringBuilder sourcecode, int first, int current, int last, char currentChar)

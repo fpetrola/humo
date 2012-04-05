@@ -1,5 +1,8 @@
 package ar.net.fpetrola.humo;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Stack;
 
 import javax.swing.ButtonModel;
@@ -14,68 +17,64 @@ import javax.swing.tree.DefaultTreeModel;
 
 public class DebuggingParserListener extends DefaultParserListener implements ParserListener
 {
-    public class ProductionFrame
+    public static class Stepper
     {
-	protected StringBuilder production;
-	protected int first;
-	protected int current;
+	protected volatile boolean pause;
+	protected volatile List<String> validSteps= new ArrayList<String>();
 
-	protected int last;
-
-	public ProductionFrame(StringBuilder production)
+	public void continueExecution()
 	{
-	    this.production= production;
+	    validSteps.clear();
+	    pause= false;
 	}
 
-	public int getCurrent()
+	public void step(String... validSteps)
 	{
-	    return current;
+	    this.validSteps= new ArrayList<String>(Arrays.asList(validSteps));
+	    pause= false;
 	}
 
-	public int getFirst()
+	public void stop()
 	{
-	    return first;
+	    pause= true;
+	    validSteps.clear();
 	}
 
-	public int getLast()
+	public void stepOut()
 	{
-	    return last;
 	}
 
-	public StringBuilder getProduction()
+	protected void performStep(String stepType)
 	{
-	    return production;
-	}
+	    if (validSteps.contains(stepType))
+		pause= true;
 
-	public void setCurrent(int current)
-	{
-	    this.current= current;
-	}
-	public void setFirst(int first)
-	{
-	    this.first= first;
-	}
+	    while (pause == true)
+		;
 
-	public void setLast(int last)
-	{
-	    this.last= last;
-	}
-
-	public void setProduction(StringBuilder production)
-	{
-	    this.production= production;
 	}
     }
 
-    protected volatile boolean pause;
-    protected volatile boolean step;
+    protected Stepper stepper= new Stepper();
+
+    public Stepper getStepper()
+    {
+	return stepper;
+    }
+    public void setStepper(Stepper stepper)
+    {
+	this.stepper= stepper;
+    }
+
+    protected volatile boolean stepout;
+
     protected final ButtonModel skipSmall;
-    protected Stack<ProductionFrame> productionFrames= new Stack<DebuggingParserListener.ProductionFrame>();
-    private JTextPane textPane;
+    protected Stack<ProductionFrame> productionFrames= new Stack<ProductionFrame>();
+    protected JTextPane textPane;
     protected Stack<DefaultMutableTreeNode> usedProductionsStack;
     protected DefaultMutableTreeNode usedProductionsStackRoot;
     protected JTree stacktraceTree;
-    private final JSpinner skipSizeSpinner;
+    protected final JSpinner skipSizeSpinner;
 
     public DefaultMutableTreeNode getUsedProductionsStackRoot()
     {
@@ -95,7 +94,7 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
     public void init(String filename, StringBuilder sourcecode, boolean createComponents)
     {
 	usedProductionsStack= new Stack<DefaultMutableTreeNode>();
-	ProductionFrame rootFrame= new ProductionFrame(sourcecode);
+	ProductionFrame rootFrame= new ProductionFrame(filename, sourcecode, (StyledDocument) textPane.getDocument());
 	usedProductionsStackRoot= new StacktraceTreeNode("Call stack of: " + filename, rootFrame);
 	productionFrames.push(rootFrame);
 	usedProductionsStack.push(usedProductionsStackRoot);
@@ -107,122 +106,163 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
 
     public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder value)
     {
-	ProductionFrame frame= new ProductionFrame(value);
+	showProductionMatch(sourcecode, current, last);
+
+	if (frameIsVisible())
+	    stepper.performStep("afterProductionFound");
+
+	ProductionFrame frame= new ProductionFrame(name.toString(), value, HumoTester.createAndSetupDocument(value));
 	productionFrames.push(frame);
 
-	DefaultMutableTreeNode node= new StacktraceTreeNode(name, frame);
-	usedProductionsStack.push(node);
-	usedProductionsStackRoot.add(usedProductionsStack.peek());
-	((DefaultTreeModel) stacktraceTree.getModel()).reload();
-
-	if (showFrame(value))
+	boolean visibleFrame= value != null && (value.length() > (Integer) skipSizeSpinner.getValue() || !skipSmall.isSelected());
+	if (visibleFrame)
 	{
-	    performStep();
-	    updateFrame(productionFrames.peek());
+	    DefaultMutableTreeNode node= new StacktraceTreeNode(name, frame);
+	    usedProductionsStack.push(node);
+	    usedProductionsStackRoot.add(usedProductionsStack.peek());
+	    ((DefaultTreeModel) stacktraceTree.getModel()).reload();
+	    ProductionFrame currentFrame= getCurrentFrame();
+	    updateFrame(currentFrame);
 	}
     }
 
     public void beforeParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar)
     {
-	// TODO Auto-generated method stub
-	super.beforeParseProductionBody(sourcecode, first, current, last, currentChar);
+	if (frameIsVisible())
+	{
+	    int lastCurrent= updateFrameValues(first, current, last);
+	    stepper.performStep("beforeParseProductionBody");
+	}
     }
 
     public void updateFrame(ProductionFrame productionFrame)
     {
-	StringBuilder productionValue= productionFrame.getProduction();
+	textPane.setDocument(productionFrame.getDocument());
+	updateCaretPosition(textPane, productionFrame);
 
-	HumoTester.configureTextPane(productionValue, textPane);
-	StyledDocument styledDocument= (StyledDocument) textPane.getDocument();
-	int openCurly= productionValue.substring(productionFrame.getFirst()).indexOf('{');
-	int closeCurly= productionValue.substring(productionFrame.getFirst()).indexOf('}');
-	int nextCurly= Math.min(openCurly > 0 ? openCurly : Integer.MAX_VALUE, closeCurly > 0 ? closeCurly : Integer.MAX_VALUE);
-	int delta= openCurly == nextCurly ? 1 : 0;
-	styledDocument.setCharacterAttributes(productionFrame.getFirst() + delta, nextCurly - delta, styledDocument.getStyle("Cursor"), false);
+	//	HumoTester.setupDocument(productionValue, styledDocument);
+	//	int openCurly= productionValue.substring(productionFrame.getFirst()).indexOf('{');
+	//	int closeCurly= productionValue.substring(productionFrame.getFirst()).indexOf('}');
+	//	int nextCurly= Math.min(openCurly > 0 ? openCurly : Integer.MAX_VALUE, closeCurly > 0 ? closeCurly : Integer.MAX_VALUE);
+	//	int delta= openCurly == nextCurly ? 1 : 0;
+	//	styledDocument.setCharacterAttributes(productionFrame.getFirst() + delta, nextCurly - delta, styledDocument.getStyle("Cursor"), false);
 
-	int caretPosition= productionFrame.getFirst();
+    }
+    public static void updateCaretPosition(JTextPane textPane, ProductionFrame aFrame)
+    {
+	StyledDocument styledDocument= (StyledDocument) aFrame.getDocument();
+	int caretPosition= aFrame.getFirst();
 	if (styledDocument.getLength() > caretPosition + 300)
 	    caretPosition+= 300;
-
-	textPane.setCaretPosition(caretPosition);
-	try
-	{
-	    Thread.sleep(10);
-	}
-	catch (InterruptedException e)
-	{
-	}
-    }
-
-    public void afterProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition)
-    {
-	if (showFrame(sourcecode))
-	{
-	    performStep();
-	    //	    updateFrame(sourcecode, first);
-	}
+	else
+	    caretPosition= styledDocument.getLength()-1;
 
 	try
 	{
-	    StyledDocument doc= (StyledDocument) textPane.getDocument();
-	    int length= endPosition - startPosition;
-	    doc.remove(startPosition, length);
-	    doc.insertString(startPosition, value.toString(), null);
-
-	    Style heading2Style= doc.getStyle("Heading2");
-	    for (int i= startPosition; i < startPosition + value.length(); i++)
-	    {
-		if (sourcecode.charAt(i) == '{' || sourcecode.charAt(i) == '}')
-		    doc.setCharacterAttributes(i, 1, heading2Style, false);
-	    }
+	    textPane.setCaretPosition(caretPosition);
+	    //	    Thread.sleep(1);
 	}
-	catch (BadLocationException e)
+	catch (Exception e)
 	{
 	    e.printStackTrace();
 	}
     }
 
-    public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition)
+    public void afterProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition)
     {
-	productionFrames.pop();
-	if (usedProductionsStack.size() > 1)
+	if (frameIsVisible())
 	{
+	    int lastCurrent= updateFrameValues(first, current, last);
+
 	    try
+	    {
+		StyledDocument doc= (StyledDocument) getCurrentFrame().getDocument();
+		int length= endPosition - startPosition;
+		doc.remove(startPosition, length);
+		doc.insertString(startPosition, value.toString(), null);
+
+		Style style= doc.getStyle("Cursor");
+		doc.setCharacterAttributes(current, value.length(), style, false);
+		highlightCurlys(sourcecode, startPosition, doc, value.length());
+	    }
+	    catch (BadLocationException e)
+	    {
+		e.printStackTrace();
+	    }
+
+	    stepper.performStep("afterProductionReplacement");
+	}
+    }
+
+    private boolean frameIsVisible()
+    {
+	return ((StacktraceTreeNode) usedProductionsStack.peek()).getFrame() == productionFrames.peek();
+    }
+
+    private void highlightCurlys(StringBuilder sourcecode, int startPosition, StyledDocument doc, int length)
+    {
+	Style defaultstyle= doc.getStyle("default");
+	Style curlyStyle= doc.getStyle(HumoTester.CURLY_STYLE);
+	for (int i= startPosition; i < startPosition + length; i++)
+	{
+	    Style usingStyle;
+	    if (sourcecode.charAt(i) == '{' || sourcecode.charAt(i) == '}')
+	    {
+		usingStyle= curlyStyle;
+		doc.setCharacterAttributes(i, 1, usingStyle, false);
+	    }
+	    else
+		usingStyle= defaultstyle;
+	}
+    }
+
+    public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition, StringBuilder name)
+    {
+	if (frameIsVisible())
+	    if (usedProductionsStack.size() > 1)
 	    {
 		usedProductionsStackRoot.remove(usedProductionsStack.peek());
 		usedProductionsStack.pop();
 		((DefaultTreeModel) stacktraceTree.getModel()).reload();
+	    }
+	productionFrames.pop();
+
+	if (frameIsVisible())
+	{
+	    try
+	    {
+		int lastCurrent= updateFrameValues(first, current, last);
+
+		ProductionFrame currentFrame= getCurrentFrame();
+		textPane.setDocument(currentFrame.getDocument());
+		updateFrame(currentFrame);
+		showProductionMatch(currentFrame.getProduction(), currentFrame.getCurrent(), currentFrame.getLast());
+		stepper.performStep("beforeProductionReplacement");
+		stepper.performStep("beforeProductionReplacement:" + name);
+
+		//	    stepper.performStep("beforeProductionReplacement");
 	    }
 	    catch (Exception e)
 	    {
 		e.printStackTrace();
 	    }
 	}
-	if (showFrame(sourcecode))
-	{
-	    performStep();
-	    updateFrame(productionFrames.peek());
-	}
     }
-
-    public void continueExecution()
+    private ProductionFrame getCurrentFrame()
     {
-	step= false;
-	pause= false;
+	return productionFrames.peek();
+    }
+    private void showProductionMatch(StringBuilder sourcecode, int current, int last)
+    {
+	StyledDocument doc= (StyledDocument) getCurrentFrame().getDocument();
+	highlightCurlys(sourcecode, current, doc, last - current);
+	Style style= doc.getStyle("production-matching");
+	doc.setCharacterAttributes(current, last - current, style, false);
     }
 
     public Stack<ProductionFrame> getProductionFrames()
     {
 	return productionFrames;
-    }
-
-    protected void performStep()
-    {
-	while (pause)
-	    ;
-
-	if (step)
-	    pause= true;
     }
 
     public void setProductionFrames(Stack<ProductionFrame> productionFrames)
@@ -232,34 +272,44 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
 
     public void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
     {
-	if (!productionFrames.isEmpty())
+	if (frameIsVisible())
 	{
-	    ProductionFrame currentProductionFrame= productionFrames.peek();
-	    currentProductionFrame.setFirst(first);
-	    currentProductionFrame.setCurrent(first);
-	    currentProductionFrame.setLast(first);
+	    try
+	    {
+		int lastCurrent= updateFrameValues(first, current, last);
+
+		StyledDocument doc= (StyledDocument) getCurrentFrame().getDocument();
+		highlightCurlys(sourcecode, lastCurrent, doc, current - lastCurrent);
+		Style style= doc.getStyle(HumoTester.FETCH_STYLE);
+		doc.setCharacterAttributes(current, last - current, style, false);
+		stepper.performStep("startParsingLoop");
+	    }
+	    catch (Exception e)
+	    {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
 	}
+    }
+
+    private int updateFrameValues(int first, int current, int last)
+    {
+	ProductionFrame currentProductionFrame= getCurrentFrame();
+
+	int lastCurrent= currentProductionFrame.getCurrent();
+	currentProductionFrame.setFirst(first);
+	currentProductionFrame.setCurrent(current);
+	currentProductionFrame.setLast(last);
+	return lastCurrent;
     }
 
     public void startProductionParsing(StringBuilder sourcecode, int first)
     {
-	super.startProductionParsing(sourcecode, first);
-	if (showFrame(sourcecode))
+	if (frameIsVisible())
 	{
-	    updateFrame(productionFrames.peek());
+	    stepper.performStep("startProductionParsing");
+	    textPane.setDocument(getCurrentFrame().getDocument());
 	}
-    }
-
-    public void step()
-    {
-	step= true;
-	pause= false;
-    }
-
-    public void stop()
-    {
-	pause= true;
-	step= false;
     }
 
     public JTree getUsedProductionsTree()
@@ -269,14 +319,13 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
 
     public void endProductionParsing(StringBuilder sourcecode, int first, int current, int last)
     {
-	if (showFrame(sourcecode))
+	if (frameIsVisible())
 	{
-	    updateFrame(productionFrames.peek());
-	    performStep();
+
+	    int lastCurrent= updateFrameValues(first, current, last);
+
+	    stepper.performStep("endProductionParsing");
+	    //	    updateFrame(productionFrames.peek());
 	}
-    }
-    private boolean showFrame(StringBuilder sourcecode)
-    {
-	return sourcecode != null && (sourcecode.length() > (Integer) skipSizeSpinner.getValue() || !skipSmall.isSelected());
     }
 }
