@@ -43,21 +43,21 @@ public class ProductionsParserListener extends DefaultParserListener implements 
 
     public void afterParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar, CharSequence name, CharSequence value)
     {
-	productionsCount++;
-
-	DefaultMutableTreeNode node= nodes.get(name);
-	DefaultMutableTreeNode child= new DefaultMutableTreeNode(value + " (count:" + productionsCount + ")");
-	if (node != null)
-	    node.add(child);
-	else
-	{
-	    DefaultMutableTreeNode parent= new DefaultMutableTreeNode(name);
-	    root.add(parent);
-	    parent.add(child);
-	    nodes.put(name, parent);
-	}
-
-	((DefaultTreeModel) productionsTree.getModel()).reload();
+//	productionsCount++;
+//
+//	DefaultMutableTreeNode node= nodes.get(name);
+//	DefaultMutableTreeNode child= new DefaultMutableTreeNode(value + " (count:" + productionsCount + ")");
+//	if (node != null)
+//	    node.add(child);
+//	else
+//	{
+//	    DefaultMutableTreeNode parent= new DefaultMutableTreeNode(name);
+//	    root.add(parent);
+//	    parent.add(child);
+//	    nodes.put(name, parent);
+//	}
+//
+//	((DefaultTreeModel) productionsTree.getModel()).reload();
     }
 
     public DefaultMutableTreeNode getRoot()

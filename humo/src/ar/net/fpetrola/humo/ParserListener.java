@@ -10,7 +10,7 @@ package ar.net.fpetrola.humo;
 
 public interface ParserListener
 {
-    void startProductionParsing(StringBuilder sourcecode, int first);
+    void startProductionParsing(StringBuilder sourcecode, int first, int current, int last);
     void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar);
     void endParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar);
     void beforeParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar);
@@ -20,4 +20,6 @@ public interface ParserListener
     void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition, StringBuilder name);
     void afterProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition);
     void endProductionParsing(StringBuilder sourcecode, int first, int current, int last);
+    void setCurrentFrame(ProductionFrame productionFrame);
+    void beforeProductionParsing(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder stringBuilder, StringBuilder value);
 }

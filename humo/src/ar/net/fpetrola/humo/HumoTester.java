@@ -11,15 +11,22 @@ package ar.net.fpetrola.humo;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Scanner;
+import java.util.Stack;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
@@ -67,42 +74,52 @@ public class HumoTester
 	ExecutionParserListener treeParserListener= new ExecutionParserListener();
 	ProductionsParserListener productionsParserListener= new ProductionsParserListener();
 	DebuggingParserListener debuggingParserListener= new DebuggingParserListener(skipSmall.getModel(), textPane, skipSizeSpinner);
-	ListenedParser parser= new ListenedParser(new ParserListenerMultiplexer(treeParserListener, productionsParserListener, debuggingParserListener));
+	ParserListenerDelegator debugDelegator= new ParserListenerDelegator(debuggingParserListener);
+	HighlighterParserListener highlighterParserListener= new HighlighterParserListener(textPane);
+	ParserListenerMultiplexer parserListenerMultiplexer= new ParserListenerMultiplexer(treeParserListener, productionsParserListener, highlighterParserListener, debugDelegator);
+	ListenedParser parser= new ListenedParser(parserListenerMultiplexer);
 
 	parser.getLoggingMap().log("begin parsing");
 	boolean initialized= false;
 
 	while (true)
 	{
-	    parser.setDisabled(false);
-
-	    debuggingParserListener.getStepper().stop();
-	    String file= filenameTextField.getText();
-	    StringBuilder sourceCode= new StringBuilder(new Scanner(HumoTester.class.getResourceAsStream("/" + file)).useDelimiter("\\Z").next());
-	    StyledDocument doc= createAndSetupDocument(sourceCode);
-	    textPane.setDocument(doc);
-
-	    treeParserListener.init(file, !initialized, sourceCode);
-	    productionsParserListener.init(file, !initialized);
-	    debuggingParserListener.init(file, sourceCode, !initialized);
-
-	    ((DefaultTreeModel) treeParserListener.getExecutionTree().getModel()).reload();
-	    ((DefaultTreeModel) debuggingParserListener.getUsedProductionsTree().getModel()).reload();
-	    ((DefaultTreeModel) productionsParserListener.getProductionsTree().getModel()).reload();
-
-	    if (!initialized)
+	    try
 	    {
-		showTree(parser, sourceCode, textPane, debuggingParserListener, debuggingParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe, filenameTextField, skipSmall, skipSizeSpinner);
-		initialized= true;
+		parser.setDisabled(false);
+
+		String file= filenameTextField.getText();
+		StringBuilder sourcecode= new StringBuilder(new Scanner(HumoTester.class.getResourceAsStream("/" + file)).useDelimiter("\\Z").next());
+		StyledDocument doc= createAndSetupDocument(sourcecode);
+		textPane.setDocument(doc);
+
+		parserListenerMultiplexer.init(file, sourcecode, !initialized);
+		treeParserListener.init(file, !initialized, sourcecode);
+		productionsParserListener.init(file, !initialized);
+		debuggingParserListener.init(file, sourcecode, !initialized);
+		//		debuggingParserListener.pause();
+
+		((DefaultTreeModel) treeParserListener.getExecutionTree().getModel()).reload();
+		((DefaultTreeModel) debuggingParserListener.getUsedProductionsTree().getModel()).reload();
+		((DefaultTreeModel) productionsParserListener.getProductionsTree().getModel()).reload();
+
+		if (!initialized)
+		{
+		    showTree(debugDelegator, parser, sourcecode, textPane, debuggingParserListener, debuggingParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe, filenameTextField, skipSmall, skipSizeSpinner, parserListenerMultiplexer);
+		    initialized= true;
+		}
+		parser.init();
+		parser.parse(sourcecode, 0);
+		parser.getLoggingMap().log("end parsing");
 	    }
-	    parser.init();
-	    parser.parse(sourceCode, 0);
-	    debuggingParserListener.getStepper().performStep("finish");
-	    parser.getLoggingMap().log("end parsing");
+	    catch (Exception e)
+	    {
+		e.printStackTrace();
+	    }
 	}
     }
 
-    public static void showTree(final ListenedParser parser, StringBuilder sourceCode, final JTextPane textPane, final DebuggingParserListener debuggingParserListener, JTree stacktraceTree, JTree executionTree, JTree productionsTree, final JFrame jframe, JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner)
+    public static void showTree(final ParserListenerDelegator debugDelegator, final ListenedParser parser, StringBuilder sourceCode, final JTextPane textPane, final DebuggingParserListener debuggingParserListener, JTree stacktraceTree, JTree executionTree, JTree productionsTree, final JFrame jframe, final JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner, final ParserListenerMultiplexer parserListenerMultiplexer)
     {
 	jframe.setLocation(100, 100);
 	//jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -120,13 +137,13 @@ public class HumoTester
 	treesSplitPane.setDividerLocation(300);
 
 	JSplitPane newRightComponent= new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, textPanel, stacktraceTreePanel);
-	newRightComponent.setDividerLocation(700);
+	newRightComponent.setDividerLocation(900);
 
 	treesSplitPane.setPreferredSize(new Dimension(1000, 300));
 	JSplitPane verticalSplitPane= new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, treesSplitPane, newRightComponent);
 	verticalSplitPane.setDividerLocation(200);
 
-	jframe.setSize(900, 1000);
+	jframe.setSize(1200, 1000);
 	jframe.setVisible(true);
 
 	JToolBar toolBar= new JToolBar("Still draggable");
@@ -135,27 +152,57 @@ public class HumoTester
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
-		debuggingParserListener.getStepper().step("afterProductionFound");
+		debugDelegator.setParserListenerDelegate(new DefaultParserListener()
+		{
+		    public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder production)
+		    {
+			debuggingParserListener.pause();
+		    }
+		});
+		debuggingParserListener.continueExecution();
 	    }
 	});
 
 	toolBar.add(pauseButton);
-	JButton stepButton= new JButton("step");
+	JButton stepButton= new JButton("step over");
 	stepButton.addActionListener(new ActionListener()
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
-		debuggingParserListener.getStepper().step("afterProductionFound", "beforeParseProductionBody", "afterProductionReplacement");
+		final ProductionFrame productionFrame= parserListenerMultiplexer.getProductionFrames().peek();
+		final ParserListener parserListenerDelegate= debugDelegator.getParserListenerDelegate();
+
+		debugDelegator.setParserListenerDelegate(new DefaultParserListener()
+		{
+		    public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition, StringBuilder name)
+		    {
+			if (currentFrame == productionFrame)
+			    debugDelegator.setParserListenerDelegate(parserListenerDelegate);
+		    }
+		});
+		debuggingParserListener.continueExecution();
 	    }
 	});
 	toolBar.add(stepButton);
 
-	JButton miniStepButton= new JButton("mini-step");
+	JButton miniStepButton= new JButton("step into");
 	miniStepButton.addActionListener(new ActionListener()
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
-		debuggingParserListener.getStepper().step("startParsingLoop", "afterProductionFound");
+		debugDelegator.setParserListenerDelegate(new DefaultParserListener()
+		{
+		    public void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
+		    {
+			debuggingParserListener.pause();
+		    }
+
+		    public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder production)
+		    {
+			debuggingParserListener.pause();
+		    }
+		});
+		debuggingParserListener.continueExecution();
 	    }
 	});
 	toolBar.add(miniStepButton);
@@ -165,8 +212,27 @@ public class HumoTester
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
-		ProductionFrame productionFrame= debuggingParserListener.getProductionFrames().peek();
-		debuggingParserListener.getStepper().step("beforeProductionReplacement:" + productionFrame.getName());
+		Stack<ProductionFrame> productionFrames= parserListenerMultiplexer.getProductionFrames();
+		if (productionFrames.size() > 1)
+		{
+		    final ProductionFrame productionFrame= productionFrames.elementAt(productionFrames.size() - 2);
+
+		    final ParserListener parserListenerDelegate= debugDelegator.getParserListenerDelegate();
+
+		    debugDelegator.setParserListenerDelegate(new DefaultParserListener()
+		    {
+			public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition, StringBuilder name)
+			{
+			    if (currentFrame == productionFrame)
+			    {
+				debugDelegator.setParserListenerDelegate(parserListenerDelegate);
+				debuggingParserListener.pause();
+			    }
+			}
+		    });
+
+		    debuggingParserListener.continueExecution();
+		}
 	    }
 	});
 	toolBar.add(stepoutButton);
@@ -176,20 +242,34 @@ public class HumoTester
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
-		debuggingParserListener.getStepper().step("finish");
+		debuggingParserListener.pause();
 	    }
 	});
 	toolBar.add(continueButton);
-
-	toolBar.add(textField);
 
 	JButton loadButton= new JButton("load source file");
 	loadButton.addActionListener(new ActionListener()
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
+		final JDialog openFileDialog= new JDialog();
+		openFileDialog.setSize(600, 100);
+		openFileDialog.setModal(true);
+		openFileDialog.getContentPane().setLayout(new GridBagLayout());
+		openFileDialog.add(textField);
+		JButton load= new JButton("load");
+		openFileDialog.add(load);
+		load.addActionListener(new ActionListener()
+		{
+		    public void actionPerformed(ActionEvent e)
+		    {
+			debuggingParserListener.pause();
+			openFileDialog.setVisible(false);
+		    }
+		});
+
+		openFileDialog.setVisible(true);
 		parser.setDisabled(true);
-		debuggingParserListener.getStepper().continueExecution();
 	    }
 	});
 
@@ -203,9 +283,7 @@ public class HumoTester
 		    StacktraceTreeNode stacktraceTreeNode= (StacktraceTreeNode) lastPathComponent;
 		    ProductionFrame frame= stacktraceTreeNode.getFrame();
 
-		    textPane.setDocument(frame.getDocument());
-		    DebuggingParserListener.updateCaretPosition(textPane, frame);
-		    //debuggingParserListener.updateFrame(stacktraceTreeNode.getFrame());
+		    HighlighterParserListener.updateFrame(frame, textPane);
 		}
 	    }
 	});
@@ -224,32 +302,67 @@ public class HumoTester
 	toolBar.add(skipSmall);
 	toolBar.add(skipSizeSpinner);
 
+	addPopupMenu(textPane, debuggingParserListener);
+
 	JPanel mainPanel= new JPanel(new BorderLayout());
 	mainPanel.add(toolBar, BorderLayout.PAGE_START);
 	mainPanel.add(verticalSplitPane, BorderLayout.CENTER);
 
 	jframe.setContentPane(mainPanel);
     }
+    private static void addPopupMenu(final JTextPane textPane, final DebuggingParserListener debuggingParserListener)
+    {
+	final JPopupMenu menu= new JPopupMenu();
+	JMenuItem menuItem= new JMenuItem("Run to this expression");
+	menuItem.addActionListener(new ActionListener()
+	{
+	    public void actionPerformed(ActionEvent e)
+	    {
+		debuggingParserListener.runTo(textPane.getDocument().getLength() - textPane.getSelectionStart(), textPane.getDocument().getLength() - textPane.getSelectionEnd());
+	    }
+	});
+
+	menu.add(menuItem);
+
+	textPane.addMouseListener(new MouseAdapter()
+	{
+	    public void mousePressed(MouseEvent evt)
+	    {
+		if (evt.isPopupTrigger())
+		{
+		    menu.show(evt.getComponent(), evt.getX(), evt.getY());
+		}
+	    }
+	    public void mouseReleased(MouseEvent evt)
+	    {
+		if (evt.isPopupTrigger())
+		{
+		    menu.show(evt.getComponent(), evt.getX(), evt.getY());
+		}
+	    }
+	});
+    }
 
     public static StyledDocument createStyleDocument()
     {
 	StyleContext styleContext= new StyleContext();
-	createStyle(styleContext, DEFAULT_STYLE, Color.black, "monospaced", Color.white, 11, false);
-	createStyle(styleContext, "Cursor", new Color(0.8f, 0, 0), "monospaced", Color.white, 11, true);
+	createStyle(styleContext, DEFAULT_STYLE, Color.black, "monospaced", Color.white, 11, null);
+	createStyle(styleContext, "Cursor", new Color(0.8f, 0, 0), "monospaced", Color.white, 11, null);
 	createStyle(styleContext, CURLY_STYLE, Color.BLACK, "monospaced", Color.WHITE, 11, true);
-	createStyle(styleContext, FETCH_STYLE, new Color(0, 0.5f, 0), "monospaced", new Color(0.95f, 0.95f, 0.95f), 11, true);
-	createStyle(styleContext, "production-matching", Color.BLUE, "monospaced", Color.WHITE, 11, true);
+	createStyle(styleContext, FETCH_STYLE, new Color(0, 0.5f, 0), "monospaced", new Color(0.95f, 0.95f, 0.95f), 11, null);
+	createStyle(styleContext, "production-matching", Color.BLUE, "monospaced", Color.WHITE, 11, null);
 	return new DefaultStyledDocument(styleContext);
     }
 
-    public static void createStyle(StyleContext sc, String aName, Color aForegroundColor, String aFontFamily, Color aBackgroundColor, int aFontSize, boolean isBold)
+    public static void createStyle(StyleContext sc, String aName, Color aForegroundColor, String aFontFamily, Color aBackgroundColor, int aFontSize, Boolean isBold)
     {
 	Style cursorStyle= sc.addStyle(aName, null);
 	StyleConstants.setForeground(cursorStyle, aForegroundColor);
 	StyleConstants.setFontFamily(cursorStyle, aFontFamily);
 	StyleConstants.setBackground(cursorStyle, aBackgroundColor);
 	StyleConstants.setFontSize(cursorStyle, aFontSize);
-	StyleConstants.setBold(cursorStyle, isBold);
+	if (isBold != null)
+	    StyleConstants.setBold(cursorStyle, isBold);
     }
 
     public static StyledDocument createAndSetupDocument(StringBuilder sourceCode)

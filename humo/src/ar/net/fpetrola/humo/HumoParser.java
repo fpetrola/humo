@@ -23,8 +23,8 @@ public class HumoParser
 
     public int parse(StringBuilder sourcecode, int first)
     {
-	parserListener.startProductionParsing(sourcecode, first);
 	int last= first, current= first;
+	parserListener.startProductionParsing(sourcecode, first, current, last);
 
 	for (char currentChar; last < sourcecode.length() && (currentChar= sourcecode.charAt(last++)) != '}';)
 	{
@@ -45,6 +45,7 @@ public class HumoParser
 		{
 		    StringBuilder value= new StringBuilder(production);
 		    parserListener.afterProductionFound(sourcecode, first, current, last, currentChar, new StringBuilder(sourcecode.subSequence(current, last)), value);
+		    parserListener.beforeProductionParsing(sourcecode, first, current, last, currentChar, new StringBuilder(sourcecode.subSequence(current, last)), value);
 		    parse(value, 0);
 		    int[] edges= ClearCharSequence.findEdges(sourcecode, current, last); // Just to beautify debugging process
 		    parserListener.beforeProductionReplacement(sourcecode, first, current, last, currentChar, value, edges[0], edges[1], new StringBuilder(sourcecode.subSequence(current, last)));

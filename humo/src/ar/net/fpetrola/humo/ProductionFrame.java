@@ -13,29 +13,36 @@ public class ProductionFrame
 
     public StyledDocument getDocument()
     {
-        return document;
+	return document;
     }
 
     public void setDocument(StyledDocument styleDocument)
     {
-        this.document= styleDocument;
+	this.document= styleDocument;
     }
 
     public String getName()
     {
-        return name;
+	return name;
     }
 
     public void setName(String name)
     {
-        this.name= name;
+	this.name= name;
     }
 
-    public ProductionFrame(String aName, StringBuilder production, StyledDocument styleDocument)
+    public ProductionFrame(String aName, StringBuilder production)
     {
 	this.name= aName;
 	this.production= production;
-	this.document= styleDocument;
+	document= HumoTester.createAndSetupDocument(production);
+    }
+
+    public ProductionFrame(String aName, StringBuilder production, StyledDocument document)
+    {
+	this.name= aName;
+	this.production= production;
+	this.document= document;
     }
 
     public int getCurrent()
@@ -75,5 +82,10 @@ public class ProductionFrame
     public void setProduction(StringBuilder production)
     {
 	this.production= production;
+    }
+
+    public String toString()
+    {
+	return name + "= " + production.toString().substring(0, 100) + "....";
     }
 }
