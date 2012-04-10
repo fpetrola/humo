@@ -106,6 +106,7 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
 
     public void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
     {
+	pause();
     }
 
     public void startProductionParsing(StringBuilder sourcecode, int first, int current, int last)

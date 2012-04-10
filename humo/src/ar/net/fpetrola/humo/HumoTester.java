@@ -350,7 +350,7 @@ public class HumoTester
 	createStyle(styleContext, "Cursor", new Color(0.8f, 0, 0), "monospaced", Color.white, 11, null);
 	createStyle(styleContext, CURLY_STYLE, Color.BLACK, "monospaced", Color.WHITE, 11, true);
 	createStyle(styleContext, FETCH_STYLE, new Color(0, 0.5f, 0), "monospaced", new Color(0.95f, 0.95f, 0.95f), 11, null);
-	createStyle(styleContext, "production-matching", Color.BLUE, "monospaced", Color.WHITE, 11, null);
+	createStyle(styleContext, "production-matching", Color.BLUE, "monospaced", Color.WHITE, 11, true);
 	return new DefaultStyledDocument(styleContext);
     }
 
