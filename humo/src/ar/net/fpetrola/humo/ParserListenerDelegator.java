@@ -1,13 +1,24 @@
 package ar.net.fpetrola.humo;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import javax.swing.ButtonModel;
-import javax.swing.JCheckBox;
 import javax.swing.SpinnerModel;
 
 public class ParserListenerDelegator extends DefaultParserListener implements ParserListener
 {
+    protected  class VisibilityListenerDispatcher implements VisibilityListener
+    {
+	protected List<VisibilityListener> visibilityListeners= new ArrayList<VisibilityListener>();
+	public void invisibleChanged(boolean invisible)
+	{
+	    for (VisibilityListener visibilityListener : visibilityListeners)
+		visibilityListener.invisibleChanged(invisible);
+	}
+    }
+
     protected ParserListener parserListenerDelegate;
     protected ButtonModel skipSmall;
     protected SpinnerModel spinnerModel;
@@ -15,6 +26,18 @@ public class ParserListenerDelegator extends DefaultParserListener implements Pa
     protected Stepper stepper= new Stepper();
     protected Stack<ProductionFrame> productionFrames;
     protected ButtonModel skipAll;
+    protected boolean invisible;
+    protected VisibilityListenerDispatcher visibilityListenerDispatcher= new VisibilityListenerDispatcher();
+
+    public VisibilityListener getVisibilityListener()
+    {
+	return visibilityListenerDispatcher;
+    }
+
+    public void setVisibilityListener(VisibilityListener visibilityListener)
+    {
+	visibilityListenerDispatcher.visibilityListeners.add(visibilityListener);
+    }
 
     public Stack<ProductionFrame> getProductionFrames()
     {
@@ -36,7 +59,7 @@ public class ParserListenerDelegator extends DefaultParserListener implements Pa
 	this.nextVisibleFrame= nextVisibleFrame;
     }
 
-    public ParserListenerDelegator(DebuggingParserListener debuggingParserListener, ButtonModel skipSmall, SpinnerModel spinnerModel, ButtonModel skipAll)
+    public ParserListenerDelegator(ButtonModel skipSmall, SpinnerModel spinnerModel, ButtonModel skipAll)
     {
 	this.skipSmall= skipSmall;
 	this.spinnerModel= spinnerModel;
@@ -97,6 +120,11 @@ public class ParserListenerDelegator extends DefaultParserListener implements Pa
     {
 	super.setCurrentFrame(productionFrame);
 	parserListenerDelegate.setCurrentFrame(productionFrame);
+    }
+
+    protected boolean isTotallyInvisible()
+    {
+	return !(isVisible() && !isInvisible());
     }
 
     protected boolean isVisible()
@@ -205,6 +233,7 @@ public class ParserListenerDelegator extends DefaultParserListener implements Pa
 
     public void runToExpression(final int start, final int end)
     {
+	invisible= true;
 	final ProductionFrame breakpointFrame= productionFrames.peek();
 	this.setNextVisibleFrame(null);
 
@@ -218,11 +247,26 @@ public class ParserListenerDelegator extends DefaultParserListener implements Pa
 		{
 		    int length= currentFrame.getProduction().length();
 		    if ((length - last) <= start && (length - last) >= end)
-			stepper.pause();
+		    {
+			setInvisible(false);
+//			stepper.pause();
+			runToNextReplacement();
+		    }
 		}
 	    }
 	});
 	stepper.continueExecution();
+    }
+
+    public boolean isInvisible()
+    {
+	return invisible;
+    }
+
+    public void setInvisible(boolean invisible)
+    {
+	this.invisible= invisible;
+	visibilityListenerDispatcher.invisibleChanged(invisible);
     }
 
     public void runToNextReplacement()

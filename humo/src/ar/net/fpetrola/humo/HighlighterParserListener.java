@@ -1,25 +1,33 @@
 package ar.net.fpetrola.humo;
 
 import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyledDocument;
 
 public class HighlighterParserListener extends DefaultParserListener implements ParserListener
 {
-    public void updateCaretPosition(ProductionFrame aFrame)
+    public void updateCaretPosition(final ProductionFrame aFrame)
     {
-	StyledDocument styledDocument= (StyledDocument) aFrame.getDocument();
-	int caretPosition= aFrame.getFirst();
-	if (styledDocument.getLength() > caretPosition + 300)
-	    caretPosition+= 300;
-	else
-	    caretPosition= styledDocument.getLength() - 1;
 
 	try
 	{
-	    if (caretPosition >= 0)
-		textPane.setCaretPosition(caretPosition);
+	    SwingUtilities.invokeLater(new Runnable()
+	    {
+		public void run()
+		{
+		    StyledDocument styledDocument= (StyledDocument) aFrame.getDocument();
+		    int caretPosition= aFrame.getFirst();
+		    if (styledDocument.getLength() > caretPosition + 300)
+			caretPosition+= 300;
+		    else
+			caretPosition= styledDocument.getLength() - 1;
+		    if (caretPosition >= 0)
+			textPane.setCaretPosition(caretPosition);
+		}
+	    });
 	    Thread.sleep(1);
 	}
 	catch (Exception e)
@@ -35,6 +43,13 @@ public class HighlighterParserListener extends DefaultParserListener implements 
     {
 	this.textPane= textPane;
 	this.debugDelegator= debugDelegator;
+	debugDelegator.setVisibilityListener(new VisibilityListener()
+	{
+	    public void invisibleChanged(boolean invisible)
+	    {
+		updateFrame(currentFrame);
+	    }
+	});
     }
 
     public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder value)
@@ -43,25 +58,38 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 	updateFrame(currentFrame);
     }
 
-    public void afterProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition)
+    public void afterProductionReplacement(final StringBuilder sourcecode, int first, final int current, int last, char currentChar, final StringBuilder value, final int startPosition, final int endPosition)
     {
-	try
+	if (debugDelegator.isVisible())
 	{
-	    if (debugDelegator.isVisible())
+	    try
 	    {
-		StyledDocument doc= (StyledDocument) currentFrame.getDocument();
-		int length= endPosition - startPosition;
-		doc.remove(startPosition, length);
-		doc.insertString(startPosition, value.toString(), null);
+		SwingUtilities.invokeAndWait(new Runnable()
+		{
+		    public void run()
+		    {
+			try
+			{
+			    StyledDocument doc= (StyledDocument) currentFrame.getDocument();
+			    int length= endPosition - startPosition;
+			    doc.remove(startPosition, length);
+			    doc.insertString(startPosition, value.toString(), null);
 
-		Style style= doc.getStyle("Cursor");
-		doc.setCharacterAttributes(current, value.length(), style, false);
-		highlightCurlys(sourcecode, startPosition, doc, value.length());
+			    Style style= doc.getStyle("Cursor");
+			    doc.setCharacterAttributes(current, value.length(), style, false);
+			    highlightCurlys(sourcecode, startPosition, doc, value.length());
+			}
+			catch (BadLocationException e)
+			{
+			    e.printStackTrace();
+			}
+		    }
+		});
 	    }
-	}
-	catch (BadLocationException e)
-	{
-	    e.printStackTrace();
+	    catch (Exception e)
+	    {
+		e.printStackTrace();
+	    }
 	}
     }
 
@@ -135,18 +163,34 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 	updateFrame(currentFrame);
     }
 
-    public void updateFrame(ProductionFrame productionFrame)
+    public void updateFrame(final ProductionFrame productionFrame)
     {
-	if (debugDelegator.isVisible())
+	try
 	{
-	    if (textPane.getDocument() != productionFrame.getDocument())
+	    SwingUtilities.invokeLater(new Runnable()
 	    {
-		textPane.setDocument(productionFrame.getDocument());
-	    }
-	    updateCaretPosition(productionFrame);
+		public void run()
+		{
+		    if (!debugDelegator.isTotallyInvisible())
+		    {
+			if (textPane.getDocument() != productionFrame.getDocument())
+			{
+			    textPane.setDocument(productionFrame.getDocument());
+			}
+			updateCaretPosition(productionFrame);
+		    }
+		    else
+		    {
+			textPane.setDocument(new DefaultStyledDocument());
+		    }
+		}
+	    });
+	}
+	catch (Exception e)
+	{
+	    e.printStackTrace();
 	}
     }
-
     public void setCurrentFrame(ProductionFrame productionFrame)
     {
 	this.currentFrame= productionFrame;

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -21,9 +22,18 @@ public class ProductionsParserListener extends DefaultParserListener implements 
     private Map<CharSequence, DefaultMutableTreeNode> nodes;
     private int productionsCount= 0;
     protected JTree productionsTree;
+    private ParserListenerDelegator debugDelegator;
 
-    public ProductionsParserListener()
+    public ProductionsParserListener(ParserListenerDelegator debugDelegator)
     {
+	this.debugDelegator= debugDelegator;
+	debugDelegator.setVisibilityListener(new VisibilityListener()
+	{
+	    public void invisibleChanged(boolean invisible)
+	    {
+		updateTreeUI();
+	    }
+	});
     }
 
     public void init(String filename, boolean createComponents)
@@ -43,23 +53,22 @@ public class ProductionsParserListener extends DefaultParserListener implements 
 
     public void afterParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar, CharSequence name, CharSequence value)
     {
-//	productionsCount++;
-//
-//	DefaultMutableTreeNode node= nodes.get(name);
-//	DefaultMutableTreeNode child= new DefaultMutableTreeNode(value + " (count:" + productionsCount + ")");
-//	if (node != null)
-//	    node.add(child);
-//	else
-//	{
-//	    DefaultMutableTreeNode parent= new DefaultMutableTreeNode(name);
-//	    root.add(parent);
-//	    parent.add(child);
-//	    nodes.put(name, parent);
-//	}
-//
-//	((DefaultTreeModel) productionsTree.getModel()).reload();
-    }
+	productionsCount++;
 
+	DefaultMutableTreeNode node= nodes.get(name);
+	DefaultMutableTreeNode child= new DefaultMutableTreeNode(value + " (count:" + productionsCount + ")");
+	if (node != null)
+	    node.add(child);
+	else
+	{
+	    DefaultMutableTreeNode parent= new DefaultMutableTreeNode(name);
+	    root.add(parent);
+	    parent.add(child);
+	    nodes.put(name, parent);
+	}
+
+	updateTreeUI();
+    }
     public DefaultMutableTreeNode getRoot()
     {
 	return root;
@@ -68,5 +77,17 @@ public class ProductionsParserListener extends DefaultParserListener implements 
     public void setRoot(DefaultMutableTreeNode productionsRoot)
     {
 	this.root= productionsRoot;
+    }
+
+    private void updateTreeUI()
+    {
+	if (!debugDelegator.isTotallyInvisible())
+	    SwingUtilities.invokeLater(new Runnable()
+	    {
+		public void run()
+		{
+		    productionsTree.updateUI();
+		}
+	    });
     }
 }

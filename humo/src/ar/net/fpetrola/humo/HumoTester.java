@@ -36,6 +36,7 @@ import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.text.BadLocationException;
@@ -51,7 +52,6 @@ public class HumoTester
     public static final String DEFAULT_STYLE= "default";
     public static final String FETCH_STYLE= "fetch";
     public static final String CURLY_STYLE= "curly";
-    public static Stepper stepper= new Stepper();
 
     public static void main(String[] args) throws Exception
     {
@@ -74,14 +74,15 @@ public class HumoTester
 	JCheckBox skipSmall= new JCheckBox("skip productions smaller than:");
 	JCheckBox skipAll= new JCheckBox("skip all");
 
-	ExecutionParserListener treeParserListener= new ExecutionParserListener();
-	ProductionsParserListener productionsParserListener= new ProductionsParserListener();
-	DebuggingParserListener debuggingParserListener= new DebuggingParserListener();
-	ParserListenerDelegator debugDelegator= new ParserListenerDelegator(debuggingParserListener, skipSmall.getModel(), skipSizeSpinner.getModel(), skipAll.getModel());
+	ParserListenerDelegator debugDelegator= new ParserListenerDelegator(skipSmall.getModel(), skipSizeSpinner.getModel(), skipAll.getModel());
+	DebuggingParserListener debuggingParserListener= new DebuggingParserListener(debugDelegator);
 	HighlighterParserListener highlighterParserListener= new HighlighterParserListener(textPane, debugDelegator);
-	ParserListenerMultiplexer parserListenerMultiplexer= new ParserListenerMultiplexer(highlighterParserListener, debugDelegator);
+	ProductionsParserListener productionsParserListener= new ProductionsParserListener(debugDelegator);
+	ExecutionParserListener treeParserListener= new ExecutionParserListener(debugDelegator);
+	ParserListenerMultiplexer parserListenerMultiplexer= new ParserListenerMultiplexer(productionsParserListener, treeParserListener, highlighterParserListener, debuggingParserListener, debugDelegator);
 	debugDelegator.setProductionFrames(parserListenerMultiplexer.getProductionFrames());
 	ListenedParser parser= new ListenedParser(parserListenerMultiplexer);
+	debugDelegator.stepInto();
 
 	parser.getLoggingMap().log("begin parsing");
 	boolean initialized= false;
@@ -101,7 +102,7 @@ public class HumoTester
 		treeParserListener.init(file, !initialized, sourcecode);
 		productionsParserListener.init(file, !initialized);
 		debuggingParserListener.init(file, sourcecode, !initialized);
-		//		debuggingParserListener.pause();
+		debugDelegator.stepInto();
 
 		((DefaultTreeModel) treeParserListener.getExecutionTree().getModel()).reload();
 		((DefaultTreeModel) debuggingParserListener.getUsedProductionsTree().getModel()).reload();
@@ -129,21 +130,17 @@ public class HumoTester
 	//jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 	JScrollPane tree1= new JScrollPane(executionTree);
-	executionTree.setPreferredSize(new Dimension(300, 300));
 
 	final JScrollPane stacktraceTreePanel= new JScrollPane(stacktraceTree);
-	stacktraceTree.setPreferredSize(new Dimension(300, 300));
 
 	JScrollPane tree2= new JScrollPane(productionsTree);
-	tree2.setPreferredSize(new Dimension(300, 300));
 	JComponent textPanel= new JScrollPane(textPane);
-	JSplitPane treesSplitPane= new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, tree1, tree2);
+	JSplitPane treesSplitPane= new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, tree1, tree2);
 	treesSplitPane.setDividerLocation(300);
 
 	JSplitPane newRightComponent= new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, textPanel, stacktraceTreePanel);
 	newRightComponent.setDividerLocation(900);
 
-	treesSplitPane.setPreferredSize(new Dimension(1000, 300));
 	JSplitPane verticalSplitPane= new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, treesSplitPane, newRightComponent);
 	verticalSplitPane.setDividerLocation(200);
 
@@ -162,70 +159,76 @@ public class HumoTester
 
 	toolBar.add(pauseButton);
 	JButton stepButton= new JButton("step over");
-	stepButton.addActionListener(new ActionListener()
+	stepButton.addActionListener(new ThreadSafeActionListener(new ActionListener()
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
 		debugDelegator.stepOver();
 	    }
-	});
+	}));
 	toolBar.add(stepButton);
 
 	JButton miniStepButton= new JButton("step into");
-	miniStepButton.addActionListener(new ActionListener()
+	miniStepButton.addActionListener(new ThreadSafeActionListener(new ActionListener()
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
 		debugDelegator.stepInto();
 	    }
-	});
+	}));
 	toolBar.add(miniStepButton);
 
 	JButton stepoutButton= new JButton("stepout");
-	stepoutButton.addActionListener(new ActionListener()
+	stepoutButton.addActionListener(new ThreadSafeActionListener(new ActionListener()
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
 		debugDelegator.stepOut();
 	    }
-	});
+	}));
 	toolBar.add(stepoutButton);
 
 	JButton continueButton= new JButton("continue");
-	continueButton.addActionListener(new ActionListener()
+	continueButton.addActionListener(new ThreadSafeActionListener(new ActionListener()
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
 		debugDelegator.continueExecution();
 	    }
-	});
+	}));
 	toolBar.add(continueButton);
 
 	JButton loadButton= new JButton("load source file");
-	loadButton.addActionListener(new ActionListener()
+	loadButton.addActionListener(new ThreadSafeActionListener(new ActionListener()
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
-		final JDialog openFileDialog= new JDialog();
-		openFileDialog.setSize(600, 100);
-		openFileDialog.setModal(true);
-		openFileDialog.getContentPane().setLayout(new GridBagLayout());
-		openFileDialog.add(textField);
-		JButton load= new JButton("load");
-		openFileDialog.add(load);
-		load.addActionListener(new ActionListener()
+		SwingUtilities.invokeLater(new Runnable()
 		{
-		    public void actionPerformed(ActionEvent e)
+		    public void run()
 		    {
-			stepper.pause();
-			openFileDialog.setVisible(false);
+			final JDialog openFileDialog= new JDialog();
+			openFileDialog.setSize(600, 100);
+			openFileDialog.setModal(true);
+			openFileDialog.getContentPane().setLayout(new GridBagLayout());
+			openFileDialog.add(textField);
+			JButton load= new JButton("load");
+			openFileDialog.add(load);
+			load.addActionListener(new ActionListener()
+			{
+			    public void actionPerformed(ActionEvent e)
+			    {
+				debugDelegator.continueExecution();
+				openFileDialog.setVisible(false);
+			    }
+			});
+
+			openFileDialog.setVisible(true);
+			parser.setDisabled(true);
 		    }
 		});
-
-		openFileDialog.setVisible(true);
-		parser.setDisabled(true);
 	    }
-	});
+	}));
 
 	stacktraceTree.addTreeSelectionListener(new TreeSelectionListener()
 	{
@@ -236,7 +239,8 @@ public class HumoTester
 		    Object lastPathComponent= e.getNewLeadSelectionPath().getLastPathComponent();
 		    StacktraceTreeNode stacktraceTreeNode= (StacktraceTreeNode) lastPathComponent;
 		    ProductionFrame frame= stacktraceTreeNode.getFrame();
-		    highlighterParserListener.updateFrame(frame);
+		    if (frame != null)
+			highlighterParserListener.updateFrame(frame);
 		}
 	    }
 	});
@@ -244,13 +248,13 @@ public class HumoTester
 	toolBar.add(loadButton);
 
 	skipSmall.setSelected(true);
-	skipSmall.addActionListener(new ActionListener()
+	skipSmall.addActionListener(new ThreadSafeActionListener(new ActionListener()
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
 		skipSizeSpinner.setEnabled(skipSmall.isSelected());
 	    }
-	});
+	}));
 
 	toolBar.add(skipAll);
 	toolBar.add(skipSmall);
@@ -268,7 +272,7 @@ public class HumoTester
     {
 	final JPopupMenu menu= new JPopupMenu();
 	JMenuItem menuItem= new JMenuItem("Run to this expression");
-	menuItem.addActionListener(new ActionListener()
+	menuItem.addActionListener(new ThreadSafeActionListener(new ActionListener()
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
@@ -277,7 +281,7 @@ public class HumoTester
 
 		debugDelegator.runToExpression(start, end);
 	    }
-	});
+	}));
 
 	menu.add(menuItem);
 

@@ -10,18 +10,28 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
 {
     protected JTree stacktraceTree;
     protected Stack<DefaultMutableTreeNode> usedProductionsStack;
-    protected DefaultMutableTreeNode usedProductionsStackRoot;
+    protected StacktraceTreeNode usedProductionsStackRoot;
+    private final ParserListenerDelegator debugDelegator;
 
-    public DebuggingParserListener()
+    public DebuggingParserListener(ParserListenerDelegator debugDelegator)
     {
+	this.debugDelegator= debugDelegator;
+	debugDelegator.setVisibilityListener(new VisibilityListener()
+	{
+	    public void invisibleChanged(boolean invisible)
+	    {
+		((DefaultTreeModel) stacktraceTree.getModel()).reload();
+	    }
+	});
     }
 
-    public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder value)
+    public void beforeProductionParsing(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder value)
     {
 	DefaultMutableTreeNode node= new StacktraceTreeNode(name, currentFrame);
 	usedProductionsStack.push(node);
 	usedProductionsStackRoot.add(usedProductionsStack.peek());
-	((DefaultTreeModel) stacktraceTree.getModel()).reload();
+	if (!debugDelegator.isTotallyInvisible())
+	    ((DefaultTreeModel) stacktraceTree.getModel()).reload();
     }
 
     public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition, StringBuilder name)
@@ -30,9 +40,9 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
 	{
 	    usedProductionsStackRoot.remove(usedProductionsStack.peek());
 	    usedProductionsStack.pop();
-	    ((DefaultTreeModel) stacktraceTree.getModel()).reload();
+	    if (!debugDelegator.isTotallyInvisible())
+		((DefaultTreeModel) stacktraceTree.getModel()).reload();
 	}
-
     }
 
     public DefaultMutableTreeNode getUsedProductionsStackRoot()
@@ -56,12 +66,16 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
 	stacktraceTree.setModel(new DefaultTreeModel(usedProductionsStackRoot));
     }
 
-    public void setUsedProductionsStackRoot(DefaultMutableTreeNode usedProductionsStackRoot)
+    public void setCurrentFrame(ProductionFrame productionFrame)
     {
-	this.usedProductionsStackRoot= usedProductionsStackRoot;
+	if (currentFrame == null)
+	    usedProductionsStackRoot.setFrame(productionFrame);
+
+	super.setCurrentFrame(productionFrame);
     }
 
-    public void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
+    public void setUsedProductionsStackRoot(StacktraceTreeNode usedProductionsStackRoot)
     {
+	this.usedProductionsStackRoot= usedProductionsStackRoot;
     }
 }
