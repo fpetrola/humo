@@ -141,6 +141,6 @@ public class ParserListenerMultiplexer implements ParserListener
     {
 	updateListeners(sourcecode, first, 0, 0);
 	for (ParserListener parserListener : parserListeners)
-	    parserListener.startProductionParsing(sourcecode, first, current, last);
+	    parserListener.beforeProductionParsing(sourcecode, first, current, last, currentChar, stringBuilder, value);
     }
 }

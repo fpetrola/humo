@@ -1,11 +1,10 @@
 package ar.net.fpetrola.humo;
 
+
 public class DefaultParserListener implements ParserListener
 {
     protected ProductionFrame currentFrame;
-    public DefaultParserListener()
-    {
-    }
+
     public void startProductionParsing(StringBuilder sourcecode, int first, int current, int last)
     {
     }

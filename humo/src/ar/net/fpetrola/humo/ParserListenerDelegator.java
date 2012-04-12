@@ -1,17 +1,39 @@
 package ar.net.fpetrola.humo;
 
-public class ParserListenerDelegator implements ParserListener
+import javax.swing.ButtonModel;
+import javax.swing.SpinnerModel;
+
+public class ParserListenerDelegator extends DefaultParserListener implements ParserListener
 {
     protected ParserListener parserListenerDelegate;
+    protected ButtonModel skipSmall;
+    protected SpinnerModel spinnerModel;
+    protected ProductionFrame nextVisibleFrame;
+
+    public ProductionFrame getNextVisibleFrame()
+    {
+        return nextVisibleFrame;
+    }
+
+    public void setNextVisibleFrame(ProductionFrame nextVisibleFrame)
+    {
+        this.nextVisibleFrame= nextVisibleFrame;
+    }
+
+    public ParserListenerDelegator(DebuggingParserListener debuggingParserListener, ButtonModel skipSmall, SpinnerModel spinnerModel)
+    {
+	this.skipSmall= skipSmall;
+	this.spinnerModel= spinnerModel;
+    }
 
     public ParserListener getParserListenerDelegate()
     {
-        return parserListenerDelegate;
+	return parserListenerDelegate;
     }
 
     public void setParserListenerDelegate(ParserListener parserListenerDelegate)
     {
-        this.parserListenerDelegate= parserListenerDelegate;
+	this.parserListenerDelegate= parserListenerDelegate;
     }
 
     public ParserListenerDelegator(ParserListener parserListener)
@@ -49,16 +71,6 @@ public class ParserListenerDelegator implements ParserListener
 	parserListenerDelegate.beforeProductionSearch(sourcecode, first, current, last, currentChar);
     }
 
-    public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder value)
-    {
-	parserListenerDelegate.afterProductionFound(sourcecode, first, current, last, currentChar, name, value);
-    }
-
-    public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition, StringBuilder name)
-    {
-	parserListenerDelegate.beforeProductionReplacement(sourcecode, first, current, last, currentChar, value, startPosition, endPosition, name);
-    }
-
     public void afterProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition)
     {
 	parserListenerDelegate.afterProductionReplacement(sourcecode, first, current, last, currentChar, value, startPosition, endPosition);
@@ -71,11 +83,49 @@ public class ParserListenerDelegator implements ParserListener
 
     public void setCurrentFrame(ProductionFrame productionFrame)
     {
+	super.setCurrentFrame(productionFrame);
 	parserListenerDelegate.setCurrentFrame(productionFrame);
+    }
+
+
+    protected boolean isVisible()
+    {
+	if (nextVisibleFrame == currentFrame)
+	    nextVisibleFrame= null;
+
+	return nextVisibleFrame == null;
+    }
+    private boolean isProductionVisible(StringBuilder value)
+    {
+	boolean result= false;
+
+	if (nextVisibleFrame == null)
+	{
+	    result= value != null && (value.length() > (Integer) spinnerModel.getValue() || !skipSmall.isSelected());
+	    if (!result)
+		nextVisibleFrame= currentFrame;
+	}
+
+	return result;
+    }
+
+    public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition, StringBuilder name)
+    {
+	if (nextVisibleFrame == currentFrame)
+	    nextVisibleFrame= null;
+
+	parserListenerDelegate.beforeProductionReplacement(sourcecode, first, current, last, currentChar, value, startPosition, endPosition, name);
+    }
+
+    public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder production)
+    {
+	parserListenerDelegate.afterProductionFound(sourcecode, first, current, last, currentChar, name, production);
+	isProductionVisible(production);
     }
 
     public void beforeProductionParsing(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder stringBuilder, StringBuilder value)
     {
 	parserListenerDelegate.beforeProductionParsing(sourcecode, first, current, last, currentChar, stringBuilder, value);
     }
+
 }

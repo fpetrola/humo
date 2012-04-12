@@ -73,10 +73,10 @@ public class HumoTester
 
 	ExecutionParserListener treeParserListener= new ExecutionParserListener();
 	ProductionsParserListener productionsParserListener= new ProductionsParserListener();
-	DebuggingParserListener debuggingParserListener= new DebuggingParserListener(skipSmall.getModel(), textPane, skipSizeSpinner);
-	ParserListenerDelegator debugDelegator= new ParserListenerDelegator(debuggingParserListener);
-	HighlighterParserListener highlighterParserListener= new HighlighterParserListener(textPane);
-	ParserListenerMultiplexer parserListenerMultiplexer= new ParserListenerMultiplexer(treeParserListener, productionsParserListener, highlighterParserListener, debugDelegator);
+	DebuggingParserListener debuggingParserListener= new DebuggingParserListener();
+	ParserListenerDelegator debugDelegator= new ParserListenerDelegator(debuggingParserListener, skipSmall.getModel(), skipSizeSpinner.getModel());
+	HighlighterParserListener highlighterParserListener= new HighlighterParserListener(textPane, debugDelegator);
+	ParserListenerMultiplexer parserListenerMultiplexer= new ParserListenerMultiplexer(highlighterParserListener, debugDelegator);
 	ListenedParser parser= new ListenedParser(parserListenerMultiplexer);
 
 	parser.getLoggingMap().log("begin parsing");
@@ -105,7 +105,7 @@ public class HumoTester
 
 		if (!initialized)
 		{
-		    showTree(debugDelegator, parser, sourcecode, textPane, debuggingParserListener, debuggingParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe, filenameTextField, skipSmall, skipSizeSpinner, parserListenerMultiplexer);
+		    showTree(highlighterParserListener, debugDelegator, parser, sourcecode, textPane, debuggingParserListener, debuggingParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe, filenameTextField, skipSmall, skipSizeSpinner, parserListenerMultiplexer);
 		    initialized= true;
 		}
 		parser.init();
@@ -119,7 +119,7 @@ public class HumoTester
 	}
     }
 
-    public static void showTree(final ParserListenerDelegator debugDelegator, final ListenedParser parser, StringBuilder sourceCode, final JTextPane textPane, final DebuggingParserListener debuggingParserListener, JTree stacktraceTree, JTree executionTree, JTree productionsTree, final JFrame jframe, final JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner, final ParserListenerMultiplexer parserListenerMultiplexer)
+    public static void showTree(final HighlighterParserListener highlighterParserListener, final ParserListenerDelegator debugDelegator, final ListenedParser parser, StringBuilder sourceCode, final JTextPane textPane, final DebuggingParserListener debuggingParserListener, JTree stacktraceTree, JTree executionTree, JTree productionsTree, final JFrame jframe, final JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner, final ParserListenerMultiplexer parserListenerMultiplexer)
     {
 	jframe.setLocation(100, 100);
 	//jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -146,7 +146,7 @@ public class HumoTester
 	jframe.setSize(1200, 1000);
 	jframe.setVisible(true);
 
-	JToolBar toolBar= new JToolBar("Still draggable");
+	JToolBar toolBar= new JToolBar("debugger actions");
 	JButton pauseButton= new JButton("next replacement");
 	pauseButton.addActionListener(new ActionListener()
 	{
@@ -156,7 +156,8 @@ public class HumoTester
 		{
 		    public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder production)
 		    {
-			debuggingParserListener.pause();
+			if (debugDelegator.isVisible())
+			    debuggingParserListener.pause();
 		    }
 		});
 		debuggingParserListener.continueExecution();
@@ -169,15 +170,17 @@ public class HumoTester
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
-		final ProductionFrame productionFrame= parserListenerMultiplexer.getProductionFrames().peek();
+		debugDelegator.setNextVisibleFrame(null);
+
 		final ParserListener parserListenerDelegate= debugDelegator.getParserListenerDelegate();
+		debugDelegator.setNextVisibleFrame(parserListenerMultiplexer.getProductionFrames().peek());
 
 		debugDelegator.setParserListenerDelegate(new DefaultParserListener()
 		{
-		    public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition, StringBuilder name)
+		    public void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
 		    {
-			if (currentFrame == productionFrame)
-			    debugDelegator.setParserListenerDelegate(parserListenerDelegate);
+			if (debugDelegator.isVisible())
+			    debuggingParserListener.pause();
 		    }
 		});
 		debuggingParserListener.continueExecution();
@@ -190,16 +193,19 @@ public class HumoTester
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
+		debugDelegator.setNextVisibleFrame(null);
 		debugDelegator.setParserListenerDelegate(new DefaultParserListener()
 		{
 		    public void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
 		    {
-			debuggingParserListener.pause();
+			if (debugDelegator.isVisible())
+			    debuggingParserListener.pause();
 		    }
 
 		    public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder production)
 		    {
-			debuggingParserListener.pause();
+			if (debugDelegator.isVisible())
+			    debuggingParserListener.pause();
 		    }
 		});
 		debuggingParserListener.continueExecution();
@@ -216,16 +222,22 @@ public class HumoTester
 		if (productionFrames.size() > 1)
 		{
 		    final ProductionFrame productionFrame= productionFrames.elementAt(productionFrames.size() - 2);
-
-		    final ParserListener parserListenerDelegate= debugDelegator.getParserListenerDelegate();
+		    debugDelegator.setNextVisibleFrame(productionFrame);
 
 		    debugDelegator.setParserListenerDelegate(new DefaultParserListener()
 		    {
 			public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition, StringBuilder name)
 			{
-			    if (currentFrame == productionFrame)
+			    if (debugDelegator.isVisible())
 			    {
-				debugDelegator.setParserListenerDelegate(parserListenerDelegate);
+				debuggingParserListener.pause();
+			    }
+			}
+
+			public void afterParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar, CharSequence name, CharSequence value)
+			{
+			    if (debugDelegator.isVisible())
+			    {
 				debuggingParserListener.pause();
 			    }
 			}
@@ -282,8 +294,7 @@ public class HumoTester
 		    Object lastPathComponent= e.getNewLeadSelectionPath().getLastPathComponent();
 		    StacktraceTreeNode stacktraceTreeNode= (StacktraceTreeNode) lastPathComponent;
 		    ProductionFrame frame= stacktraceTreeNode.getFrame();
-
-		    HighlighterParserListener.updateFrame(frame, textPane);
+		    highlighterParserListener.updateFrame(frame);
 		}
 	    }
 	});
@@ -302,7 +313,7 @@ public class HumoTester
 	toolBar.add(skipSmall);
 	toolBar.add(skipSizeSpinner);
 
-	addPopupMenu(textPane, debuggingParserListener);
+	addPopupMenu(textPane, debuggingParserListener, debugDelegator, parserListenerMultiplexer);
 
 	JPanel mainPanel= new JPanel(new BorderLayout());
 	mainPanel.add(toolBar, BorderLayout.PAGE_START);
@@ -310,7 +321,7 @@ public class HumoTester
 
 	jframe.setContentPane(mainPanel);
     }
-    private static void addPopupMenu(final JTextPane textPane, final DebuggingParserListener debuggingParserListener)
+    private static void addPopupMenu(final JTextPane textPane, final DebuggingParserListener debuggingParserListener, final ParserListenerDelegator debugDelegator, final ParserListenerMultiplexer parserListenerMultiplexer)
     {
 	final JPopupMenu menu= new JPopupMenu();
 	JMenuItem menuItem= new JMenuItem("Run to this expression");
@@ -318,7 +329,26 @@ public class HumoTester
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
-		debuggingParserListener.runTo(textPane.getDocument().getLength() - textPane.getSelectionStart(), textPane.getDocument().getLength() - textPane.getSelectionEnd());
+		debugDelegator.setNextVisibleFrame(null);
+
+		final ProductionFrame breakpointFrame= parserListenerMultiplexer.getProductionFrames().peek();
+		debugDelegator.setNextVisibleFrame(breakpointFrame);
+		final int start= textPane.getDocument().getLength() - textPane.getSelectionStart();
+		final int end= textPane.getDocument().getLength() - textPane.getSelectionEnd();
+
+		debugDelegator.setParserListenerDelegate(new DefaultParserListener()
+		{
+		    public void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
+		    {
+			if (debugDelegator.isVisible() && currentFrame == breakpointFrame)
+			{
+			    int length= currentFrame.getProduction().length();
+			    if ((length - last) <= start && (length - last) >= end)
+				debuggingParserListener.pause();
+			}
+		    }
+		});
+		debuggingParserListener.continueExecution();
 	    }
 	});
 

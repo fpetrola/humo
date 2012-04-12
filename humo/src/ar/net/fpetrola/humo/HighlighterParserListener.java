@@ -7,7 +7,7 @@ import javax.swing.text.StyledDocument;
 
 public class HighlighterParserListener extends DefaultParserListener implements ParserListener
 {
-    public static void updateCaretPosition(JTextPane textPane, ProductionFrame aFrame)
+    public void updateCaretPosition(ProductionFrame aFrame)
     {
 	StyledDocument styledDocument= (StyledDocument) aFrame.getDocument();
 	int caretPosition= aFrame.getFirst();
@@ -18,8 +18,9 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 
 	try
 	{
-	    textPane.setCaretPosition(caretPosition);
-	    //	    Thread.sleep(1);
+	    if (caretPosition >= 0)
+		textPane.setCaretPosition(caretPosition);
+	    //Thread.sleep(1);
 	}
 	catch (Exception e)
 	{
@@ -28,38 +29,35 @@ public class HighlighterParserListener extends DefaultParserListener implements 
     }
 
     protected JTextPane textPane;
+    private final ParserListenerDelegator debugDelegator;
 
-    public HighlighterParserListener(JTextPane textPane)
+    public HighlighterParserListener(JTextPane textPane, ParserListenerDelegator debugDelegator)
     {
 	this.textPane= textPane;
+	this.debugDelegator= debugDelegator;
     }
 
     public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder value)
     {
-	try
-	{
-	    showProductionMatch(sourcecode, current, last);
-
-	    updateFrame(currentFrame, textPane);
-	}
-	catch (Exception e)
-	{
-	    e.printStackTrace();
-	}
+	showProductionMatch(sourcecode, current, last);
+	updateFrame(currentFrame);
     }
 
     public void afterProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition)
     {
 	try
 	{
-	    StyledDocument doc= (StyledDocument) currentFrame.getDocument();
-	    int length= endPosition - startPosition;
-	    doc.remove(startPosition, length);
-	    doc.insertString(startPosition, value.toString(), null);
+	    if (debugDelegator.isVisible())
+	    {
+		StyledDocument doc= (StyledDocument) currentFrame.getDocument();
+		int length= endPosition - startPosition;
+		doc.remove(startPosition, length);
+		doc.insertString(startPosition, value.toString(), null);
 
-	    Style style= doc.getStyle("Cursor");
-	    doc.setCharacterAttributes(current, value.length(), style, false);
-	    highlightCurlys(sourcecode, startPosition, doc, value.length());
+		Style style= doc.getStyle("Cursor");
+		doc.setCharacterAttributes(current, value.length(), style, false);
+		highlightCurlys(sourcecode, startPosition, doc, value.length());
+	    }
 	}
 	catch (BadLocationException e)
 	{
@@ -69,25 +67,28 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 
     public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition, StringBuilder name)
     {
-	textPane.setDocument(currentFrame.getDocument());
-	updateFrame(currentFrame, textPane);
-	showProductionMatch(currentFrame.getProduction(), currentFrame.getCurrent(), currentFrame.getLast());
+	updateFrame(currentFrame);
+	if (debugDelegator.isVisible())
+	    showProductionMatch(currentFrame.getProduction(), currentFrame.getCurrent(), currentFrame.getLast());
     }
 
     private void highlightCurlys(StringBuilder sourcecode, int startPosition, StyledDocument doc, int length)
     {
-	Style defaultstyle= doc.getStyle("default");
-	Style curlyStyle= doc.getStyle(HumoTester.CURLY_STYLE);
-	for (int i= startPosition; i < startPosition + length; i++)
+	if (debugDelegator.isVisible())
 	{
-	    Style usingStyle;
-	    if (sourcecode.charAt(i) == '{' || sourcecode.charAt(i) == '}')
+	    Style defaultstyle= doc.getStyle("default");
+	    Style curlyStyle= doc.getStyle(HumoTester.CURLY_STYLE);
+	    for (int i= startPosition; i < startPosition + length; i++)
 	    {
-		usingStyle= curlyStyle;
-		doc.setCharacterAttributes(i, 1, usingStyle, false);
+		Style usingStyle;
+		if (sourcecode.charAt(i) == '{' || sourcecode.charAt(i) == '}')
+		{
+		    usingStyle= curlyStyle;
+		    doc.setCharacterAttributes(i, 1, usingStyle, false);
+		}
+		else
+		    usingStyle= defaultstyle;
 	    }
-	    else
-		usingStyle= defaultstyle;
 	}
     }
     public void init(String filename, StringBuilder sourcecode, boolean createComponents)
@@ -96,20 +97,26 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 
     private void showProductionMatch(StringBuilder sourcecode, int current, int last)
     {
-	StyledDocument doc= (StyledDocument) currentFrame.getDocument();
-	highlightCurlys(sourcecode, current, doc, last - current);
-	Style style= doc.getStyle("production-matching");
-	doc.setCharacterAttributes(current, last - current, style, false);
+	if (debugDelegator.isVisible())
+	{
+	    StyledDocument doc= (StyledDocument) currentFrame.getDocument();
+	    highlightCurlys(sourcecode, current, doc, last - current);
+	    Style style= doc.getStyle("production-matching");
+	    doc.setCharacterAttributes(current, last - current, style, false);
+	}
     }
 
     public void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
     {
 	try
 	{
-	    StyledDocument doc= (StyledDocument) currentFrame.getDocument();
-//	    highlightCurlys(sourcecode, lastCurrent, doc, current - lastCurrent);
-	    Style style= doc.getStyle(HumoTester.FETCH_STYLE);
-	    doc.setCharacterAttributes(current, last - current, style, false);
+	    if (debugDelegator.isVisible())
+	    {
+		StyledDocument doc= (StyledDocument) currentFrame.getDocument();
+		//	    highlightCurlys(sourcecode, lastCurrent, doc, current - lastCurrent);
+		Style style= doc.getStyle(HumoTester.FETCH_STYLE);
+		doc.setCharacterAttributes(current, last - current, style, false);
+	    }
 	}
 	catch (Exception e)
 	{
@@ -118,23 +125,25 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 	}
     }
 
-    public void startProductionParsing(StringBuilder sourcecode, int first, int current, int last)
+    public void endProductionParsing(StringBuilder sourcecode, int first, int current, int last)
     {
-	try
-	{
-	    textPane.setDocument(currentFrame.getDocument());
-	    //		Thread.sleep(10);
-	}
-	catch (Exception e)
-	{
-	    e.printStackTrace();
-	}
+	startParsingLoop(sourcecode, first, current, last, '}');
     }
 
-    public static void updateFrame(ProductionFrame productionFrame, JTextPane textPane)
+    public void startProductionParsing(StringBuilder sourcecode, int first, int current, int last)
     {
-	textPane.setDocument(productionFrame.getDocument());
-	updateCaretPosition(textPane, productionFrame);
+	updateFrame(currentFrame);
+    }
+
+    public void updateFrame(ProductionFrame productionFrame)
+    {
+	if (debugDelegator.isVisible())
+	{
+	    if (textPane.getDocument() != productionFrame.getDocument())
+		textPane.setDocument(productionFrame.getDocument());
+
+	    updateCaretPosition(productionFrame);
+	}
     }
 
     public void setCurrentFrame(ProductionFrame productionFrame)
