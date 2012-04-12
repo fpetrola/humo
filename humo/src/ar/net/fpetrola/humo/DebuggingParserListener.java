@@ -8,22 +8,7 @@ import javax.swing.tree.DefaultTreeModel;
 
 public class DebuggingParserListener extends DefaultParserListener implements ParserListener
 {
-    protected volatile boolean pause;
-
-    public void continueExecution()
-    {
-	pause= false;
-    }
-
-    protected void pause()
-    {
-	pause= true;
-	while (pause == true)
-	    ;
-    }
-
     protected JTree stacktraceTree;
-
     protected Stack<DefaultMutableTreeNode> usedProductionsStack;
     protected DefaultMutableTreeNode usedProductionsStackRoot;
 
@@ -78,6 +63,5 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
 
     public void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
     {
-	pause();
     }
 }

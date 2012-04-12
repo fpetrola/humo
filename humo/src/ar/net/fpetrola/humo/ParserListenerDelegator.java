@@ -1,6 +1,9 @@
 package ar.net.fpetrola.humo;
 
+import java.util.Stack;
+
 import javax.swing.ButtonModel;
+import javax.swing.JCheckBox;
 import javax.swing.SpinnerModel;
 
 public class ParserListenerDelegator extends DefaultParserListener implements ParserListener
@@ -9,21 +12,35 @@ public class ParserListenerDelegator extends DefaultParserListener implements Pa
     protected ButtonModel skipSmall;
     protected SpinnerModel spinnerModel;
     protected ProductionFrame nextVisibleFrame;
+    protected Stepper stepper= new Stepper();
+    protected Stack<ProductionFrame> productionFrames;
+    protected ButtonModel skipAll;
+
+    public Stack<ProductionFrame> getProductionFrames()
+    {
+	return productionFrames;
+    }
+
+    public void setProductionFrames(Stack<ProductionFrame> productionFrames)
+    {
+	this.productionFrames= productionFrames;
+    }
 
     public ProductionFrame getNextVisibleFrame()
     {
-        return nextVisibleFrame;
+	return nextVisibleFrame;
     }
 
     public void setNextVisibleFrame(ProductionFrame nextVisibleFrame)
     {
-        this.nextVisibleFrame= nextVisibleFrame;
+	this.nextVisibleFrame= nextVisibleFrame;
     }
 
-    public ParserListenerDelegator(DebuggingParserListener debuggingParserListener, ButtonModel skipSmall, SpinnerModel spinnerModel)
+    public ParserListenerDelegator(DebuggingParserListener debuggingParserListener, ButtonModel skipSmall, SpinnerModel spinnerModel, ButtonModel skipAll)
     {
 	this.skipSmall= skipSmall;
 	this.spinnerModel= spinnerModel;
+	this.skipAll= skipAll;
     }
 
     public ParserListener getParserListenerDelegate()
@@ -34,11 +51,6 @@ public class ParserListenerDelegator extends DefaultParserListener implements Pa
     public void setParserListenerDelegate(ParserListener parserListenerDelegate)
     {
 	this.parserListenerDelegate= parserListenerDelegate;
-    }
-
-    public ParserListenerDelegator(ParserListener parserListener)
-    {
-	this.parserListenerDelegate= parserListener;
     }
 
     public void startProductionParsing(StringBuilder sourcecode, int first, int current, int last)
@@ -87,7 +99,6 @@ public class ParserListenerDelegator extends DefaultParserListener implements Pa
 	parserListenerDelegate.setCurrentFrame(productionFrame);
     }
 
-
     protected boolean isVisible()
     {
 	if (nextVisibleFrame == currentFrame)
@@ -101,7 +112,7 @@ public class ParserListenerDelegator extends DefaultParserListener implements Pa
 
 	if (nextVisibleFrame == null)
 	{
-	    result= value != null && (value.length() > (Integer) spinnerModel.getValue() || !skipSmall.isSelected());
+	    result= value != null && (value.length() > (Integer) spinnerModel.getValue() || !skipSmall.isSelected()) && !skipAll.isSelected();
 	    if (!result)
 		nextVisibleFrame= currentFrame;
 	}
@@ -126,6 +137,113 @@ public class ParserListenerDelegator extends DefaultParserListener implements Pa
     public void beforeProductionParsing(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder stringBuilder, StringBuilder value)
     {
 	parserListenerDelegate.beforeProductionParsing(sourcecode, first, current, last, currentChar, stringBuilder, value);
+    }
+
+    public void stepOver()
+    {
+	this.setNextVisibleFrame(productionFrames.peek());
+	this.setParserListenerDelegate(new DefaultParserListener()
+	{
+	    public void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
+	    {
+		if (isVisible())
+		    stepper.pause();
+	    }
+	});
+	stepper.continueExecution();
+    }
+
+    public void stepInto()
+    {
+	this.setNextVisibleFrame(null);
+	this.setParserListenerDelegate(new DefaultParserListener()
+	{
+	    public void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
+	    {
+		if (isVisible())
+		    stepper.pause();
+	    }
+
+	    public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder production)
+	    {
+		if (isVisible())
+		    stepper.pause();
+	    }
+	});
+	stepper.continueExecution();
+    }
+
+    public void stepOut()
+    {
+	if (productionFrames.size() > 1)
+	{
+	    final ProductionFrame productionFrame= productionFrames.elementAt(productionFrames.size() - 2);
+	    this.setNextVisibleFrame(productionFrame);
+
+	    this.setParserListenerDelegate(new DefaultParserListener()
+	    {
+		public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition, StringBuilder name)
+		{
+		    if (isVisible())
+		    {
+			stepper.pause();
+		    }
+		}
+
+		public void afterParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar, CharSequence name, CharSequence value)
+		{
+		    if (isVisible())
+		    {
+			stepper.pause();
+		    }
+		}
+	    });
+
+	    stepper.continueExecution();
+	}
+    }
+
+    public void runToExpression(final int start, final int end)
+    {
+	final ProductionFrame breakpointFrame= productionFrames.peek();
+	this.setNextVisibleFrame(null);
+
+	this.setNextVisibleFrame(breakpointFrame);
+
+	this.setParserListenerDelegate(new DefaultParserListener()
+	{
+	    public void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
+	    {
+		if (isVisible() && currentFrame == breakpointFrame)
+		{
+		    int length= currentFrame.getProduction().length();
+		    if ((length - last) <= start && (length - last) >= end)
+			stepper.pause();
+		}
+	    }
+	});
+	stepper.continueExecution();
+    }
+
+    public void runToNextReplacement()
+    {
+	this.setParserListenerDelegate(new DefaultParserListener()
+	{
+	    public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder production)
+	    {
+		if (isVisible())
+		    stepper.pause();
+	    }
+	});
+	stepper.continueExecution();
+    }
+
+    public void continueExecution()
+    {
+	this.setParserListenerDelegate(new DefaultParserListener()
+	{
+	});
+	stepper.continueExecution();
     }
 
 }

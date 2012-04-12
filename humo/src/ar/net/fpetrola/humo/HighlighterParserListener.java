@@ -20,7 +20,7 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 	{
 	    if (caretPosition >= 0)
 		textPane.setCaretPosition(caretPosition);
-	    //Thread.sleep(1);
+	    Thread.sleep(1);
 	}
 	catch (Exception e)
 	{
@@ -140,8 +140,9 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 	if (debugDelegator.isVisible())
 	{
 	    if (textPane.getDocument() != productionFrame.getDocument())
+	    {
 		textPane.setDocument(productionFrame.getDocument());
-
+	    }
 	    updateCaretPosition(productionFrame);
 	}
     }

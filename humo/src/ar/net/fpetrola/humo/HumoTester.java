@@ -19,6 +19,7 @@ import java.awt.event.MouseEvent;
 import java.util.Scanner;
 import java.util.Stack;
 
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -50,6 +51,7 @@ public class HumoTester
     public static final String DEFAULT_STYLE= "default";
     public static final String FETCH_STYLE= "fetch";
     public static final String CURLY_STYLE= "curly";
+    public static Stepper stepper= new Stepper();
 
     public static void main(String[] args) throws Exception
     {
@@ -70,13 +72,15 @@ public class HumoTester
 	JTextField filenameTextField= new JTextField(aFilename);
 	JSpinner skipSizeSpinner= new JSpinner(new SpinnerNumberModel(50, 0, 100000, 1000));
 	JCheckBox skipSmall= new JCheckBox("skip productions smaller than:");
+	JCheckBox skipAll= new JCheckBox("skip all");
 
 	ExecutionParserListener treeParserListener= new ExecutionParserListener();
 	ProductionsParserListener productionsParserListener= new ProductionsParserListener();
 	DebuggingParserListener debuggingParserListener= new DebuggingParserListener();
-	ParserListenerDelegator debugDelegator= new ParserListenerDelegator(debuggingParserListener, skipSmall.getModel(), skipSizeSpinner.getModel());
+	ParserListenerDelegator debugDelegator= new ParserListenerDelegator(debuggingParserListener, skipSmall.getModel(), skipSizeSpinner.getModel(), skipAll.getModel());
 	HighlighterParserListener highlighterParserListener= new HighlighterParserListener(textPane, debugDelegator);
 	ParserListenerMultiplexer parserListenerMultiplexer= new ParserListenerMultiplexer(highlighterParserListener, debugDelegator);
+	debugDelegator.setProductionFrames(parserListenerMultiplexer.getProductionFrames());
 	ListenedParser parser= new ListenedParser(parserListenerMultiplexer);
 
 	parser.getLoggingMap().log("begin parsing");
@@ -105,7 +109,7 @@ public class HumoTester
 
 		if (!initialized)
 		{
-		    showTree(highlighterParserListener, debugDelegator, parser, sourcecode, textPane, debuggingParserListener, debuggingParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe, filenameTextField, skipSmall, skipSizeSpinner, parserListenerMultiplexer);
+		    showTree(highlighterParserListener, debugDelegator, parser, sourcecode, textPane, debuggingParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe, filenameTextField, skipSmall, skipSizeSpinner, parserListenerMultiplexer, skipAll);
 		    initialized= true;
 		}
 		parser.init();
@@ -119,7 +123,7 @@ public class HumoTester
 	}
     }
 
-    public static void showTree(final HighlighterParserListener highlighterParserListener, final ParserListenerDelegator debugDelegator, final ListenedParser parser, StringBuilder sourceCode, final JTextPane textPane, final DebuggingParserListener debuggingParserListener, JTree stacktraceTree, JTree executionTree, JTree productionsTree, final JFrame jframe, final JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner, final ParserListenerMultiplexer parserListenerMultiplexer)
+    public static void showTree(final HighlighterParserListener highlighterParserListener, final ParserListenerDelegator debugDelegator, final ListenedParser parser, StringBuilder sourceCode, final JTextPane textPane, JTree stacktraceTree, JTree executionTree, JTree productionsTree, final JFrame jframe, final JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner, final ParserListenerMultiplexer parserListenerMultiplexer, JCheckBox skipAll)
     {
 	jframe.setLocation(100, 100);
 	//jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -152,15 +156,7 @@ public class HumoTester
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
-		debugDelegator.setParserListenerDelegate(new DefaultParserListener()
-		{
-		    public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder production)
-		    {
-			if (debugDelegator.isVisible())
-			    debuggingParserListener.pause();
-		    }
-		});
-		debuggingParserListener.continueExecution();
+		debugDelegator.runToNextReplacement();
 	    }
 	});
 
@@ -170,20 +166,7 @@ public class HumoTester
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
-		debugDelegator.setNextVisibleFrame(null);
-
-		final ParserListener parserListenerDelegate= debugDelegator.getParserListenerDelegate();
-		debugDelegator.setNextVisibleFrame(parserListenerMultiplexer.getProductionFrames().peek());
-
-		debugDelegator.setParserListenerDelegate(new DefaultParserListener()
-		{
-		    public void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
-		    {
-			if (debugDelegator.isVisible())
-			    debuggingParserListener.pause();
-		    }
-		});
-		debuggingParserListener.continueExecution();
+		debugDelegator.stepOver();
 	    }
 	});
 	toolBar.add(stepButton);
@@ -193,22 +176,7 @@ public class HumoTester
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
-		debugDelegator.setNextVisibleFrame(null);
-		debugDelegator.setParserListenerDelegate(new DefaultParserListener()
-		{
-		    public void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
-		    {
-			if (debugDelegator.isVisible())
-			    debuggingParserListener.pause();
-		    }
-
-		    public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder production)
-		    {
-			if (debugDelegator.isVisible())
-			    debuggingParserListener.pause();
-		    }
-		});
-		debuggingParserListener.continueExecution();
+		debugDelegator.stepInto();
 	    }
 	});
 	toolBar.add(miniStepButton);
@@ -218,33 +186,7 @@ public class HumoTester
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
-		Stack<ProductionFrame> productionFrames= parserListenerMultiplexer.getProductionFrames();
-		if (productionFrames.size() > 1)
-		{
-		    final ProductionFrame productionFrame= productionFrames.elementAt(productionFrames.size() - 2);
-		    debugDelegator.setNextVisibleFrame(productionFrame);
-
-		    debugDelegator.setParserListenerDelegate(new DefaultParserListener()
-		    {
-			public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition, StringBuilder name)
-			{
-			    if (debugDelegator.isVisible())
-			    {
-				debuggingParserListener.pause();
-			    }
-			}
-
-			public void afterParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar, CharSequence name, CharSequence value)
-			{
-			    if (debugDelegator.isVisible())
-			    {
-				debuggingParserListener.pause();
-			    }
-			}
-		    });
-
-		    debuggingParserListener.continueExecution();
-		}
+		debugDelegator.stepOut();
 	    }
 	});
 	toolBar.add(stepoutButton);
@@ -254,7 +196,7 @@ public class HumoTester
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
-		debuggingParserListener.pause();
+		debugDelegator.continueExecution();
 	    }
 	});
 	toolBar.add(continueButton);
@@ -275,7 +217,7 @@ public class HumoTester
 		{
 		    public void actionPerformed(ActionEvent e)
 		    {
-			debuggingParserListener.pause();
+			stepper.pause();
 			openFileDialog.setVisible(false);
 		    }
 		});
@@ -310,10 +252,11 @@ public class HumoTester
 	    }
 	});
 
+	toolBar.add(skipAll);
 	toolBar.add(skipSmall);
 	toolBar.add(skipSizeSpinner);
 
-	addPopupMenu(textPane, debuggingParserListener, debugDelegator, parserListenerMultiplexer);
+	addPopupMenu(textPane, debugDelegator);
 
 	JPanel mainPanel= new JPanel(new BorderLayout());
 	mainPanel.add(toolBar, BorderLayout.PAGE_START);
@@ -321,7 +264,7 @@ public class HumoTester
 
 	jframe.setContentPane(mainPanel);
     }
-    private static void addPopupMenu(final JTextPane textPane, final DebuggingParserListener debuggingParserListener, final ParserListenerDelegator debugDelegator, final ParserListenerMultiplexer parserListenerMultiplexer)
+    public static void addPopupMenu(final JTextPane textPane, final ParserListenerDelegator debugDelegator)
     {
 	final JPopupMenu menu= new JPopupMenu();
 	JMenuItem menuItem= new JMenuItem("Run to this expression");
@@ -329,26 +272,10 @@ public class HumoTester
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
-		debugDelegator.setNextVisibleFrame(null);
-
-		final ProductionFrame breakpointFrame= parserListenerMultiplexer.getProductionFrames().peek();
-		debugDelegator.setNextVisibleFrame(breakpointFrame);
 		final int start= textPane.getDocument().getLength() - textPane.getSelectionStart();
 		final int end= textPane.getDocument().getLength() - textPane.getSelectionEnd();
 
-		debugDelegator.setParserListenerDelegate(new DefaultParserListener()
-		{
-		    public void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
-		    {
-			if (debugDelegator.isVisible() && currentFrame == breakpointFrame)
-			{
-			    int length= currentFrame.getProduction().length();
-			    if ((length - last) <= start && (length - last) >= end)
-				debuggingParserListener.pause();
-			}
-		    }
-		});
-		debuggingParserListener.continueExecution();
+		debugDelegator.runToExpression(start, end);
 	    }
 	});
 
