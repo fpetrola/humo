@@ -19,7 +19,6 @@ import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -61,28 +60,28 @@ public class HumoTester
 	String filename= args[0];
 
 	JFrame jframe= new JFrame();
+
 	createEnvironment(filename, jframe);
     }
 
     private static void createEnvironment(String aFilename, JFrame jframe)
     {
 	JTextPane textPane= new JTextPane();
-	//	textPane.setFont(new Font("Monospaced", Font.PLAIN, 11));
 
 	JTextField filenameTextField= new JTextField(aFilename);
 	JSpinner skipSizeSpinner= new JSpinner(new SpinnerNumberModel(50, 0, 100000, 1000));
 	JCheckBox skipSmall= new JCheckBox("skip productions smaller than:");
 	JCheckBox skipAll= new JCheckBox("skip all");
 
-	ParserListenerDelegator debugDelegator= new ParserListenerDelegator(skipSmall.getModel(), skipSizeSpinner.getModel(), skipAll.getModel());
-	DebuggingParserListener debuggingParserListener= new DebuggingParserListener(debugDelegator);
-	HighlighterParserListener highlighterParserListener= new HighlighterParserListener(textPane, debugDelegator);
-	ProductionsParserListener productionsParserListener= new ProductionsParserListener(debugDelegator);
-	ExecutionParserListener treeParserListener= new ExecutionParserListener(debugDelegator);
-	ParserListenerMultiplexer parserListenerMultiplexer= new ParserListenerMultiplexer(productionsParserListener, treeParserListener, highlighterParserListener, debuggingParserListener, debugDelegator);
-	debugDelegator.setProductionFrames(parserListenerMultiplexer.getProductionFrames());
+	DebuggerParserListener debugListener= new DebuggerParserListener(skipSmall.getModel(), skipSizeSpinner.getModel(), skipAll.getModel());
+	CallStackParserListener callStackParserListener= new CallStackParserListener(debugListener);
+	HighlighterParserListener highlighterParserListener= new HighlighterParserListener(textPane, debugListener);
+	ProductionsParserListener productionsParserListener= new ProductionsParserListener(debugListener);
+	ExecutionParserListener treeParserListener= new ExecutionParserListener(debugListener);
+	ParserListenerMultiplexer parserListenerMultiplexer= new ParserListenerMultiplexer(productionsParserListener, treeParserListener, highlighterParserListener, callStackParserListener, debugListener);
+	debugListener.setProductionFrames(parserListenerMultiplexer.getProductionFrames());
 	ListenedParser parser= new ListenedParser(parserListenerMultiplexer);
-	debugDelegator.stepInto();
+	debugListener.stepInto();
 
 	parser.getLoggingMap().log("begin parsing");
 	boolean initialized= false;
@@ -101,16 +100,16 @@ public class HumoTester
 		parserListenerMultiplexer.init(file, sourcecode, !initialized);
 		treeParserListener.init(file, !initialized, sourcecode);
 		productionsParserListener.init(file, !initialized);
-		debuggingParserListener.init(file, sourcecode, !initialized);
-		debugDelegator.stepInto();
+		callStackParserListener.init(file, sourcecode, !initialized);
+		debugListener.stepInto();
 
 		((DefaultTreeModel) treeParserListener.getExecutionTree().getModel()).reload();
-		((DefaultTreeModel) debuggingParserListener.getUsedProductionsTree().getModel()).reload();
+		((DefaultTreeModel) callStackParserListener.getUsedProductionsTree().getModel()).reload();
 		((DefaultTreeModel) productionsParserListener.getProductionsTree().getModel()).reload();
 
 		if (!initialized)
 		{
-		    showTree(highlighterParserListener, debugDelegator, parser, sourcecode, textPane, debuggingParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe, filenameTextField, skipSmall, skipSizeSpinner, parserListenerMultiplexer, skipAll);
+		    showTree(highlighterParserListener, debugListener, parser, sourcecode, textPane, callStackParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe, filenameTextField, skipSmall, skipSizeSpinner, parserListenerMultiplexer, skipAll);
 		    initialized= true;
 		}
 		parser.init();
@@ -124,36 +123,39 @@ public class HumoTester
 	}
     }
 
-    public static void showTree(final HighlighterParserListener highlighterParserListener, final ParserListenerDelegator debugDelegator, final ListenedParser parser, StringBuilder sourceCode, final JTextPane textPane, JTree stacktraceTree, JTree executionTree, JTree productionsTree, final JFrame jframe, final JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner, final ParserListenerMultiplexer parserListenerMultiplexer, JCheckBox skipAll)
+    public static void showTree(final HighlighterParserListener highlighterParserListener, final DebuggerParserListener debugListener, final ListenedParser parser, StringBuilder sourceCode, final JTextPane textPane, JTree stacktraceTree, JTree executionTree, JTree productionsTree, final JFrame jframe, final JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner, final ParserListenerMultiplexer parserListenerMultiplexer, JCheckBox skipAll)
     {
 	jframe.setLocation(100, 100);
-	//jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-	JScrollPane tree1= new JScrollPane(executionTree);
-
-	final JScrollPane stacktraceTreePanel= new JScrollPane(stacktraceTree);
-
-	JScrollPane tree2= new JScrollPane(productionsTree);
-	JComponent textPanel= new JScrollPane(textPane);
-	JSplitPane treesSplitPane= new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, tree1, tree2);
+	JSplitPane treesSplitPane= new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, new JScrollPane(executionTree), new JScrollPane(productionsTree));
 	treesSplitPane.setDividerLocation(300);
-
-	JSplitPane newRightComponent= new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, textPanel, stacktraceTreePanel);
+	JSplitPane newRightComponent= new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, new JScrollPane(textPane), new JScrollPane(stacktraceTree));
 	newRightComponent.setDividerLocation(900);
-
 	JSplitPane verticalSplitPane= new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, treesSplitPane, newRightComponent);
 	verticalSplitPane.setDividerLocation(200);
 
+	addPopupMenu(textPane, debugListener);
+
+	JPanel mainPanel= new JPanel(new BorderLayout());
+
+	JToolBar toolBar= createToolbar(highlighterParserListener, debugListener, parser, stacktraceTree, textField, skipSmall, skipSizeSpinner, skipAll);
+	mainPanel.add(toolBar, BorderLayout.PAGE_START);
+	mainPanel.add(verticalSplitPane, BorderLayout.CENTER);
+
+	jframe.setContentPane(mainPanel);
 	jframe.setSize(1200, 1000);
 	jframe.setVisible(true);
+    }
 
+    private static JToolBar createToolbar(final HighlighterParserListener highlighterParserListener, final DebuggerParserListener debugListener, final ListenedParser parser, JTree stacktraceTree, final JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner, JCheckBox skipAll)
+    {
 	JToolBar toolBar= new JToolBar("debugger actions");
 	JButton pauseButton= new JButton("next replacement");
 	pauseButton.addActionListener(new ActionListener()
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
-		debugDelegator.runToNextReplacement();
+		debugListener.runToNextReplacement();
 	    }
 	});
 
@@ -163,7 +165,7 @@ public class HumoTester
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
-		debugDelegator.stepOver();
+		debugListener.stepOver();
 	    }
 	}));
 	toolBar.add(stepButton);
@@ -173,7 +175,7 @@ public class HumoTester
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
-		debugDelegator.stepInto();
+		debugListener.stepInto();
 	    }
 	}));
 	toolBar.add(miniStepButton);
@@ -183,7 +185,7 @@ public class HumoTester
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
-		debugDelegator.stepOut();
+		debugListener.stepOut();
 	    }
 	}));
 	toolBar.add(stepoutButton);
@@ -193,7 +195,7 @@ public class HumoTester
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
-		debugDelegator.continueExecution();
+		debugListener.continueExecution();
 	    }
 	}));
 	toolBar.add(continueButton);
@@ -218,7 +220,7 @@ public class HumoTester
 			{
 			    public void actionPerformed(ActionEvent e)
 			    {
-				debugDelegator.continueExecution();
+				debugListener.continueExecution();
 				openFileDialog.setVisible(false);
 			    }
 			});
@@ -259,16 +261,10 @@ public class HumoTester
 	toolBar.add(skipAll);
 	toolBar.add(skipSmall);
 	toolBar.add(skipSizeSpinner);
-
-	addPopupMenu(textPane, debugDelegator);
-
-	JPanel mainPanel= new JPanel(new BorderLayout());
-	mainPanel.add(toolBar, BorderLayout.PAGE_START);
-	mainPanel.add(verticalSplitPane, BorderLayout.CENTER);
-
-	jframe.setContentPane(mainPanel);
+	return toolBar;
     }
-    public static void addPopupMenu(final JTextPane textPane, final ParserListenerDelegator debugDelegator)
+
+    public static void addPopupMenu(final JTextPane textPane, final DebuggerParserListener debugDelegator)
     {
 	final JPopupMenu menu= new JPopupMenu();
 	JMenuItem menuItem= new JMenuItem("Run to this expression");

@@ -7,7 +7,7 @@ import java.util.Stack;
 import javax.swing.ButtonModel;
 import javax.swing.SpinnerModel;
 
-public class ParserListenerDelegator extends DefaultParserListener implements ParserListener
+public class DebuggerParserListener extends DefaultParserListener implements ParserListener
 {
     protected  class VisibilityListenerDispatcher implements VisibilityListener
     {
@@ -59,19 +59,14 @@ public class ParserListenerDelegator extends DefaultParserListener implements Pa
 	this.nextVisibleFrame= nextVisibleFrame;
     }
 
-    public ParserListenerDelegator(ButtonModel skipSmall, SpinnerModel spinnerModel, ButtonModel skipAll)
+    public DebuggerParserListener(ButtonModel skipSmall, SpinnerModel spinnerModel, ButtonModel skipAll)
     {
 	this.skipSmall= skipSmall;
 	this.spinnerModel= spinnerModel;
 	this.skipAll= skipAll;
     }
 
-    public ParserListener getParserListenerDelegate()
-    {
-	return parserListenerDelegate;
-    }
-
-    public void setParserListenerDelegate(ParserListener parserListenerDelegate)
+    private void setParserListenerDelegate(ParserListener parserListenerDelegate)
     {
 	this.parserListenerDelegate= parserListenerDelegate;
     }

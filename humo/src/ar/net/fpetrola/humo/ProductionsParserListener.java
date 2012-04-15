@@ -22,9 +22,9 @@ public class ProductionsParserListener extends DefaultParserListener implements 
     private Map<CharSequence, DefaultMutableTreeNode> nodes;
     private int productionsCount= 0;
     protected JTree productionsTree;
-    private ParserListenerDelegator debugDelegator;
+    private DebuggerParserListener debugDelegator;
 
-    public ProductionsParserListener(ParserListenerDelegator debugDelegator)
+    public ProductionsParserListener(DebuggerParserListener debugDelegator)
     {
 	this.debugDelegator= debugDelegator;
 	debugDelegator.setVisibilityListener(new VisibilityListener()

@@ -38,9 +38,9 @@ public class HighlighterParserListener extends DefaultParserListener implements 
     }
 
     protected JTextPane textPane;
-    private final ParserListenerDelegator debugDelegator;
+    private final DebuggerParserListener debugDelegator;
 
-    public HighlighterParserListener(JTextPane textPane, ParserListenerDelegator debugDelegator)
+    public HighlighterParserListener(JTextPane textPane, DebuggerParserListener debugDelegator)
     {
 	this.textPane= textPane;
 	this.debugDelegator= debugDelegator;
@@ -168,30 +168,43 @@ public class HighlighterParserListener extends DefaultParserListener implements 
     {
 	try
 	{
-	    SwingUtilities.invokeLater(new Runnable()
+	    if (!debugDelegator.isTotallyInvisible())
 	    {
-		public void run()
+		if (textPane.getDocument() != productionFrame.getDocument())
 		{
-		    if (!debugDelegator.isTotallyInvisible())
+		    SwingUtilities.invokeLater(new Runnable()
 		    {
-			if (textPane.getDocument() != productionFrame.getDocument())
+			public void run()
 			{
 			    textPane.setDocument(productionFrame.getDocument());
 			}
+		    });
+		}
+		SwingUtilities.invokeLater(new Runnable()
+		{
+		    public void run()
+		    {
 			updateCaretPosition(productionFrame);
 		    }
-		    else
-			if (debugDelegator.isInvisible())
+		});
+	    }
+	    else
+	    {
+		if (debugDelegator.isInvisible())
+		    SwingUtilities.invokeLater(new Runnable()
+		    {
+			public void run()
+			{
 			    textPane.setDocument(new DefaultStyledDocument());
-		}
-	    });
+			}
+		    });
+	    }
 	}
 	catch (Exception e)
 	{
 	    e.printStackTrace();
 	}
     }
-
     public void setCurrentFrame(ProductionFrame productionFrame)
     {
 	this.currentFrame= productionFrame;

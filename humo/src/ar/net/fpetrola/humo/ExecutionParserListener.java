@@ -20,7 +20,7 @@ public class ExecutionParserListener extends DefaultParserListener implements Pa
     protected Stack<DefaultMutableTreeNode> nodes;
     protected DefaultMutableTreeNode root;
     protected JTree executionTree;
-    private final ParserListenerDelegator debugDelegator;
+    private final DebuggerParserListener debugDelegator;
 
     public JTree getExecutionTree()
     {
@@ -35,7 +35,7 @@ public class ExecutionParserListener extends DefaultParserListener implements Pa
     {
 	this.root= root;
     }
-    public ExecutionParserListener(ParserListenerDelegator debugDelegator)
+    public ExecutionParserListener(DebuggerParserListener debugDelegator)
     {
 	this.debugDelegator= debugDelegator;
 

@@ -6,14 +6,14 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
-public class DebuggingParserListener extends DefaultParserListener implements ParserListener
+public class CallStackParserListener extends DefaultParserListener implements ParserListener
 {
     protected JTree stacktraceTree;
     protected Stack<DefaultMutableTreeNode> usedProductionsStack;
     protected StacktraceTreeNode usedProductionsStackRoot;
-    private final ParserListenerDelegator debugDelegator;
+    private final DebuggerParserListener debugDelegator;
 
-    public DebuggingParserListener(ParserListenerDelegator debugDelegator)
+    public CallStackParserListener(DebuggerParserListener debugDelegator)
     {
 	this.debugDelegator= debugDelegator;
 	debugDelegator.setVisibilityListener(new VisibilityListener()
