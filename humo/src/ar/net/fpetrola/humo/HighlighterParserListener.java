@@ -11,7 +11,6 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 {
     public void updateCaretPosition(final ProductionFrame aFrame)
     {
-
 	try
 	{
 	    SwingUtilities.invokeLater(new Runnable()
@@ -19,12 +18,14 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 		public void run()
 		{
 		    StyledDocument styledDocument= (StyledDocument) aFrame.getDocument();
+		    int length= styledDocument.getLength();
 		    int caretPosition= aFrame.getFirst();
-		    if (styledDocument.getLength() > caretPosition + 300)
+		    if (length > caretPosition + 300)
 			caretPosition+= 300;
 		    else
-			caretPosition= styledDocument.getLength() - 1;
-		    if (caretPosition >= 0)
+			caretPosition= length - 1;
+
+		    if (caretPosition >= 0 && caretPosition < textPane.getDocument().getLength())
 			textPane.setCaretPosition(caretPosition);
 		}
 	    });
@@ -54,7 +55,7 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 
     public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder value)
     {
-	showProductionMatch(sourcecode, current, last);
+	showProductionMatch(sourcecode, current, last, HumoTester.PRODUCTION_FOUND_STYLE);
 	updateFrame(currentFrame);
     }
 
@@ -97,7 +98,7 @@ public class HighlighterParserListener extends DefaultParserListener implements 
     {
 	updateFrame(currentFrame);
 	if (debugDelegator.isVisible())
-	    showProductionMatch(currentFrame.getProduction(), currentFrame.getCurrent(), currentFrame.getLast());
+	    showProductionMatch(currentFrame.getProduction(), currentFrame.getCurrent(), currentFrame.getLast(), HumoTester.PRODUCTION_BEFORE_REPLACEMENT_STYLE);
     }
 
     private void highlightCurlys(StringBuilder sourcecode, int startPosition, StyledDocument doc, int length)
@@ -123,13 +124,13 @@ public class HighlighterParserListener extends DefaultParserListener implements 
     {
     }
 
-    private void showProductionMatch(StringBuilder sourcecode, int current, int last)
+    private void showProductionMatch(StringBuilder sourcecode, int current, int last, String styleId)
     {
 	if (debugDelegator.isVisible())
 	{
 	    StyledDocument doc= (StyledDocument) currentFrame.getDocument();
 	    highlightCurlys(sourcecode, current, doc, last - current);
-	    Style style= doc.getStyle("production-matching");
+	    Style style= doc.getStyle(styleId);
 	    doc.setCharacterAttributes(current, last - current, style, false);
 	}
     }
@@ -180,9 +181,8 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 			updateCaretPosition(productionFrame);
 		    }
 		    else
-		    {
-			textPane.setDocument(new DefaultStyledDocument());
-		    }
+			if (debugDelegator.isInvisible())
+			    textPane.setDocument(new DefaultStyledDocument());
 		}
 	    });
 	}
@@ -191,6 +191,7 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 	    e.printStackTrace();
 	}
     }
+
     public void setCurrentFrame(ProductionFrame productionFrame)
     {
 	this.currentFrame= productionFrame;
