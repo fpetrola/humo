@@ -55,7 +55,7 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 
     public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder value)
     {
-	showProductionMatch(sourcecode, current, last, HumoTester.PRODUCTION_FOUND_STYLE);
+	showProductionMatch(sourcecode, current, last, TextViewHelper.PRODUCTION_FOUND_STYLE);
 	updateFrame(currentFrame);
     }
 
@@ -72,6 +72,7 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 			try
 			{
 			    StyledDocument doc= (StyledDocument) currentFrame.getDocument();
+			    doc.putProperty("auto", true);
 			    int length= endPosition - startPosition;
 			    doc.remove(startPosition, length);
 			    doc.insertString(startPosition, value.toString(), null);
@@ -79,6 +80,7 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 			    Style style= doc.getStyle("Cursor");
 			    doc.setCharacterAttributes(current, value.length(), style, false);
 			    highlightCurlys(sourcecode, startPosition, doc, value.length());
+			    doc.putProperty("auto", null);
 			}
 			catch (BadLocationException e)
 			{
@@ -98,7 +100,7 @@ public class HighlighterParserListener extends DefaultParserListener implements 
     {
 	updateFrame(currentFrame);
 	if (debugDelegator.isVisible())
-	    showProductionMatch(currentFrame.getProduction(), currentFrame.getCurrent(), currentFrame.getLast(), HumoTester.PRODUCTION_BEFORE_REPLACEMENT_STYLE);
+	    showProductionMatch(currentFrame.getProduction(), currentFrame.getCurrent(), currentFrame.getLast(), TextViewHelper.PRODUCTION_BEFORE_REPLACEMENT_STYLE);
     }
 
     private void highlightCurlys(StringBuilder sourcecode, int startPosition, StyledDocument doc, int length)
@@ -106,7 +108,7 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 	if (debugDelegator.isVisible())
 	{
 	    Style defaultstyle= doc.getStyle("default");
-	    Style curlyStyle= doc.getStyle(HumoTester.CURLY_STYLE);
+	    Style curlyStyle= doc.getStyle(TextViewHelper.CURLY_STYLE);
 	    for (int i= startPosition; i < startPosition + length; i++)
 	    {
 		Style usingStyle;
@@ -143,7 +145,7 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 	    {
 		StyledDocument doc= (StyledDocument) currentFrame.getDocument();
 		//	    highlightCurlys(sourcecode, lastCurrent, doc, current - lastCurrent);
-		Style style= doc.getStyle(HumoTester.FETCH_STYLE);
+		Style style= doc.getStyle(TextViewHelper.FETCH_STYLE);
 		doc.setCharacterAttributes(current, last - current, style, false);
 	    }
 	}

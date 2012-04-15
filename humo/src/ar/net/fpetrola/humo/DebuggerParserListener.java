@@ -24,6 +24,16 @@ public class DebuggerParserListener extends DefaultParserListener implements Par
     protected SpinnerModel spinnerModel;
     protected ProductionFrame nextVisibleFrame;
     protected Stepper stepper= new Stepper();
+    public Stepper getStepper()
+    {
+        return stepper;
+    }
+
+    public void setStepper(Stepper stepper)
+    {
+        this.stepper= stepper;
+    }
+
     protected Stack<ProductionFrame> productionFrames;
     protected ButtonModel skipAll;
     protected boolean invisible;

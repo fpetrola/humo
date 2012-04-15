@@ -36,7 +36,7 @@ public class ParserListenerMultiplexer implements ParserListener
 	this.parserListeners= parserListener;
     }
 
-    private ProductionFrame getCurrentFrame()
+    public ProductionFrame getCurrentFrame()
     {
 	return productionFrames.peek();
     }
@@ -72,7 +72,7 @@ public class ParserListenerMultiplexer implements ParserListener
 	for (ParserListener parserListener : parserListeners)
 	    parserListener.afterProductionFound(sourcecode, first, current, last, currentChar, name, value);
 
-	ProductionFrame frame= new ProductionFrame(name.toString(), value, HumoTester.createAndSetupDocument(value));
+	ProductionFrame frame= new ProductionFrame(name.toString(), value);
 	productionFrames.push(frame);
     }
 

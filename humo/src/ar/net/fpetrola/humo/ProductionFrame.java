@@ -1,5 +1,8 @@
 package ar.net.fpetrola.humo;
 
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
 public class ProductionFrame
@@ -16,11 +19,6 @@ public class ProductionFrame
 	return document;
     }
 
-    public void setDocument(StyledDocument styleDocument)
-    {
-	this.document= styleDocument;
-    }
-
     public String getName()
     {
 	return name;
@@ -35,14 +33,43 @@ public class ProductionFrame
     {
 	this.name= aName;
 	this.production= production;
-	document= HumoTester.createAndSetupDocument(production);
-    }
+	document= TextViewHelper.createAndSetupDocument(production);
+	document.addDocumentListener(new DocumentListener()
+	{
+	    public void removeUpdate(DocumentEvent e)
+	    {
+		if (document.getProperty("auto") == null)
+		{
+		    try
+		    {
+			ProductionFrame.this.production.replace(e.getOffset(), e.getOffset() + e.getLength(), "");
+		    }
+		    catch (Exception e1)
+		    {
+			e1.printStackTrace();
+		    }
+		}
+	    }
 
-    public ProductionFrame(String aName, StringBuilder production, StyledDocument document)
-    {
-	this.name= aName;
-	this.production= production;
-	this.document= document;
+	    public void insertUpdate(DocumentEvent e)
+	    {
+		if (document.getProperty("auto") == null)
+		{
+		    try
+		    {
+			ProductionFrame.this.production.replace(0, ProductionFrame.this.production.length(), e.getDocument().getText(0, e.getDocument().getLength()));
+		    }
+		    catch (Exception e1)
+		    {
+			e1.printStackTrace();
+		    }
+		}
+	    }
+
+	    public void changedUpdate(DocumentEvent e)
+	    {
+	    }
+	});
     }
 
     public int getCurrent()
