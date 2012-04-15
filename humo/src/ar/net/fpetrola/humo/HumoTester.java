@@ -10,16 +10,13 @@ package ar.net.fpetrola.humo;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Scanner;
-import java.util.Stack;
 
-import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -49,9 +46,12 @@ import javax.swing.tree.DefaultTreeModel;
 
 public class HumoTester
 {
+    public static final String CURSOR_STYLE= "Cursor";
+    public static final String PRODUCTION_FOUND_STYLE= "production-found";
     public static final String DEFAULT_STYLE= "default";
     public static final String FETCH_STYLE= "fetch";
     public static final String CURLY_STYLE= "curly";
+    public static final String PRODUCTION_BEFORE_REPLACEMENT_STYLE= "production-before-replacement";
 
     public static void main(String[] args) throws Exception
     {
@@ -307,11 +307,15 @@ public class HumoTester
     public static StyledDocument createStyleDocument()
     {
 	StyleContext styleContext= new StyleContext();
+	Color grey= new Color(0.95f, 0.95f, 0.95f);
+
+	Color orange= new Color(Integer.parseInt("008EFF", 16));
 	createStyle(styleContext, DEFAULT_STYLE, Color.black, "monospaced", Color.white, 11, null);
-	createStyle(styleContext, "Cursor", new Color(0.8f, 0, 0), "monospaced", Color.white, 11, null);
+	createStyle(styleContext, CURSOR_STYLE, new Color(0.8f, 0, 0), "monospaced", grey, 11, null);
 	createStyle(styleContext, CURLY_STYLE, Color.BLACK, "monospaced", Color.WHITE, 11, true);
-	createStyle(styleContext, FETCH_STYLE, new Color(0, 0.5f, 0), "monospaced", new Color(0.95f, 0.95f, 0.95f), 11, null);
-	createStyle(styleContext, "production-matching", Color.BLUE, "monospaced", Color.WHITE, 11, true);
+	createStyle(styleContext, FETCH_STYLE, new Color(0, 0.5f, 0), "monospaced", grey, 11, null);
+	createStyle(styleContext, PRODUCTION_FOUND_STYLE, Color.BLUE, "monospaced", grey, 11, true);
+	createStyle(styleContext, PRODUCTION_BEFORE_REPLACEMENT_STYLE, orange, "monospaced", grey, 11, true);
 	return new DefaultStyledDocument(styleContext);
     }
 

@@ -64,6 +64,7 @@ public class DebuggingParserListener extends DefaultParserListener implements Pa
 	    stacktraceTree= new JTree();
 
 	stacktraceTree.setModel(new DefaultTreeModel(usedProductionsStackRoot));
+	currentFrame= null;
     }
 
     public void setCurrentFrame(ProductionFrame productionFrame)

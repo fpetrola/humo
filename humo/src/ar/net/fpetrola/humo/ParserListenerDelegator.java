@@ -177,6 +177,11 @@ public class ParserListenerDelegator extends DefaultParserListener implements Pa
 		if (isVisible())
 		    stepper.pause();
 	    }
+	    public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder production)
+	    {
+		if (isVisible())
+		    stepper.pause();
+	    }
 	});
 	stepper.continueExecution();
     }
