@@ -12,7 +12,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -22,7 +21,6 @@ import java.util.Scanner;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -39,18 +37,15 @@ import javax.swing.JTree;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
-
-import com.digitprop.tonic.TonicLookAndFeel;
 
 public class HumoTester
 {
     public static void main(String[] args) throws Exception
     {
-	UIManager.setLookAndFeel(new TonicLookAndFeel());
+//	UIManager.setLookAndFeel(new TonicLookAndFeel());
 
 	if (args.length == 0)
 	    args= new String[] { "prueba+de+objetos2.humo" };
