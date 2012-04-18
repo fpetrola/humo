@@ -9,6 +9,9 @@
 package ar.net.fpetrola.humo;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,14 +19,17 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Scanner;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
@@ -31,15 +37,21 @@ import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
+
+import com.digitprop.tonic.TonicLookAndFeel;
 
 public class HumoTester
 {
     public static void main(String[] args) throws Exception
     {
+	UIManager.setLookAndFeel(new TonicLookAndFeel());
+
 	if (args.length == 0)
 	    args= new String[] { "prueba+de+objetos2.humo" };
 
@@ -63,7 +75,7 @@ public class HumoTester
 	JTextField filenameTextField= new JTextField(aFilename);
 	JSpinner skipSizeSpinner= new JSpinner(new SpinnerNumberModel(50, 0, 100000, 1000));
 	JCheckBox skipSmall= new JCheckBox("skip productions smaller than:");
-	JCheckBox skipAll= new JCheckBox("skip all");
+	JCheckBox skipAll= new JCheckBox("skip all  ");
 
 	DebuggerParserListener debugListener= new DebuggerParserListener(skipSmall.getModel(), skipSizeSpinner.getModel(), skipAll.getModel());
 	CallStackParserListener callStackParserListener= new CallStackParserListener(debugListener);
@@ -131,7 +143,7 @@ public class HumoTester
 
 	JPanel mainPanel= new JPanel(new BorderLayout());
 
-	JToolBar toolBar= createToolbar(highlighterParserListener, debugListener, parser, stacktraceTree, textField, skipSmall, skipSizeSpinner, skipAll);
+	JToolBar toolBar= createToolbar(highlighterParserListener, debugListener, parser, stacktraceTree, textField, skipSmall, skipSizeSpinner, skipAll, textPane);
 	mainPanel.add(toolBar, BorderLayout.PAGE_START);
 	mainPanel.add(verticalSplitPane, BorderLayout.CENTER);
 
@@ -140,20 +152,26 @@ public class HumoTester
 	jframe.setVisible(true);
     }
 
-    private static JToolBar createToolbar(final HighlighterParserListener highlighterParserListener, final DebuggerParserListener debugListener, final ListenedParser parser, JTree stacktraceTree, final JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner, JCheckBox skipAll)
+    private static JToolBar createToolbar(final HighlighterParserListener highlighterParserListener, final DebuggerParserListener debugListener, final ListenedParser parser, JTree stacktraceTree, final JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner, JCheckBox skipAll, final JTextPane textPane)
     {
 	JToolBar toolBar= new JToolBar("debugger actions");
-	JButton pauseButton= new JButton("next replacement");
-	pauseButton.addActionListener(new ActionListener()
+	toolBar.setPreferredSize(new Dimension(1200, 40));
+
+	toolBar.add(new JSeparator(SwingConstants.VERTICAL));
+
+	JButton nextReplacementButton= new JButton("next replacement", new ImageIcon(HumoTester.class.getResource("/images/runtocomp.gif")));
+	nextReplacementButton.addActionListener(new ActionListener()
 	{
 	    public void actionPerformed(ActionEvent e)
 	    {
 		debugListener.runToNextReplacement();
 	    }
 	});
+	addButtonToToolbar(toolBar, nextReplacementButton);
 
-	toolBar.add(pauseButton);
-	JButton stepButton= new JButton("step over");
+	toolBar.add(new JSeparator(SwingConstants.VERTICAL));
+
+	JButton stepButton= new JButton("step over", new ImageIcon(HumoTester.class.getResource("/images/stepover.gif")));
 	stepButton.addActionListener(new ThreadSafeActionListener(new ActionListener()
 	{
 	    public void actionPerformed(ActionEvent e)
@@ -161,9 +179,10 @@ public class HumoTester
 		debugListener.stepOver();
 	    }
 	}));
-	toolBar.add(stepButton);
 
-	JButton miniStepButton= new JButton("step into");
+	addButtonToToolbar(toolBar, stepButton);
+
+	JButton miniStepButton= new JButton("step into", new ImageIcon(HumoTester.class.getResource("/images/stepinto.gif")));
 	miniStepButton.addActionListener(new ThreadSafeActionListener(new ActionListener()
 	{
 	    public void actionPerformed(ActionEvent e)
@@ -171,9 +190,9 @@ public class HumoTester
 		debugListener.stepInto();
 	    }
 	}));
-	toolBar.add(miniStepButton);
+	addButtonToToolbar(toolBar, miniStepButton);
 
-	JButton stepoutButton= new JButton("stepout");
+	JButton stepoutButton= new JButton("step out", new ImageIcon(HumoTester.class.getResource("/images/stepreturn.gif")));
 	stepoutButton.addActionListener(new ThreadSafeActionListener(new ActionListener()
 	{
 	    public void actionPerformed(ActionEvent e)
@@ -181,9 +200,21 @@ public class HumoTester
 		debugListener.stepOut();
 	    }
 	}));
-	toolBar.add(stepoutButton);
+	addButtonToToolbar(toolBar, stepoutButton);
 
-	JButton continueButton= new JButton("continue");
+	JButton runToSelectionButton= new JButton("run to selection", new ImageIcon(HumoTester.class.getResource("/images/stepintosp.gif")));
+	runToSelectionButton.addActionListener(new ThreadSafeActionListener(new ActionListener()
+	{
+	    public void actionPerformed(ActionEvent e)
+	    {
+		final int start= textPane.getDocument().getLength() - textPane.getSelectionStart();
+		final int end= textPane.getDocument().getLength() - textPane.getSelectionEnd();
+		debugListener.runToExpression(start, end);
+	    }
+	}));
+	addButtonToToolbar(toolBar, runToSelectionButton);
+
+	JButton continueButton= new JButton("continue", new ImageIcon(HumoTester.class.getResource("/images/resume.gif")));
 	continueButton.addActionListener(new ThreadSafeActionListener(new ActionListener()
 	{
 	    public void actionPerformed(ActionEvent e)
@@ -191,9 +222,21 @@ public class HumoTester
 		debugListener.continueExecution();
 	    }
 	}));
-	toolBar.add(continueButton);
+	addButtonToToolbar(toolBar, continueButton);
 
-	JButton loadButton= new JButton("load source file");
+	JButton pauseButton= new JButton("pause", new ImageIcon(HumoTester.class.getResource("/images/threads_obj.gif")));
+	pauseButton.addActionListener(new ThreadSafeActionListener(new ActionListener()
+	{
+	    public void actionPerformed(ActionEvent e)
+	    {
+		debugListener.stepInto();
+	    }
+	}));
+	addButtonToToolbar(toolBar, pauseButton);
+
+	toolBar.add(new JSeparator(SwingConstants.VERTICAL));
+
+	JButton loadButton= new JButton("load source file", new ImageIcon(HumoTester.class.getResource("/images/schema_variable.gif")));
 	loadButton.addActionListener(new ThreadSafeActionListener(new ActionListener()
 	{
 	    public void actionPerformed(ActionEvent e)
@@ -202,23 +245,13 @@ public class HumoTester
 		{
 		    public void run()
 		    {
-			final JDialog openFileDialog= new JDialog();
-			openFileDialog.setSize(600, 100);
-			openFileDialog.setModal(true);
-			openFileDialog.getContentPane().setLayout(new GridBagLayout());
-			openFileDialog.add(textField);
-			JButton load= new JButton("load");
-			openFileDialog.add(load);
-			load.addActionListener(new ActionListener()
+			String str= (String) JOptionPane.showInputDialog(null, "Enter file name: ", "Open a new source code", JOptionPane.QUESTION_MESSAGE, null, null, textField.getText());
+			if (str != null)
 			{
-			    public void actionPerformed(ActionEvent e)
-			    {
-				debugListener.continueExecution();
-				openFileDialog.setVisible(false);
-			    }
-			});
+			    textField.setText(str);
+			    debugListener.continueExecution();
+			}
 
-			openFileDialog.setVisible(true);
 			parser.setDisabled(true);
 		    }
 		});
@@ -240,7 +273,9 @@ public class HumoTester
 	    }
 	});
 
-	toolBar.add(loadButton);
+	addButtonToToolbar(toolBar, loadButton);
+
+	toolBar.add(new JSeparator(SwingConstants.VERTICAL));
 
 	skipSmall.setSelected(true);
 	skipSmall.addActionListener(new ThreadSafeActionListener(new ActionListener()
@@ -257,6 +292,12 @@ public class HumoTester
 	return toolBar;
     }
 
+    private static Component addButtonToToolbar(JToolBar toolBar, JButton aButton)
+    {
+	Font font= new Font("Verdana", Font.PLAIN, 12);
+	aButton.setFont(font);
+	return toolBar.add(aButton);
+    }
     public static void addPopupMenu(final JTextPane textPane, final DebuggerParserListener debugDelegator)
     {
 	final JPopupMenu menu= new JPopupMenu();

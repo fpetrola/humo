@@ -11,9 +11,12 @@ package ar.net.fpetrola.humo;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 
 public class ProductionsParserListener extends DefaultParserListener implements ParserListener
@@ -40,8 +43,17 @@ public class ProductionsParserListener extends DefaultParserListener implements 
     {
 	nodes= new HashMap<CharSequence, DefaultMutableTreeNode>();
 	this.root= new DefaultMutableTreeNode("Productions of: " + filename);
+
 	if (createComponents)
+	{
 	    productionsTree= new JTree(root);
+	    DefaultTreeCellRenderer renderer= new DefaultTreeCellRenderer();
+	    Icon customOpenIcon= new ImageIcon(HumoTester.class.getResource("/images/scalarvar.gif"));
+	    Icon customClosedIcon= new ImageIcon(HumoTester.class.getResource("/images/genericvariable.gif"));
+	    renderer.setOpenIcon(customOpenIcon);
+	    renderer.setClosedIcon(customClosedIcon);
+	    productionsTree.setCellRenderer(renderer);
+	}
 
 	productionsTree.setModel(new DefaultTreeModel(root));
     }

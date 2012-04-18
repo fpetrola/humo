@@ -28,6 +28,7 @@ public class ParserListenerMultiplexer implements ParserListener
     public void init(String filename, StringBuilder sourcecode, boolean createComponents)
     {
 	ProductionFrame rootFrame= new ProductionFrame(filename, sourcecode);
+	productionFrames.clear();
 	productionFrames.push(rootFrame);
     }
 

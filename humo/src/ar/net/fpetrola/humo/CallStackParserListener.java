@@ -2,8 +2,11 @@ package ar.net.fpetrola.humo;
 
 import java.util.Stack;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 
 public class CallStackParserListener extends DefaultParserListener implements ParserListener
@@ -61,7 +64,15 @@ public class CallStackParserListener extends DefaultParserListener implements Pa
 	usedProductionsStackRoot= new StacktraceTreeNode("Call stack of: " + filename, currentFrame);
 	usedProductionsStack.push(usedProductionsStackRoot);
 	if (createComponents)
+	{
 	    stacktraceTree= new JTree();
+	    DefaultTreeCellRenderer renderer= new DefaultTreeCellRenderer();
+	    Icon customOpenIcon= new ImageIcon(HumoTester.class.getResource("/images/stckframe.gif"));
+	    Icon customClosedIcon= new ImageIcon(HumoTester.class.getResource("/images/stckframe.gif"));
+	    renderer.setOpenIcon(customOpenIcon);
+	    renderer.setClosedIcon(customClosedIcon);
+	    stacktraceTree.setCellRenderer(renderer);
+	}
 
 	stacktraceTree.setModel(new DefaultTreeModel(usedProductionsStackRoot));
 	currentFrame= null;

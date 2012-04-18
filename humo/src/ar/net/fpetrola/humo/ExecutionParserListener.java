@@ -10,9 +10,12 @@ package ar.net.fpetrola.humo;
 
 import java.util.Stack;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 
 public class ExecutionParserListener extends DefaultParserListener implements ParserListener
@@ -56,6 +59,13 @@ public class ExecutionParserListener extends DefaultParserListener implements Pa
 	if (createComponents)
 	{
 	    executionTree= new JTree();
+	    DefaultTreeCellRenderer renderer= new DefaultTreeCellRenderer();
+	    Icon customOpenIcon= new ImageIcon(HumoTester.class.getResource("/images/ebrkpnt_green.gif"));
+	    Icon customClosedIcon= new ImageIcon(HumoTester.class.getResource("/images/ebrkpnt.gif"));
+	    renderer.setOpenIcon(customOpenIcon);
+	    renderer.setClosedIcon(customClosedIcon);
+	    executionTree.setCellRenderer(renderer);
+
 	}
 
 	executionTree.setModel(new DefaultTreeModel(root));
