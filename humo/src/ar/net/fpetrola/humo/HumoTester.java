@@ -247,9 +247,8 @@ public class HumoTester
 			{
 			    textField.setText(str);
 			    debugListener.continueExecution();
+			    parser.setDisabled(true);
 			}
-
-			parser.setDisabled(true);
 		    }
 		});
 	    }
