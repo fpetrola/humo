@@ -37,15 +37,18 @@ import javax.swing.JTree;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
+
+import com.digitprop.tonic.TonicLookAndFeel;
 
 public class HumoTester
 {
     public static void main(String[] args) throws Exception
     {
-//	UIManager.setLookAndFeel(new TonicLookAndFeel());
+	UIManager.setLookAndFeel(new TonicLookAndFeel());
 
 	if (args.length == 0)
 	    args= new String[] { "prueba+de+objetos2.humo" };
@@ -150,7 +153,6 @@ public class HumoTester
     private static JToolBar createToolbar(final HighlighterParserListener highlighterParserListener, final DebuggerParserListener debugListener, final ListenedParser parser, JTree stacktraceTree, final JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner, JCheckBox skipAll, final JTextPane textPane)
     {
 	JToolBar toolBar= new JToolBar("debugger actions");
-	toolBar.setPreferredSize(new Dimension(1200, 40));
 
 	toolBar.add(new JSeparator(SwingConstants.VERTICAL));
 

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project humo">
+	<target name="create_run_jar">
+		<jar destfile="demo/humo.jar" filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Main-Class" value="ar.net.fpetrola.humo.HumoTester" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="bin" />
+			<zipfileset excludes="META-INF/*.SF" src="lib/toniclf_slim.jar" />
+		</jar>
+	</target>
+</project>
