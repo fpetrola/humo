@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="humo">
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
+        <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+        <dependent-module archiveName="dragome-guia-swing-0.96-beta2.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/dragome-guia-swing/dragome-guia-swing">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="dragome-js-commons-0.96-beta2.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/dragome-js-commons/dragome-js-commons">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="dragome-core-0.96-beta2.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/dragome-core/dragome-core">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="dragome-guia-0.96-beta2.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/dragome-guia/dragome-guia">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="dragome-web-0.96-beta2.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/dragome-web/dragome-web">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="dragome-form-bindings-0.96-beta2.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/dragome-form-bindings/dragome-form-bindings">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="dragome-method-logger-0.96-beta2.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/dragome-method-logger/dragome-method-logger">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="context-root" value="humo"/>
+        <property name="java-output-path" value="/humo/src/main/webapp/WEB-INF/classes"/>
+    </wb-module>
+</project-modules>
