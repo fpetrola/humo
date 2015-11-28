@@ -2,95 +2,71 @@ package ar.net.fpetrola.humo;
 
 import java.util.Stack;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
-
-import ar.net.fpetrola.humo.gui.DefaultTreeNode;
-import ar.net.fpetrola.humo.gui.TreeNode;
 
 public class CallStackParserListener extends DefaultParserListener implements ParserListener
 {
-	protected TreeNode stacktraceTree;
-	protected Stack<TreeNode> usedProductionsStack;
-	protected StacktraceTreeNode usedProductionsStackRoot;
-	private final DebuggerParserListener debugDelegator;
+    protected HumoTreeModel stacktraceTreeModel;
+    protected Stack<DefaultMutableTreeNode> usedProductionsStack;
+    protected StacktraceTreeNode usedProductionsStackRoot;
+    private final DebuggerParserListener debugDelegator;
 
-	public CallStackParserListener(DebuggerParserListener debugDelegator)
+    public CallStackParserListener(DebuggerParserListener debugDelegator)
+    {
+	this.debugDelegator= debugDelegator;
+	debugDelegator.setVisibilityListener(new VisibilityListener()
 	{
-		this.debugDelegator= debugDelegator;
-		debugDelegator.setVisibilityListener(new VisibilityListener()
-		{
-			public void invisibleChanged(boolean invisible)
-			{
-				((DefaultTreeModel) stacktraceTree.getModel()).reload();
-			}
-		});
-	}
+	    public void invisibleChanged(boolean invisible)
+	    {
+		stacktraceTreeModel.reload();
+	    }
+	});
+    }
 
-	public void beforeProductionParsing(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder value)
+    public void beforeProductionParsing(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder value)
+    {
+	DefaultMutableTreeNode node= new StacktraceTreeNode(name, currentFrame);
+	usedProductionsStack.push(node);
+	usedProductionsStackRoot.add(usedProductionsStack.peek());
+	if (!debugDelegator.isTotallyInvisible())
+	    stacktraceTreeModel.reload();
+    }
+
+    public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition, StringBuilder name)
+    {
+	if (usedProductionsStack.size() > 1)
 	{
-		TreeNode node= new StacktraceTreeNode(name, currentFrame);
-		usedProductionsStack.push(node);
-		usedProductionsStackRoot.add(usedProductionsStack.peek());
-		if (!debugDelegator.isTotallyInvisible())
-			((DefaultTreeModel) stacktraceTree.getModel()).reload();
+	    usedProductionsStackRoot.remove(usedProductionsStack.peek());
+	    usedProductionsStack.pop();
+	    if (!debugDelegator.isTotallyInvisible())
+		stacktraceTreeModel.reload();
 	}
+    }
 
-	public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition, StringBuilder name)
-	{
-		if (usedProductionsStack.size() > 1)
-		{
-			usedProductionsStackRoot.remove(usedProductionsStack.peek());
-			usedProductionsStack.pop();
-			if (!debugDelegator.isTotallyInvisible())
-				((DefaultTreeModel) stacktraceTree.getModel()).reload();
-		}
-	}
+    public DefaultMutableTreeNode getUsedProductionsStackRoot()
+    {
+	return usedProductionsStackRoot;
+    }
 
-	public TreeNode getUsedProductionsStackRoot()
-	{
-		return usedProductionsStackRoot;
-	}
+    public void init(String filename, StringBuilder sourcecode)
+    {
+	usedProductionsStack= new Stack<DefaultMutableTreeNode>();
+	usedProductionsStackRoot= new StacktraceTreeNode("Call stack of: " + filename, currentFrame);
+	usedProductionsStack.push(usedProductionsStackRoot);
+	stacktraceTreeModel= new HumoTreeModel(usedProductionsStackRoot);
+	currentFrame= null;
+    }
 
-	public TreeNode getUsedProductionsTree()
-	{
-		return stacktraceTree;
-	}
+    public void setCurrentFrame(ProductionFrame productionFrame)
+    {
+	if (currentFrame == null)
+	    usedProductionsStackRoot.setFrame(productionFrame);
 
-	public void init(String filename, StringBuilder sourcecode, boolean createComponents)
-	{
-		usedProductionsStack= new Stack<TreeNode>();
-		usedProductionsStackRoot= new StacktraceTreeNode("Call stack of: " + filename, currentFrame);
-		usedProductionsStack.push(usedProductionsStackRoot);
-		if (createComponents)
-		{
-			stacktraceTree= new DefaultTreeNode();
-			DefaultTreeCellRenderer renderer= new DefaultTreeCellRenderer();
-			Icon customOpenIcon= new ImageIcon(HumoTester.class.getResource("/images/stckframe.gif"));
-			Icon customClosedIcon= new ImageIcon(HumoTester.class.getResource("/images/stckframe.gif"));
-			renderer.setOpenIcon(customOpenIcon);
-			renderer.setClosedIcon(customClosedIcon);
-			stacktraceTree.setCellRenderer(renderer);
-		}
+	super.setCurrentFrame(productionFrame);
+    }
 
-		stacktraceTree.setModel(new DefaultTreeModel(usedProductionsStackRoot));
-		currentFrame= null;
-	}
-
-	public void setCurrentFrame(ProductionFrame productionFrame)
-	{
-		if (currentFrame == null)
-			usedProductionsStackRoot.setFrame(productionFrame);
-
-		super.setCurrentFrame(productionFrame);
-	}
-
-	public void setUsedProductionsStackRoot(StacktraceTreeNode usedProductionsStackRoot)
-	{
-		this.usedProductionsStackRoot= usedProductionsStackRoot;
-	}
+    public void setUsedProductionsStackRoot(StacktraceTreeNode usedProductionsStackRoot)
+    {
+	this.usedProductionsStackRoot= usedProductionsStackRoot;
+    }
 }

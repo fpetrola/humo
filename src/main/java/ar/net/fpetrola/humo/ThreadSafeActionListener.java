@@ -7,21 +7,21 @@ import javax.swing.SwingUtilities;
 
 public class ThreadSafeActionListener implements ActionListener
 {
-	private ActionListener actionListener;
+    private ActionListener actionListener;
 
-	public ThreadSafeActionListener(ActionListener actionListener)
-	{
-		this.actionListener= actionListener;
-	}
+    public ThreadSafeActionListener(ActionListener actionListener)
+    {
+	this.actionListener= actionListener;
+    }
 
-	public void actionPerformed(final ActionEvent e)
+    public void actionPerformed(final ActionEvent e)
+    {
+	SwingUtilities.invokeLater(new Runnable()
 	{
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				actionListener.actionPerformed(e);
-			}
-		});
-	}
+	    public void run()
+	    {
+		actionListener.actionPerformed(e);
+	    }
+	});
+    }
 }

@@ -10,106 +10,81 @@ package ar.net.fpetrola.humo;
 
 import java.util.Stack;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JTree;
-import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 
 public class ExecutionParserListener extends DefaultParserListener implements ParserListener
 {
-	protected Stack<DefaultMutableTreeNode> nodes;
-	protected DefaultMutableTreeNode root;
-	protected JTree executionTree;
-	private final DebuggerParserListener debugDelegator;
+    private Stack<DefaultMutableTreeNode> nodes;
+    private DefaultMutableTreeNode root;
+    private HumoTreeModel treeModel;
 
-	public JTree getExecutionTree()
+    public TreeNode getRoot()
+    {
+	return root;
+    }
+
+    public void setRoot(DefaultMutableTreeNode root)
+    {
+	this.root= root;
+    }
+
+    public ExecutionParserListener(DebuggerParserListener debugDelegator)
+    {
+	debugDelegator.setVisibilityListener(new VisibilityListener()
 	{
-		return executionTree;
-	}
-
-	public DefaultMutableTreeNode getRoot()
-	{
-		return root;
-	}
-
-	public void setRoot(DefaultMutableTreeNode root)
-	{
-		this.root= root;
-	}
-
-	public ExecutionParserListener(DebuggerParserListener debugDelegator)
-	{
-		this.debugDelegator= debugDelegator;
-
-		debugDelegator.setVisibilityListener(new VisibilityListener()
-		{
-			public void invisibleChanged(boolean invisible)
-			{
-				updateTreeUI();
-			}
-		});
-	}
-
-	public void init(String filename, boolean createComponents, CharSequence sourcecode)
-	{
-		nodes= new Stack<DefaultMutableTreeNode>();
-		root= new DefaultMutableTreeNode("Execution of: " + filename);
-		nodes.push(root);
-		if (createComponents)
-		{
-			executionTree= new JTree();
-			DefaultTreeCellRenderer renderer= new DefaultTreeCellRenderer();
-			Icon customOpenIcon= new ImageIcon(HumoTester.class.getResource("/images/ebrkpnt_green.gif"));
-			Icon customClosedIcon= new ImageIcon(HumoTester.class.getResource("/images/ebrkpnt.gif"));
-			renderer.setOpenIcon(customOpenIcon);
-			renderer.setClosedIcon(customClosedIcon);
-			executionTree.setCellRenderer(renderer);
-
-		}
-
-		executionTree.setModel(new DefaultTreeModel(root));
-	}
-
-	public void beforeParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar)
-	{
-		DefaultMutableTreeNode peek= nodes.peek();
-		DefaultMutableTreeNode item= new DefaultMutableTreeNode(sourcecode.subSequence(first, last - 1));
-		nodes.push(item);
-		peek.add(item);
+	    public void invisibleChanged(boolean invisible)
+	    {
 		updateTreeUI();
-	}
+	    }
+	});
+    }
 
-	public void afterParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar, CharSequence name, CharSequence value)
-	{
-		nodes.peek().add(new DefaultMutableTreeNode(value));
-		DefaultMutableTreeNode child= nodes.pop();
-		child.setUserObject(name);
-		nodes.peek().add(child);
-		updateTreeUI();
+    public void init(String filename, CharSequence sourcecode)
+    {
+	nodes= new Stack<DefaultMutableTreeNode>();
+	root= new DefaultMutableTreeNode("Execution of: " + filename);
+	nodes.push(root);
+	setTreeModel(new HumoTreeModel(root));
+    }
 
-		// nodes.push(new DefaultMutableTreeNode(name));
-		// if (!debugDelegator.isTotallyInvisible())
-		// ((DefaultTreeModel) executionTree.getModel()).reload();
-		// nodes.peek().add(new DefaultMutableTreeNode(value));
-		// DefaultMutableTreeNode child= nodes.pop();
-		// child.setUserObject(name);
-		// nodes.peek().add(child);
-		// if (!debugDelegator.isTotallyInvisible())
-		// ((DefaultTreeModel) executionTree.getModel()).reload();
-	}
+    public void beforeParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar)
+    {
+	DefaultMutableTreeNode peek= nodes.peek();
+	DefaultMutableTreeNode item= new DefaultMutableTreeNode(sourcecode.subSequence(first, last - 1));
+	nodes.push(item);
+	peek.add(item);
+	updateTreeUI();
+    }
 
-	private void updateTreeUI()
-	{
-		if (!debugDelegator.isTotallyInvisible())
-			SwingUtilities.invokeLater(new Runnable()
-			{
-				public void run()
-				{
-					executionTree.updateUI();
-				}
-			});
-	}
+    public void afterParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar, CharSequence name, CharSequence value)
+    {
+	nodes.peek().add(new DefaultMutableTreeNode(value));
+	DefaultMutableTreeNode child= nodes.pop();
+	child.setUserObject(name);
+	nodes.peek().add(child);
+	updateTreeUI();
+    }
+
+    private void updateTreeUI()
+    {
+	//	if (!debugDelegator.isTotallyInvisible())
+	//	    SwingUtilities.invokeLater(new Runnable()
+	//	    {
+	//		public void run()
+	//		{
+	//		    executionTree.updateUI();
+	//		}
+	//	    });
+    }
+
+    public HumoTreeModel getTreeModel()
+    {
+	return treeModel;
+    }
+
+    public void setTreeModel(HumoTreeModel treeModel)
+    {
+	this.treeModel= treeModel;
+    }
 }

@@ -1,23 +1,23 @@
 package ar.net.fpetrola.humo;
 
-import ar.net.fpetrola.humo.gui.DefaultTreeNode;
+import javax.swing.tree.DefaultMutableTreeNode;
 
-public class StacktraceTreeNode extends DefaultTreeNode
+public class StacktraceTreeNode extends DefaultMutableTreeNode
 {
-	private ProductionFrame frame;
+    private ProductionFrame frame;
 
-	public ProductionFrame getFrame()
-	{
-		return frame;
-	}
+    public ProductionFrame getFrame()
+    {
+	return frame;
+    }
 
-	public void setFrame(ProductionFrame frame)
-	{
-		this.frame= frame;
-	}
+    public void setFrame(ProductionFrame frame)
+    {
+	this.frame= frame;
+    }
 
-	public StacktraceTreeNode(CharSequence key, ProductionFrame frame)
-	{
-		this.frame= frame;
-	}
+    public StacktraceTreeNode(CharSequence key, ProductionFrame frame)
+    {
+	this.frame= frame;
+    }
 }

@@ -13,41 +13,41 @@ import java.util.TreeMap;
 @SuppressWarnings("serial")
 public class LoggingMap extends TreeMap<CharSequence, CharSequence>
 {
-	public LoggingMap()
-	{
-	}
+    public LoggingMap()
+    {
+    }
 
-	public synchronized CharSequence get(Object key)
-	{
-		CharSequence o= super.get(new ClearCharSequence((CharSequence) key));
-		log("uso: " + key + " = " + o + "");
-		return o;
-	}
+    public synchronized CharSequence get(Object key)
+    {
+	CharSequence o= super.get(new ClearCharSequence((CharSequence) key));
+	log("uso: " + key + " = " + o + "");
+	return o;
+    }
 
-	public synchronized CharSequence remove(Object key)
-	{
-		CharSequence o= super.remove(key);
-		log((String) key + "{}");
-		return o;
-	}
+    public synchronized CharSequence remove(Object key)
+    {
+	CharSequence o= super.remove(key);
+	log((String) key + "{}");
+	return o;
+    }
 
-	public synchronized CharSequence put(CharSequence key, CharSequence value)
-	{
-		log((String) key);
-		log("{");
-		log("\t" + (String) value);
-		log("}\n");
-		CharSequence o= super.put(new ClearCharSequence(ClearCharSequence.clearText(new StringBuilder(key).toString())), new ClearCharSequence(value));
-		return o;
-	}
+    public synchronized CharSequence put(CharSequence key, CharSequence value)
+    {
+	log((String) key);
+	log("{");
+	log("\t" + (String) value);
+	log("}\n");
+	CharSequence o= super.put(new ClearCharSequence(ClearCharSequence.clearText(new StringBuilder(key).toString())), new ClearCharSequence(value));
+	return o;
+    }
 
-	public void log(String t)
-	{
-		// StringBuffer sb = new StringBuffer();
-		// for (int primero = 0; primero < parser.getDepth(); primero++)
-		// sb.append("\t");
+    public void log(String t)
+    {
+	// StringBuffer sb = new StringBuffer();
+	// for (int primero = 0; primero < parser.getDepth(); primero++)
+	// sb.append("\t");
 
-		// System.out.println(sb.toString() + t);
-	}
+	// System.out.println(sb.toString() + t);
+    }
 
 }
