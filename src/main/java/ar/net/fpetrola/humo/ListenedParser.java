@@ -42,6 +42,7 @@ public class ListenedParser extends HumoParser
 	}
 	catch (Exception e)
 	{
+	    e.printStackTrace();
 	    return 0;
 	}
 

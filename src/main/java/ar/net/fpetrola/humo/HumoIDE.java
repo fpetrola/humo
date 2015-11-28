@@ -38,11 +38,12 @@ public class HumoIDE extends GuiaVisualActivity
 	controls= new Controls();
 
 	DebuggerParserListener debugListener= new DebuggerParserListener(controls);
-	CallStackParserListener callStackParserListener= new CallStackParserListener(debugListener);
+//	CallStackParserListener callStackParserListener= new CallStackParserListener(debugListener);
 	highlighterParserListener= new HighlighterParserListener(debugListener);
-	ProductionsParserListener productionsParserListener= new ProductionsParserListener(debugListener);
-	ExecutionParserListener treeParserListener= new ExecutionParserListener(debugListener);
-	ParserListenerMultiplexer parserListenerMultiplexer= new ParserListenerMultiplexer(productionsParserListener, treeParserListener, highlighterParserListener, callStackParserListener, debugListener);
+//	ProductionsParserListener productionsParserListener= new ProductionsParserListener(debugListener);
+//	ExecutionParserListener treeParserListener= new ExecutionParserListener(debugListener);
+//	ParserListenerMultiplexer parserListenerMultiplexer= new ParserListenerMultiplexer(productionsParserListener, treeParserListener, highlighterParserListener, callStackParserListener, debugListener);
+	ParserListenerMultiplexer parserListenerMultiplexer= new ParserListenerMultiplexer(highlighterParserListener, debugListener);
 	debugListener.setProductionFrames(parserListenerMultiplexer.getProductionFrames());
 	ListenedParser parser= new ListenedParser(parserListenerMultiplexer);
 	debugListener.stepInto();
@@ -61,9 +62,9 @@ public class HumoIDE extends GuiaVisualActivity
 		parser.setDisabled(false);
 
 		parserListenerMultiplexer.init(file, sourcecode);
-		treeParserListener.init(file, sourcecode);
-		productionsParserListener.init(file);
-		callStackParserListener.init(file, sourcecode);
+//		treeParserListener.init(file, sourcecode);
+//		productionsParserListener.init(file);
+//		callStackParserListener.init(file, sourcecode);
 
 		highlighterParserListener.setTextDocument(parserListenerMultiplexer.getCurrentFrame().getDocument());
 		debugListener.stepInto();

@@ -7,11 +7,11 @@ import java.util.Enumeration;
 public class DefaultMutableTreeNode implements Cloneable, MutableTreeNode, Serializable
 {
 
-    public DefaultMutableTreeNode(CharSequence subSequence)
+    public DefaultMutableTreeNode(Object userObject)
     {
 	// TODO Auto-generated constructor stub
     }
-
+    
     @Override
     public TreeNode getChildAt(int childIndex)
     {

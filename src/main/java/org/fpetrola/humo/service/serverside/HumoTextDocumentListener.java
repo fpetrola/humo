@@ -28,7 +28,13 @@ final class HumoTextDocumentListener implements HumoTextDocument
 
     public void setSpan(String style, int start, int end)
     {
-	styledDocument.setCharacterAttributes(start, end - start, styledDocument.getStyle(style), false);
+	SwingUtilities.invokeLater(new Runnable()
+	{
+	    public void run()
+	    {
+		styledDocument.setCharacterAttributes(start, end - start, styledDocument.getStyle(style), false);
+	    }
+	});
     }
 
     public void setCaretPosition(int caretPosition)
@@ -37,7 +43,8 @@ final class HumoTextDocumentListener implements HumoTextDocument
 	{
 	    public void run()
 	    {
-		jTextPane.setCaretPosition(caretPosition);
+		if (caretPosition < jTextPane.getDocument().getLength())
+		    jTextPane.setCaretPosition(caretPosition);
 	    }
 	});
     }
