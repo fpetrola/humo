@@ -1,13 +1,17 @@
 package ar.net.fpetrola.humo;
 
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 
-public class HumoTreeModel extends DefaultTreeModel
+public class HumoTreeModel 
 {
     public HumoTreeModel(TreeNode root)
     {
-	super(root);
+    }
+
+    public void reload()
+    {
+	// TODO Auto-generated method stub
+	
     }
 
 }

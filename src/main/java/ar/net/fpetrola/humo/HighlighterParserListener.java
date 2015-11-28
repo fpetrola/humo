@@ -1,41 +1,24 @@
 package ar.net.fpetrola.humo;
 
 import javax.swing.SwingUtilities;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Style;
-import javax.swing.text.StyledDocument;
 
 public class HighlighterParserListener extends DefaultParserListener implements ParserListener
 {
     public void updateCaretPosition(final ProductionFrame aFrame)
     {
-	try
-	{
-	    SwingUtilities.invokeLater(new Runnable()
-	    {
-		public void run()
-		{
-		    StyledDocument styledDocument= (StyledDocument) aFrame.getDocument();
-		    int length= styledDocument.getLength();
-		    int caretPosition= aFrame.getFirst();
-		    if (length > caretPosition + 300)
-			caretPosition+= 300;
-		    else
-			caretPosition= length - 1;
+	HumoTextDocument styledDocument= (HumoTextDocument) aFrame.getDocument();
+	int length= styledDocument.getLength();
+	int caretPosition= aFrame.getFirst();
+	if (length > caretPosition + 300)
+	    caretPosition+= 300;
+	else
+	    caretPosition= length - 1;
 
-		    if (caretPosition >= 0 && caretPosition < textDocument.getLength())
-			textDocument.setCaretPosition(caretPosition);
-		}
-	    });
-	    Thread.sleep(1);
-	}
-	catch (Exception e)
-	{
-	    e.printStackTrace();
-	}
+	if (caretPosition >= 0 && caretPosition < textDocument.getLength())
+	    textDocument.setCaretPosition(caretPosition);
     }
 
-    private HumoStyledDocument textDocument;
+    private HumoTextDocument textDocument;
     private final DebuggerParserListener debugDelegator;
 
     public HighlighterParserListener(DebuggerParserListener debugDelegator)
@@ -60,30 +43,14 @@ public class HighlighterParserListener extends DefaultParserListener implements 
     {
 	if (debugDelegator.isVisible())
 	{
+	    HumoTextDocument doc= (HumoTextDocument) currentFrame.getDocument();
+	    doc.setAuto(true);
+	    doc.delete(startPosition, endPosition);
+	    doc.insert(startPosition, value.toString());
 
-	    try
-	    {
-		SwingUtilities.invokeAndWait(new Runnable()
-		{
-		    public void run()
-		    {
-			HumoStyledDocument doc= (HumoStyledDocument) currentFrame.getDocument();
-			doc.putProperty("auto", true);
-			int length= endPosition - startPosition;
-			doc.remove(startPosition, length);
-			doc.insertString(startPosition, value.toString(), null);
-
-			Style style= doc.getStyle("Cursor");
-			doc.setCharacterAttributes(current, value.length(), style, false);
-			highlightCurlys(sourcecode, startPosition, doc, value.length());
-			doc.putProperty("auto", null);
-		    }
-		});
-	    }
-	    catch (Exception e)
-	    {
-		e.printStackTrace();
-	    }
+	    doc.setSpan(TextViewHelper.CURSOR_STYLE, current, current + value.length());
+	    highlightCurlys(sourcecode, startPosition, doc, value.length());
+	    doc.setAuto(false);
 	}
     }
 
@@ -94,19 +61,19 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 	    showProductionMatch(currentFrame.getProduction(), currentFrame.getCurrent(), currentFrame.getLast(), TextViewHelper.PRODUCTION_BEFORE_REPLACEMENT_STYLE);
     }
 
-    private void highlightCurlys(StringBuilder sourcecode, int startPosition, HumoStyledDocument doc, int length)
+    private void highlightCurlys(StringBuilder sourcecode, int startPosition, HumoTextDocument doc, int length)
     {
 	if (debugDelegator.isVisible())
 	{
-	    Style defaultstyle= doc.getStyle("default");
-	    Style curlyStyle= doc.getStyle(TextViewHelper.CURLY_STYLE);
+	    String defaultstyle= TextViewHelper.DEFAULT_STYLE;
+	    String curlyStyle= TextViewHelper.CURLY_STYLE;
 	    for (int i= startPosition; i < startPosition + length; i++)
 	    {
-		Style usingStyle;
+		String usingStyle;
 		if (sourcecode.charAt(i) == '{' || sourcecode.charAt(i) == '}')
 		{
 		    usingStyle= curlyStyle;
-		    doc.setCharacterAttributes(i, 1, usingStyle, false);
+		    doc.setSpan(usingStyle, i, i + 1);
 		}
 		else
 		    usingStyle= defaultstyle;
@@ -122,10 +89,9 @@ public class HighlighterParserListener extends DefaultParserListener implements 
     {
 	if (debugDelegator.isVisible())
 	{
-	    HumoStyledDocument doc= (HumoStyledDocument) currentFrame.getDocument();
+	    HumoTextDocument doc= (HumoTextDocument) currentFrame.getDocument();
 	    highlightCurlys(sourcecode, current, doc, last - current);
-	    Style style= doc.getStyle(styleId);
-	    doc.setCharacterAttributes(current, last - current, style, false);
+	    doc.setSpan(styleId, current, last);
 	}
     }
 
@@ -135,11 +101,10 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 	{
 	    if (debugDelegator.isVisible())
 	    {
-		HumoStyledDocument doc= (HumoStyledDocument) currentFrame.getDocument();
+		HumoTextDocument doc= (HumoTextDocument) currentFrame.getDocument();
 		// highlightCurlys(sourcecode, lastCurrent, doc, current -
 		// lastCurrent);
-		Style style= doc.getStyle(TextViewHelper.FETCH_STYLE);
-		doc.setCharacterAttributes(current, last - current, style, false);
+		doc.setSpan(TextViewHelper.FETCH_STYLE, current, last);
 	    }
 	}
 	catch (Exception e)
@@ -167,32 +132,14 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 	    {
 		if (getTextDocument() != productionFrame.getDocument())
 		{
-		    SwingUtilities.invokeLater(new Runnable()
-		    {
-			public void run()
-			{
-			    setTextDocument(productionFrame.getDocument());
-			}
-		    });
+		    setTextDocument(productionFrame.getDocument());
 		}
-		SwingUtilities.invokeLater(new Runnable()
-		{
-		    public void run()
-		    {
-			updateCaretPosition(productionFrame);
-		    }
-		});
+		updateCaretPosition(productionFrame);
 	    }
 	    else
 	    {
 		if (debugDelegator.isInvisible())
-		    SwingUtilities.invokeLater(new Runnable()
-		    {
-			public void run()
-			{
-			    setTextDocument(new HumoTextDocument());
-			}
-		    });
+		    setTextDocument(HumoTextDocumentFactory.createTextDocument());
 	    }
 	}
 	catch (Exception e)
@@ -206,12 +153,12 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 	this.currentFrame= productionFrame;
     }
 
-    public HumoStyledDocument getTextDocument()
+    public HumoTextDocument getTextDocument()
     {
 	return textDocument;
     }
 
-    public void setTextDocument(HumoStyledDocument textDocument)
+    public void setTextDocument(HumoTextDocument textDocument)
     {
 	this.textDocument= textDocument;
     }

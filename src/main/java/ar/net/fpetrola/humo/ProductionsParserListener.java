@@ -11,10 +11,7 @@ package ar.net.fpetrola.humo;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JTree;
-import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 
 public class ProductionsParserListener extends DefaultParserListener implements ParserListener
 {

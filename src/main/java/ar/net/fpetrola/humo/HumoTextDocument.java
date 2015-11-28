@@ -1,86 +1,35 @@
 package ar.net.fpetrola.humo;
 
-import javax.swing.event.DocumentListener;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.Style;
-import javax.swing.text.StyleContext;
+import java.util.EventListener;
+import java.util.List;
 
-public class HumoTextDocument implements HumoStyledDocument
+public interface HumoTextDocument extends EventListener
 {
-    private HumoStyledDocument delegate;
-    private StyleContext styleContext;
+    int getCaretPosition();
 
-    public HumoTextDocument()
-    {
-    }
+    int getSelectionStart();
 
-    public HumoTextDocument(StyleContext styleContext)
-    {
-	this.styleContext= styleContext;
-    }
+    int getSelectionEnd();
 
-    public int getSelectionStart()
-    {
-	return getDelegate().getSelectionStart();
-    }
+    void setCaretPosition(int caretPosition);
 
-    public int getSelectionEnd()
-    {
-	return getDelegate().getSelectionEnd();
-    }
+    void setSpan(String style, int start, int end);
 
-    public void setCaretPosition(int caretPosition)
-    {
-	getDelegate().setCaretPosition(caretPosition);
-    }
+    void clear();
 
-    public int getLength()
-    {
-	return getDelegate().getLength();
-    }
+    void insert(int start, String string);
 
-    public void putProperty(String name, Object value)
-    {
-	getDelegate().putProperty(name, value);
-    }
+    int getLength();
 
-    public void remove(int startPosition, int length2)
-    {
-	getDelegate().remove(startPosition, length2);
-    }
+    void delete(int startPosition, int endPosition);
 
-    public void insertString(int startPosition, String string, AttributeSet object)
-    {
-	getDelegate().insertString(startPosition, string, object);
-    }
+    void setAuto(boolean auto);
 
-    public Style getStyle(String string)
-    {
-	return getDelegate().getStyle(string);
-    }
+    boolean isAuto();
 
-    public void setCharacterAttributes(int current, int length2, Style style, boolean b)
-    {
-	getDelegate().setCharacterAttributes(current, length2, style, b);
-    }
+    String getText();
 
-    public void addDocumentListener(DocumentListener documentListener)
-    {
-	getDelegate().addDocumentListener(documentListener);
-    }
+    List<StyledSpan> getSpans();
 
-    public Object getProperty(String name)
-    {
-	return getDelegate().getProperty(name);
-    }
-
-    public HumoStyledDocument getDelegate()
-    {
-	return delegate;
-    }
-
-    public void setDelegate(HumoStyledDocument delegate)
-    {
-	this.delegate = delegate;
-    }
+    void setSpans(List<StyledSpan> spans);
 }

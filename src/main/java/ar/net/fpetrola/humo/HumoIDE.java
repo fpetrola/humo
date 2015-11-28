@@ -19,7 +19,9 @@ import com.dragome.guia.components.interfaces.VisualComponent;
 import com.dragome.guia.components.interfaces.VisualPanel;
 import com.dragome.guia.components.interfaces.VisualTextField;
 import com.dragome.templates.interfaces.Template;
+import com.dragome.web.annotations.PageAlias;
 
+@PageAlias(alias= "humo-ide")
 public class HumoIDE extends GuiaVisualActivity
 {
     private Controls controls;
@@ -87,7 +89,7 @@ public class HumoIDE extends GuiaVisualActivity
 	}
     }
 
-    private void createToolbar(final HighlighterParserListener highlighterParserListener, final DebuggerParserListener debugListener, final ListenedParser parser, final VisualTextField<String> textField, final HumoStyledDocument textPane)
+    private void createToolbar(final HighlighterParserListener highlighterParserListener, final DebuggerParserListener debugListener, final ListenedParser parser, final VisualTextField<String> textField, final HumoTextDocument textPane)
     {
 	ComponentBuilder componentBuilder= new ComponentBuilder(getMainPanel());
 	componentBuilder.bindTemplate("nextReplacementButton").as(VisualButton.class).onClick(() -> debugListener.runToNextReplacement()).build();
@@ -149,7 +151,7 @@ public class HumoIDE extends GuiaVisualActivity
 	return spinnerPanel;
     }
 
-    public void addPopupMenu(final HumoStyledDocument textPane, final DebuggerParserListener debugDelegator, ComponentBuilder componentBuilder)
+    public void addPopupMenu(final HumoTextDocument textPane, final DebuggerParserListener debugDelegator, ComponentBuilder componentBuilder)
     {
 	VisualComponent popup= componentBuilder.bindTemplate("popup").as(VisualPanel.class).buildChildren(b -> {
 	    b.bindTemplate("run-to").as(VisualButton.class).onClick(() -> {

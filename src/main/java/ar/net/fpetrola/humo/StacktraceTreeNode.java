@@ -18,6 +18,13 @@ public class StacktraceTreeNode extends DefaultMutableTreeNode
 
     public StacktraceTreeNode(CharSequence key, ProductionFrame frame)
     {
+	super(key);
 	this.frame= frame;
+    }
+
+    public void add(DefaultMutableTreeNode peek)
+    {
+	// TODO Auto-generated method stub
+	
     }
 }

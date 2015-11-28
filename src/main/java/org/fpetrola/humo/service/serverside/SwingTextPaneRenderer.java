@@ -1,16 +1,22 @@
 package org.fpetrola.humo.service.serverside;
 
+import java.awt.Color;
+
 import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import javax.swing.text.StyledDocument;
 
 import com.dragome.guia.components.interfaces.VisualTextField;
+import com.dragome.guia.events.listeners.interfaces.ListenerMultiplexer;
 import com.dragome.model.interfaces.ValueChangeEvent;
 import com.dragome.model.interfaces.ValueChangeHandler;
 import com.dragome.render.canvas.CanvasImpl;
@@ -19,14 +25,19 @@ import com.dragome.render.html.renderers.Mergeable;
 import com.dragome.render.interfaces.ComponentRenderer;
 import com.dragome.render.serverside.swing.SwingUtils;
 
-import ar.net.fpetrola.humo.HumoStyledDocument;
 import ar.net.fpetrola.humo.HumoTextDocument;
+import ar.net.fpetrola.humo.HumoTextDocumentImpl;
+import ar.net.fpetrola.humo.StyledSpan;
+import ar.net.fpetrola.humo.TextViewHelper;
 import ar.net.fpetrola.humo.VisualTextPaneImpl;
+import ar.net.fpetrola.humo.delegates.DelegateMultiplexer;
 
-public class SwingTextPaneRenderer implements ComponentRenderer<Object, VisualTextPaneImpl<HumoTextDocument>>
+public class SwingTextPaneRenderer implements ComponentRenderer<Object, VisualTextPaneImpl<HumoTextDocumentImpl>>
 {
-    public Canvas<Object> render(final VisualTextPaneImpl<HumoTextDocument> visualTextField)
+    public Canvas<Object> render(final VisualTextPaneImpl<HumoTextDocumentImpl> visualTextField)
     {
+	StyleContext styleContext= createStyleDocument();
+
 	CanvasImpl<Object> canvasImpl= new CanvasImpl<Object>();
 
 	canvasImpl.setContent(new Mergeable<JTextPane>()
@@ -46,88 +57,27 @@ public class SwingTextPaneRenderer implements ComponentRenderer<Object, VisualTe
 
 		jTextPane.setText(visualTextField.getValue() + "");
 
-		visualTextField.addValueChangeHandler(new ValueChangeHandler<HumoTextDocument>()
+		visualTextField.addValueChangeHandler(new ValueChangeHandler<HumoTextDocumentImpl>()
 		{
-		    public void onValueChange(ValueChangeEvent<HumoTextDocument> event)
+		    public void onValueChange(ValueChangeEvent<HumoTextDocumentImpl> event)
 		    {
 			try
 			{
-			    DefaultStyledDocument document= new DefaultStyledDocument();
-			    jTextPane.setDocument(document);
-			    
-			    event.getValue().setDelegate(new HumoStyledDocument()
+			    HumoTextDocument humoTextDocument= event.getValue();
+			    StyledDocument styledDocument= createStyledDocumentFromHumoTextDocument(humoTextDocument);
+
+			    DelegateMultiplexer<HumoTextDocument> delegateMultiplexer= (DelegateMultiplexer<HumoTextDocument>) humoTextDocument;
+			    delegateMultiplexer.addDelegate(new HumoTextDocumentListener(styledDocument, jTextPane));
+
+			    SwingUtilities.invokeLater(new Runnable()
 			    {
-				
-				public void setCharacterAttributes(int current, int length2, Style style, boolean b)
+				public void run()
 				{
-				    document.setCharacterAttributes(current, length2, style, b);
-				}
-
-				public void setCaretPosition(int caretPosition)
-				{
-				    jTextPane.setCaretPosition(caretPosition);
-				}
-
-				public void remove(int startPosition, int length2)
-				{
-				    try
-				    {
-					document.remove(startPosition, length2);
-				    }
-				    catch (BadLocationException e)
-				    {
-					e.printStackTrace();
-				    }
-				}
-
-				public void putProperty(String name, Object value)
-				{
-				    document.putProperty(name, value);
-				}
-
-				public void insertString(int startPosition, String string, AttributeSet object)
-				{
-				    try
-				    {
-					document.insertString(startPosition, string, object);
-				    }
-				    catch (BadLocationException e)
-				    {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				    }
-				}
-
-				public Style getStyle(String string)
-				{
-				    return document.getStyle(string);
-				}
-
-				public int getSelectionStart()
-				{
-				    return jTextPane.getSelectionStart();
-				}
-
-				public int getSelectionEnd()
-				{
-				    return jTextPane.getSelectionEnd();
-				}
-
-				public Object getProperty(String name)
-				{
-				    return document.getProperty(name);
-				}
-
-				public int getLength()
-				{
-				    return document.getLength();
-				}
-
-				public void addDocumentListener(DocumentListener documentListener)
-				{
-				    document.addDocumentListener(documentListener);
+				    jTextPane.setDocument(styledDocument);
 				}
 			    });
+
+
 			    //			    if (!jTextPane.getText().equals(text))
 			    //				jTextPane.setText(text);
 			}
@@ -136,10 +86,62 @@ public class SwingTextPaneRenderer implements ComponentRenderer<Object, VisualTe
 			    throw new RuntimeException(e);
 			}
 		    }
+
+		    private StyledDocument createStyledDocumentFromHumoTextDocument(HumoTextDocument humoTextDocument)
+		    {
+			try
+			{
+			    DefaultStyledDocument result= new DefaultStyledDocument(createStyleDocument());
+			    result.insertString(0, humoTextDocument.getText(), null);
+
+			    for (StyledSpan styledSpan : humoTextDocument.getSpans())
+			    {
+				int length= styledSpan.getEnd() - styledSpan.getStart();
+				result.setCharacterAttributes(styledSpan.getStart(), length, getStyle(styledSpan.getStyle()), false);
+			    }
+			    
+			    return result;
+			}
+			catch (BadLocationException e)
+			{
+			    throw new RuntimeException(e);
+			}
+		    }
+
+		    private AttributeSet getStyle(String style)
+		    {
+			return styleContext.getStyle(style);
+		    }
 		});
 
 	    }
 	});
 	return canvasImpl;
+    }
+
+    public StyleContext createStyleDocument()
+    {
+	StyleContext styleContext= new StyleContext();
+	Color grey= new Color(0.95f, 0.95f, 0.95f);
+
+	Color orange= new Color(Integer.parseInt("008EFF", 16));
+	createStyle(styleContext, TextViewHelper.DEFAULT_STYLE, Color.black, "monospaced", Color.white, 11, null);
+	createStyle(styleContext, TextViewHelper.CURSOR_STYLE, new Color(0.8f, 0, 0), "monospaced", grey, 11, null);
+	createStyle(styleContext, TextViewHelper.CURLY_STYLE, Color.BLACK, "monospaced", Color.WHITE, 11, true);
+	createStyle(styleContext, TextViewHelper.FETCH_STYLE, new Color(0, 0.5f, 0), "monospaced", grey, 11, null);
+	createStyle(styleContext, TextViewHelper.PRODUCTION_FOUND_STYLE, Color.BLUE, "monospaced", grey, 11, true);
+	createStyle(styleContext, TextViewHelper.PRODUCTION_BEFORE_REPLACEMENT_STYLE, orange, "monospaced", grey, 11, true);
+	return styleContext;
+    }
+
+    public void createStyle(StyleContext sc, String aName, Color aForegroundColor, String aFontFamily, Color aBackgroundColor, int aFontSize, Boolean isBold)
+    {
+	Style cursorStyle= sc.addStyle(aName, null);
+	StyleConstants.setForeground(cursorStyle, aForegroundColor);
+	StyleConstants.setFontFamily(cursorStyle, aFontFamily);
+	StyleConstants.setBackground(cursorStyle, aBackgroundColor);
+	StyleConstants.setFontSize(cursorStyle, aFontSize);
+	if (isBold != null)
+	    StyleConstants.setBold(cursorStyle, isBold);
     }
 }
