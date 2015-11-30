@@ -4,8 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import com.dragome.commons.ExecutionHandler;
+
 public class DebuggerParserListener extends DefaultParserListener implements ParserListener
 {
+    private final class StepIntoParserListener extends DefaultParserListener
+    {
+	public void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
+	{
+	if (isVisible())
+	    stepper.pause();
+	}
+	public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder production)
+	{
+	if (isVisible())
+	    stepper.pause();
+	}
+    }
+
     protected class VisibilityListenerDispatcher implements VisibilityListener
     {
 	protected List<VisibilityListener> visibilityListeners= new ArrayList<VisibilityListener>();
@@ -19,7 +35,7 @@ public class DebuggerParserListener extends DefaultParserListener implements Par
 
     protected ParserListener parserListenerDelegate;
     protected ProductionFrame nextVisibleFrame;
-    protected Stepper stepper= new Stepper();
+    protected Stepper stepper;
 
     public Stepper getStepper()
     {
@@ -66,9 +82,13 @@ public class DebuggerParserListener extends DefaultParserListener implements Par
 	this.nextVisibleFrame= nextVisibleFrame;
     }
 
-    public DebuggerParserListener(Controls controls)
+    public DebuggerParserListener(Controls controls, ExecutionHandler executionHandler)
     {
 	this.controls= controls;
+	this.stepper= new Stepper(executionHandler);
+	
+	this.setNextVisibleFrame(null);
+	this.setParserListenerDelegate(new StepIntoParserListener());	
     }
 
     private void setParserListenerDelegate(ParserListener parserListenerDelegate)
@@ -77,7 +97,7 @@ public class DebuggerParserListener extends DefaultParserListener implements Par
     }
 
     public void startProductionParsing(StringBuilder sourcecode, int first, int current, int last)
-    {
+    { 
 	parserListenerDelegate.startProductionParsing(sourcecode, first, current, last);
     }
 
@@ -191,20 +211,7 @@ public class DebuggerParserListener extends DefaultParserListener implements Par
     public void stepInto()
     {
 	this.setNextVisibleFrame(null);
-	this.setParserListenerDelegate(new DefaultParserListener()
-	{
-	    public void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
-	    {
-		if (isVisible())
-		    stepper.pause();
-	    }
-
-	    public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder production)
-	    {
-		if (isVisible())
-		    stepper.pause();
-	    }
-	});
+	this.setParserListenerDelegate(new StepIntoParserListener());
 	stepper.continueExecution();
     }
 

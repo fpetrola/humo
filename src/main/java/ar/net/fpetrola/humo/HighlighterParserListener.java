@@ -1,7 +1,5 @@
 package ar.net.fpetrola.humo;
 
-import javax.swing.SwingUtilities;
-
 public class HighlighterParserListener extends DefaultParserListener implements ParserListener
 {
     public void updateCaretPosition(final ProductionFrame aFrame)

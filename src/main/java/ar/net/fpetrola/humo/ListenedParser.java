@@ -8,6 +8,8 @@
 
 package ar.net.fpetrola.humo;
 
+import java.util.HashMap;
+
 public class ListenedParser extends HumoParser
 {
     protected ParserListener parserListener;
@@ -27,7 +29,7 @@ public class ListenedParser extends HumoParser
     {
 	super(parserListener);
 	this.parserListener= parserListener;
-	productions= new LoggingMap();
+	productions= new HashMap<>();
     }
 
     public int parse(StringBuilder sourcecode, int first)
@@ -49,10 +51,10 @@ public class ListenedParser extends HumoParser
 	return result;
     }
 
-    public LoggingMap getLoggingMap()
-    {
-	return (LoggingMap) productions;
-    }
+//    public LoggingMap getLoggingMap()
+//    {
+//	return (LoggingMap) productions;
+//    }
 
     public void init()
     {

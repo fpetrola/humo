@@ -37,6 +37,7 @@ public class HumoTextDocumentImpl implements HumoTextDocument
     public void setSpan(String style, int start, int end)
     {
 	getSpans().add(new StyledSpan(style, start, end));
+	System.out.println("spans1:" + spans.size());
     }
 
     public void clear()
@@ -66,7 +67,7 @@ public class HumoTextDocumentImpl implements HumoTextDocument
 
     public boolean isAuto()
     {
-        return auto;
+	return auto;
     }
 
     public String getText()
@@ -81,6 +82,6 @@ public class HumoTextDocumentImpl implements HumoTextDocument
 
     public void setSpans(List<StyledSpan> spans)
     {
-	this.spans = spans;
+	this.spans= spans;
     }
 }

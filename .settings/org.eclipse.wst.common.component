@@ -7,7 +7,6 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/resources"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/tests"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/swing-src"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/java"/>
         <property name="context-root" value="humo"/>
         <property name="java-output-path" value="/humo/src/main/webapp/WEB-INF/classes"/>
     </wb-module>

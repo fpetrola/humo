@@ -8,11 +8,13 @@
 
 package ar.net.fpetrola.humo;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Stack;
 
 public class ParserListenerMultiplexer implements ParserListener
 {
-    private ParserListener[] parserListeners;
+    private List<ParserListener> parserListeners;
     protected Stack<ProductionFrame> productionFrames= new Stack<ProductionFrame>();
 
     public Stack<ProductionFrame> getProductionFrames()
@@ -34,7 +36,7 @@ public class ParserListenerMultiplexer implements ParserListener
 
     public ParserListenerMultiplexer(ParserListener... parserListener)
     {
-	this.parserListeners= parserListener;
+	this.parserListeners= Arrays.asList(parserListener);
     }
 
     public ProductionFrame getCurrentFrame()

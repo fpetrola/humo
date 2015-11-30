@@ -10,6 +10,7 @@ package ar.net.fpetrola.humo;
 
 import org.fpetrola.humo.service.ExamplesProviderService;
 
+import com.dragome.commons.ExecutionHandler;
 import com.dragome.forms.bindings.builders.ComponentBuilder;
 import com.dragome.guia.GuiaVisualActivity;
 import com.dragome.guia.components.VisualPanelImpl;
@@ -18,6 +19,8 @@ import com.dragome.guia.components.interfaces.VisualButton;
 import com.dragome.guia.components.interfaces.VisualComponent;
 import com.dragome.guia.components.interfaces.VisualPanel;
 import com.dragome.guia.components.interfaces.VisualTextField;
+import com.dragome.render.html.renderers.HTMLComponentRenderer;
+import com.dragome.services.ServiceLocator;
 import com.dragome.templates.interfaces.Template;
 import com.dragome.web.annotations.PageAlias;
 
@@ -31,66 +34,76 @@ public class HumoIDE extends GuiaVisualActivity
 
     private void createEnvironment(String aFilename)
     {
-	ExamplesProviderService examplesProviderService= serviceFactory.createSyncService(ExamplesProviderService.class);
+	HTMLComponentRenderer.addRenderFor(VisualTextPaneImpl.class, HTMLVisualTextPaneRenderer.class);
+	
+	final ExecutionHandler executionHandler= ServiceLocator.getInstance().getConfigurator().getExecutionHandler();
+
+	ExamplesProviderService examplesProviderService= serviceFactory.createFixedSyncService(ExamplesProviderService.class);
 
 	VisualTextField<String> filenameTextField= new VisualTextFieldImpl<>("filenameTextField", aFilename);
 	spinner= new Spinner(50, 0, 100000, 1000);
 	controls= new Controls();
 
-	DebuggerParserListener debugListener= new DebuggerParserListener(controls);
-//	CallStackParserListener callStackParserListener= new CallStackParserListener(debugListener);
+	DebuggerParserListener debugListener= new DebuggerParserListener(controls, executionHandler);
+	//	CallStackParserListener callStackParserListener= new CallStackParserListener(debugListener);
 	highlighterParserListener= new HighlighterParserListener(debugListener);
-//	ProductionsParserListener productionsParserListener= new ProductionsParserListener(debugListener);
-//	ExecutionParserListener treeParserListener= new ExecutionParserListener(debugListener);
-//	ParserListenerMultiplexer parserListenerMultiplexer= new ParserListenerMultiplexer(productionsParserListener, treeParserListener, highlighterParserListener, callStackParserListener, debugListener);
+	//	ProductionsParserListener productionsParserListener= new ProductionsParserListener(debugListener);
+	//	ExecutionParserListener treeParserListener= new ExecutionParserListener(debugListener);
+	//	ParserListenerMultiplexer parserListenerMultiplexer= new ParserListenerMultiplexer(productionsParserListener, treeParserListener, highlighterParserListener, callStackParserListener, debugListener);
 	ParserListenerMultiplexer parserListenerMultiplexer= new ParserListenerMultiplexer(highlighterParserListener, debugListener);
 	debugListener.setProductionFrames(parserListenerMultiplexer.getProductionFrames());
 	ListenedParser parser= new ListenedParser(parserListenerMultiplexer);
-	debugListener.stepInto();
 
-	parser.getLoggingMap().log("begin parsing");
-	boolean initialized= false;
+//	parser.getLoggingMap().log("begin parsing");
 
-	while (true)
-	{
-	    try
+	executionHandler.getExecutor().execute(() -> {
+
+//	    debugListener.stepInto();
+	    boolean initialized= false;
+	    while (true)
 	    {
-		String file= filenameTextField.getValue();
-		String example= examplesProviderService.getExample(file);
-		StringBuilder sourcecode= new StringBuilder(example);
-
-		parser.setDisabled(false);
-
-		parserListenerMultiplexer.init(file, sourcecode);
-//		treeParserListener.init(file, sourcecode);
-//		productionsParserListener.init(file);
-//		callStackParserListener.init(file, sourcecode);
-
-		highlighterParserListener.setTextDocument(parserListenerMultiplexer.getCurrentFrame().getDocument());
-		debugListener.stepInto();
-
-		//				((DefaultTreeModel) treeParserListener.getExecutionTree().getModel()).reload();
-		//				((DefaultTreeModel) callStackParserListener.getUsedProductionsTree().getModel()).reload();
-		//				((DefaultTreeModel) productionsParserListener.getProductionsTree().getModel()).reload();
-
-		if (!initialized)
+		try
 		{
-		    createToolbar(highlighterParserListener, debugListener, parser, filenameTextField, parserListenerMultiplexer.getCurrentFrame().getDocument());
-		    initialized= true;
+		    String file= filenameTextField.getValue();
+		    String example= examplesProviderService.getExample(file);
+		    StringBuilder sourcecode= new StringBuilder(example);
+
+		    parser.setDisabled(false);
+
+		    parserListenerMultiplexer.init(file, sourcecode);
+		    //		treeParserListener.init(file, sourcecode);
+		    //		productionsParserListener.init(file);
+		    //		callStackParserListener.init(file, sourcecode);
+
+		    highlighterParserListener.setTextDocument(parserListenerMultiplexer.getCurrentFrame().getDocument());
+		    
+//		    debugListener.stepInto();
+
+		    //				((DefaultTreeModel) treeParserListener.getExecutionTree().getModel()).reload();
+		    //				((DefaultTreeModel) callStackParserListener.getUsedProductionsTree().getModel()).reload();
+		    //				((DefaultTreeModel) productionsParserListener.getProductionsTree().getModel()).reload();
+
+		    if (!initialized)
+		    {
+			createToolbar(executionHandler, highlighterParserListener, debugListener, parser, filenameTextField, parserListenerMultiplexer.getCurrentFrame().getDocument());
+			initialized= true;
+		    }
+		    parser.init();
+		    parser.parse(sourcecode, 0);
+//		    parser.getLoggingMap().log("end parsing");
+		    debugListener.getStepper().pause();
 		}
-		parser.init();
-		parser.parse(sourcecode, 0);
-		parser.getLoggingMap().log("end parsing");
-		debugListener.getStepper().pause();
+		catch (Exception e)
+		{
+		    e.printStackTrace();
+		}
+		
+		System.out.println("new cycle");
 	    }
-	    catch (Exception e)
-	    {
-		e.printStackTrace();
-	    }
-	}
+	});
     }
 
-    private void createToolbar(final HighlighterParserListener highlighterParserListener, final DebuggerParserListener debugListener, final ListenedParser parser, final VisualTextField<String> textField, final HumoTextDocument textPane)
+    private void createToolbar(ExecutionHandler executionHandler, final HighlighterParserListener highlighterParserListener, final DebuggerParserListener debugListener, final ListenedParser parser, final VisualTextField<String> textField, final HumoTextDocument textPane)
     {
 	ComponentBuilder componentBuilder= new ComponentBuilder(getMainPanel());
 	componentBuilder.bindTemplate("nextReplacementButton").as(VisualButton.class).onClick(() -> debugListener.runToNextReplacement()).build();

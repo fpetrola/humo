@@ -44,6 +44,13 @@
 			<version>0.96-beta2</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.dragome</groupId>
+			<artifactId>dragome-callback-evictor</artifactId>
+			<version>0.96-beta2</version>
+		</dependency>
+
+
 	</dependencies>
 
 

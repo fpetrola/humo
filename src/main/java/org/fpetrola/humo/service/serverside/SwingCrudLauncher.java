@@ -3,6 +3,8 @@ package org.fpetrola.humo.service.serverside;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import org.fpetrola.humo.HumoApplicationConfigurator;
+
 import com.dragome.guia.GuiaServiceLocator;
 import com.dragome.render.serverside.swing.SwingGuiaServiceFactory;
 import com.dragome.render.serverside.swing.SwingTemplateLoadingStrategy;
@@ -24,7 +26,7 @@ public class SwingCrudLauncher
 
 	public void run()
 	{
-	    
+		ServiceLocator.getInstance().setConfigurator(new HumoApplicationConfigurator());
 		ServiceLocator.getInstance().setReflectionService(new ServerReflectionServiceImpl());
 		GuiaServiceLocator.getInstance().setServiceFactory(new SwingGuiaServiceFactory());
 		ServiceLocator.getInstance().setLocalExecution(true);

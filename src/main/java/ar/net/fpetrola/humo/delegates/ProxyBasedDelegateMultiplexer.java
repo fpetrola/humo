@@ -38,6 +38,10 @@ public class ProxyBasedDelegateMultiplexer<T> implements InvocationHandler, Dele
 	{
 	    setMainDelegate((T) args[0]);
 	}
+	else if (method.getName().equals("getMainDelegate"))
+	{
+	    return getMainDelegate();
+	}
 	else
 	{
 	    collectionHandler.forAll(new ItemInvoker<T>()
@@ -74,6 +78,11 @@ public class ProxyBasedDelegateMultiplexer<T> implements InvocationHandler, Dele
     public void setMainDelegate(T aDelegate)
     {
 	mainDelegate= aDelegate;
+    }
+
+    public T getMainDelegate()
+    {
+        return mainDelegate;
     }
 
     public static <T> T createDelegateMultiplexer(Class<T> aType)

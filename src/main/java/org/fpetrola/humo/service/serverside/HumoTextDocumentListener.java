@@ -10,7 +10,7 @@ import javax.swing.text.StyledDocument;
 import ar.net.fpetrola.humo.HumoTextDocument;
 import ar.net.fpetrola.humo.StyledSpan;
 
-final class HumoTextDocumentListener implements HumoTextDocument
+public class HumoTextDocumentListener implements HumoTextDocument
 {
     private StyledDocument styledDocument;
     private JTextPane jTextPane;
@@ -43,8 +43,14 @@ final class HumoTextDocumentListener implements HumoTextDocument
 	{
 	    public void run()
 	    {
-		if (caretPosition < jTextPane.getDocument().getLength())
-		    jTextPane.setCaretPosition(caretPosition);
+		try
+		{
+		    if (caretPosition < jTextPane.getDocument().getLength())
+		        jTextPane.setCaretPosition(caretPosition);
+		}
+		catch (Exception e)
+		{
+		}
 	    }
 	});
     }
@@ -61,14 +67,20 @@ final class HumoTextDocumentListener implements HumoTextDocument
 
     public void insert(int start, String string)
     {
-	try
+	SwingUtilities.invokeLater(new Runnable()
 	{
-	    styledDocument.insertString(start, string, null);
-	}
-	catch (BadLocationException e)
-	{
-	    throw new RuntimeException(e);
-	}
+	    public void run()
+	    {
+		try
+		{
+		    styledDocument.insertString(start, string, null);
+		}
+		catch (BadLocationException e)
+		{
+		    throw new RuntimeException(e);
+		}
+	    }
+	});
     }
 
     public String getText()
@@ -110,25 +122,37 @@ final class HumoTextDocumentListener implements HumoTextDocument
 
     public void delete(int startPosition, int endPosition)
     {
-	try
+	SwingUtilities.invokeLater(new Runnable()
 	{
-	    styledDocument.remove(startPosition, endPosition - startPosition);
-	}
-	catch (BadLocationException e)
-	{
-	    throw new RuntimeException(e);
-	}
+	    public void run()
+	    {
+		try
+		{
+		    styledDocument.remove(startPosition, endPosition - startPosition);
+		}
+		catch (BadLocationException e)
+		{
+		    throw new RuntimeException(e);
+		}
+	    }
+	});
     }
 
     public void clear()
     {
-	try
+	SwingUtilities.invokeLater(new Runnable()
 	{
-	    styledDocument.remove(0, styledDocument.getLength());
-	}
-	catch (BadLocationException e)
-	{
-	    throw new RuntimeException(e);
-	}
+	    public void run()
+	    {
+		try
+		{
+		    styledDocument.remove(0, styledDocument.getLength());
+		}
+		catch (BadLocationException e)
+		{
+		    throw new RuntimeException(e);
+		}
+	    }
+	});
     }
 }
