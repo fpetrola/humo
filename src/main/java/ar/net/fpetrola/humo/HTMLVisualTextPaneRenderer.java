@@ -34,13 +34,18 @@ public class HTMLVisualTextPaneRenderer extends AbstractHTMLComponentRenderer<Vi
 			delegateMultiplexer.addDelegate(new HTMLHumoTextDocumentListener(delegateMultiplexer.getMainDelegate(), textFieldElement));
 
 			setElementInnerHTML(textFieldElement, value.getText());
+			
+//			if (aVisualTextPane.getValue() != null)
+//			{
+//			    String value= aVisualTextPane.getValue().getText();
+//			    textFieldElement.setAttribute("onchange", "EventDispatcher.setText(this.id, this.value);stopEvent(event);");
+//
+//			    setElementInnerHTML(textFieldElement, value);
+//			}
 		    }
 		});
 
-		String value= aVisualTextPane.getValue().getText();
-		textFieldElement.setAttribute("onchange", "EventDispatcher.setText(this.id, this.value);stopEvent(event);");
-
-		setElementInnerHTML(textFieldElement, value);
+		
 	    }
 	});
 

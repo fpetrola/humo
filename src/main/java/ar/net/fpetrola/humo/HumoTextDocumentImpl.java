@@ -36,8 +36,25 @@ public class HumoTextDocumentImpl implements HumoTextDocument
 
     public void setSpan(String style, int start, int end)
     {
-	getSpans().add(new StyledSpan(style, start, end));
-	System.out.println("spans1:" + spans.size());
+	boolean spanAdded= false;
+	for (StyledSpan styledSpan : spans)
+	{
+	    if (!spanAdded)
+		if (styledSpan.getStyle().equals(style))
+		    if (start >= styledSpan.getStart() && start <= styledSpan.getEnd())
+		    {
+			if (end > styledSpan.getEnd())
+			{
+			    styledSpan.setEnd(end);
+			    spanAdded= true;
+			}
+		    }
+	}
+
+	if (!spanAdded)
+	    getSpans().add(new StyledSpan(style, start, end));
+	
+//	System.out.println("spans1:" + spans.size());
     }
 
     public void clear()

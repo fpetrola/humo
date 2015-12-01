@@ -33,7 +33,7 @@ public class LoggingMap extends TreeMap<CharSequence, CharSequence>
 
     public synchronized CharSequence put(CharSequence key, CharSequence value)
     {
-	log((String) key);
+	log("put:" + (String) key);
 	log("{");
 	log("\t" + (String) value);
 	log("}\n");
@@ -43,6 +43,7 @@ public class LoggingMap extends TreeMap<CharSequence, CharSequence>
 
     public void log(String t)
     {
+//	System.out.println(t);
 	// StringBuffer sb = new StringBuffer();
 	// for (int primero = 0; primero < parser.getDepth(); primero++)
 	// sb.append("\t");

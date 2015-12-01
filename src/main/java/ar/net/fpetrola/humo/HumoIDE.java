@@ -75,7 +75,6 @@ public class HumoIDE extends GuiaVisualActivity
 		    //		productionsParserListener.init(file);
 		    //		callStackParserListener.init(file, sourcecode);
 
-		    highlighterParserListener.setTextDocument(parserListenerMultiplexer.getCurrentFrame().getDocument());
 		    
 //		    debugListener.stepInto();
 
@@ -88,6 +87,7 @@ public class HumoIDE extends GuiaVisualActivity
 			createToolbar(executionHandler, highlighterParserListener, debugListener, parser, filenameTextField, parserListenerMultiplexer.getCurrentFrame().getDocument());
 			initialized= true;
 		    }
+		    highlighterParserListener.setTextDocument(parserListenerMultiplexer.getCurrentFrame().getDocument());
 		    parser.init();
 		    parser.parse(sourcecode, 0);
 //		    parser.getLoggingMap().log("end parsing");

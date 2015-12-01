@@ -29,7 +29,7 @@ public class ListenedParser extends HumoParser
     {
 	super(parserListener);
 	this.parserListener= parserListener;
-	productions= new HashMap<>();
+	productions= new LoggingMap();
     }
 
     public int parse(StringBuilder sourcecode, int first)

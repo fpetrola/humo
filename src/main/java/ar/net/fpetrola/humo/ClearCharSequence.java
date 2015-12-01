@@ -73,4 +73,14 @@ public class ClearCharSequence implements CharSequence, Comparable<CharSequence>
 	}
 	return result;
     }
+    
+    public boolean equals(Object o)
+    {
+        return clearText(o.toString()).compareTo(clearText(toString())) == 0;
+    }
+    
+    public int hashCode()
+    {
+        return clearText(toString()).hashCode();
+    }
 }

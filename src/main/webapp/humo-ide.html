@@ -1,17 +1,49 @@
 <html>
 <head>
 <script type="text/javascript" src="dragome-resources/dragome-debug.js"></script>
+
+<style type="text/css">
+.Cursor {
+	color: orange;
+}
+
+.production-found {
+	color: blue;
+	font-weight: bold;
+}
+
+.default {
+	color: black;
+}
+
+.fetch {
+	color: green;
+	background-color: #EEE;
+}
+
+.curly {
+	color: black;
+}
+
+.production-before-replacement {
+	color: red;
+	font-weight: bold;
+}
+</style>
+
 </head>
 
 <body>
+<div style="position: fixed;">
 	<button data-template="nextReplacementButton">Next replacement</button>
 	<button data-template="stepButton">stepButton</button>
 	<button data-template="miniStepButton">miniStepButtont</button>
 	<button data-template="stepoutButton">stepoutButton</button>
 	<button data-template="continueButton">continueButton</button>
+</div>
 
 	<br>
-	<textarea data-template="textPane"></textarea>
+	<div data-template="textPane" style="font-family: courier"></div>
 </body>
 
 </html>
