@@ -41,24 +41,32 @@ public class HumoTextDocumentImpl implements HumoTextDocument
 	{
 	    if (!spanAdded)
 		if (styledSpan.getStyle().equals(style))
+		{
 		    if (start >= styledSpan.getStart() && start <= styledSpan.getEnd())
 		    {
-			if (end > styledSpan.getEnd())
+			if (end >= styledSpan.getEnd())
 			{
 			    styledSpan.setEnd(end);
 			    spanAdded= true;
 			}
 		    }
+		}
+		else if (styledSpan.getStart() == start && styledSpan.getEnd() == end)
+		{
+		    styledSpan.setStyle(style);
+		    spanAdded= true;
+		}
 	}
 
 	if (!spanAdded)
 	    getSpans().add(new StyledSpan(style, start, end));
-	
-//	System.out.println("spans1:" + spans.size());
+
+	//	System.out.println("spans1:" + spans.size());
     }
 
     public void clear()
     {
+	spans.clear();
 	text.delete(0, text.length());
     }
 

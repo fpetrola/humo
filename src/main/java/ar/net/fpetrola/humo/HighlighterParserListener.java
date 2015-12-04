@@ -61,22 +61,22 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 
     private void highlightCurlys(StringBuilder sourcecode, int startPosition, HumoTextDocument doc, int length)
     {
-	if (debugDelegator.isVisible())
-	{
-	    String defaultstyle= TextViewHelper.DEFAULT_STYLE;
-	    String curlyStyle= TextViewHelper.CURLY_STYLE;
-	    for (int i= startPosition; i < startPosition + length; i++)
-	    {
-		String usingStyle;
-		if (sourcecode.charAt(i) == '{' || sourcecode.charAt(i) == '}')
-		{
-		    usingStyle= curlyStyle;
-		    doc.setSpan(usingStyle, i, i + 1);
-		}
-		else
-		    usingStyle= defaultstyle;
-	    }
-	}
+//	if (debugDelegator.isVisible())
+//	{
+//	    String defaultstyle= TextViewHelper.DEFAULT_STYLE;
+//	    String curlyStyle= TextViewHelper.CURLY_STYLE;
+//	    for (int i= startPosition; i < startPosition + length; i++)
+//	    {
+//		String usingStyle;
+//		if (sourcecode.charAt(i) == '{' || sourcecode.charAt(i) == '}')
+//		{
+//		    usingStyle= curlyStyle;
+//		    doc.setSpan(usingStyle, i, i + 1);
+//		}
+//		else
+//		    usingStyle= defaultstyle;
+//	    }
+//	}
     }
 
     public void init(String filename, StringBuilder sourcecode, boolean createComponents)

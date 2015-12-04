@@ -40,6 +40,7 @@ public class HTMLHumoTextDocumentListener implements HumoTextDocument
 
     public void setSpan(String style, int start, int end)
     {
+//	updateWholeText();
     }
 
     public void clear()
@@ -54,18 +55,70 @@ public class HTMLHumoTextDocumentListener implements HumoTextDocument
 	if (string.length() > 0)
 	    for (StyledSpan styledSpan : spans)
 	    {
-		if (start >= styledSpan.getStart() && start < styledSpan.getEnd())
+		if (start <= styledSpan.getStart())
 		{
+		    int len= styledSpan.getEnd() - styledSpan.getStart();
 		    styledSpan.setStart(styledSpan.getStart() + string.length());
 		    styledSpan.setEnd(styledSpan.getEnd() + string.length());
 		}
-		else if (start <= styledSpan.getStart())
+		else if (start + string.length() <= styledSpan.getEnd())
 		{
-		    styledSpan.setStart(styledSpan.getStart() + string.length());
 		    styledSpan.setEnd(styledSpan.getEnd() + string.length());
 		}
 
+		//		else if (start <= styledSpan.getStart())
+		//		{
+		//		    styledSpan.setStart(styledSpan.getStart() + string.length());
+		//		    styledSpan.setEnd(styledSpan.getEnd() + string.length());
+		//		}
+
 	    }
+
+	updateWholeText();
+    }
+
+    public void delete(int startPosition, int endPosition)
+    {
+	List<StyledSpan> spans= humoTextDocument.getSpans();
+
+	for (StyledSpan styledSpan : spans)
+	{
+	    int delta= endPosition - startPosition;
+	    if (startPosition <= styledSpan.getStart())
+	    {
+		if (endPosition >= styledSpan.getEnd())
+		{
+		    styledSpan.setStyle("");
+		}
+		else
+		{
+		    styledSpan.setEnd(styledSpan.getEnd() - delta);
+		    if (endPosition <= styledSpan.getStart())
+		    {
+			styledSpan.setStart(styledSpan.getStart() - delta);
+		    }
+		    else
+		    {
+			styledSpan.setStart(startPosition);
+		    }
+		}
+	    }
+	    else if (startPosition > styledSpan.getStart())
+	    {
+		if (endPosition < styledSpan.getEnd())
+		{
+		    styledSpan.setEnd(styledSpan.getEnd() - delta);
+		}
+		else
+		{
+		    //		    styledSpan.setStyle("");
+		    //		    styledSpan.setEnd(startPosition + 2);
+
+		    //		    System.out.println("fer1");
+		}
+	    }
+
+	}
 
 	updateWholeText();
     }
@@ -97,32 +150,43 @@ public class HTMLHumoTextDocumentListener implements HumoTextDocument
     private void updateWholeText()
     {
 	String text1= humoTextDocument.getText();
-//	StringBuilder text= new StringBuilder(text1);
-//
-//	StringBuilder result= new StringBuilder();
-//
-//	String[] classes= findClasses(text1);
-//
-//	String lastStyle= "";
-//	int lastStart= 0;
-//	for (int i= 0; i < classes.length; i++)
-//	{
-//	    String currentStyle= classes[i];
-//	    if (currentStyle == null)
-//		currentStyle= "";
-//
-//	    if (!lastStyle.equals(currentStyle))
-//	    {
-//		String toReplace= text.substring(lastStart, i);
-//		String str= "<span class='" + currentStyle + "'>" + escapeHTML(toReplace) + "</span>";
-//		result.append(str);
-//		lastStart= i;
-//	    }
-//
-//	    lastStyle= currentStyle;
-//	}
+	StringBuilder text= new StringBuilder(text1);
 
-	AbstractHTMLComponentRenderer.setElementInnerHTML(textFieldElement, escapeHTML(text1.toString()));
+	StringBuilder result= new StringBuilder();
+
+	String[] classes= findClasses(text1);
+
+	String lastStyle= "";
+	int lastStart= 0;
+	for (int i= 0; i < classes.length; i++)
+	{
+	    String currentStyle= classes[i];
+	    if (currentStyle == null)
+		currentStyle= "";
+
+	    if (!lastStyle.equals(currentStyle))
+	    {
+		String toReplace= text.substring(lastStart, i);
+		String escapeHTML= escapeHTML(toReplace);
+		if (currentStyle.equals(""))
+		{
+		    result.append(escapeHTML);
+		}
+		else
+		{
+		    String str= "<span class='" + currentStyle + "'>" + escapeHTML + "</span>";
+		    result.append(str);
+		}
+		lastStart= i;
+	    }
+	    
+	    lastStyle= currentStyle;
+	}
+	
+	if (lastStart < text1.length())
+	    result.append(escapeHTML(text1.substring(lastStart)));
+
+	AbstractHTMLComponentRenderer.setElementInnerHTML(textFieldElement, result.toString());
     }
 
     private String[] findClasses(String text1)
@@ -137,7 +201,8 @@ public class HTMLHumoTextDocumentListener implements HumoTextDocument
 		if (classes[i] == null)
 		    classes[i]= "";
 
-		classes[i]+= styledSpan.getStyle() + " ";
+		if (!classes[i].contains(styledSpan.getStyle()))
+		    classes[i]+= styledSpan.getStyle() + " ";
 	    }
 	}
 	return classes;
@@ -151,23 +216,6 @@ public class HTMLHumoTextDocumentListener implements HumoTextDocument
     public int getLength()
     {
 	return 0;
-    }
-
-    public void delete(int startPosition, int endPosition)
-    {
-	List<StyledSpan> spans= humoTextDocument.getSpans();
-
-	for (StyledSpan styledSpan : spans)
-	{
-	    if (endPosition < styledSpan.getStart())
-	    {
-		int delta= endPosition - startPosition;
-		styledSpan.setStart(styledSpan.getStart() - delta);
-		styledSpan.setEnd(styledSpan.getEnd() - delta);
-	    }
-	}
-
-	updateWholeText();
     }
 
     public void setAuto(boolean auto)
