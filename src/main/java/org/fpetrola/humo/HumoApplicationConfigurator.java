@@ -11,26 +11,26 @@ import ar.net.fpetrola.humo.Controls;
 @DragomeConfiguratorImplementor
 public class HumoApplicationConfigurator extends DomHandlerApplicationConfigurator
 {
-    private CallbackEvictorConfigurator callbackEvictorConfigurator;
-    private MethodLoggerConfigurator methodLoggerConfigurator;
+	private CallbackEvictorConfigurator callbackEvictorConfigurator;
+	private MethodLoggerConfigurator methodLoggerConfigurator;
 
-    public HumoApplicationConfigurator()
-    {
-	String packageName= Controls.class.getPackage().getName();
-	
-	callbackEvictorConfigurator= new CallbackEvictorConfigurator();
-	callbackEvictorConfigurator.setEnabled(true);
-	callbackEvictorConfigurator.getIncludedPaths().add(packageName);
+	public HumoApplicationConfigurator()
+	{
+		String packageName= Controls.class.getPackage().getName();
 
-	methodLoggerConfigurator= new MethodLoggerConfigurator(packageName);
-	methodLoggerConfigurator.setEnabled(true);
+		callbackEvictorConfigurator= new CallbackEvictorConfigurator();
+		callbackEvictorConfigurator.setEnabled(true);
+		callbackEvictorConfigurator.getIncludedPaths().add(packageName);
 
-	init(callbackEvictorConfigurator, methodLoggerConfigurator);
-	
-    }
+		methodLoggerConfigurator= new MethodLoggerConfigurator(packageName);
+		methodLoggerConfigurator.setEnabled(true);
 
-    public ExecutionHandler getExecutionHandler()
-    {
-	return callbackEvictorConfigurator.getExecutionHandler();
-    }
+		init(callbackEvictorConfigurator, methodLoggerConfigurator);
+
+	}
+
+	public ExecutionHandler getExecutionHandler()
+	{
+		return callbackEvictorConfigurator.getExecutionHandler();
+	}
 }
