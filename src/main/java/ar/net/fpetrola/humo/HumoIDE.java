@@ -35,7 +35,7 @@ public class HumoIDE extends GuiaVisualActivity
     private void createEnvironment(String aFilename)
     {
 	HTMLComponentRenderer.addRenderFor(VisualTextPaneImpl.class, HTMLVisualTextPaneRenderer.class);
-	
+
 	final ExecutionHandler executionHandler= ServiceLocator.getInstance().getConfigurator().getExecutionHandler();
 
 	ExamplesProviderService examplesProviderService= serviceFactory.createFixedSyncService(ExamplesProviderService.class);
@@ -54,11 +54,11 @@ public class HumoIDE extends GuiaVisualActivity
 	debugListener.setProductionFrames(parserListenerMultiplexer.getProductionFrames());
 	ListenedParser parser= new ListenedParser(parserListenerMultiplexer);
 
-//	parser.getLoggingMap().log("begin parsing");
+	//	parser.getLoggingMap().log("begin parsing");
 
 	executionHandler.getExecutor().execute(() -> {
 
-//	    debugListener.stepInto();
+	    //	    debugListener.stepInto();
 	    boolean initialized= false;
 	    while (true)
 	    {
@@ -75,8 +75,7 @@ public class HumoIDE extends GuiaVisualActivity
 		    //		productionsParserListener.init(file);
 		    //		callStackParserListener.init(file, sourcecode);
 
-		    
-//		    debugListener.stepInto();
+		    //		    debugListener.stepInto();
 
 		    //				((DefaultTreeModel) treeParserListener.getExecutionTree().getModel()).reload();
 		    //				((DefaultTreeModel) callStackParserListener.getUsedProductionsTree().getModel()).reload();
@@ -90,14 +89,14 @@ public class HumoIDE extends GuiaVisualActivity
 		    highlighterParserListener.setTextDocument(parserListenerMultiplexer.getCurrentFrame().getDocument());
 		    parser.init();
 		    parser.parse(sourcecode, 0);
-//		    parser.getLoggingMap().log("end parsing");
+		    //		    parser.getLoggingMap().log("end parsing");
 		    debugListener.getStepper().pause();
 		}
 		catch (Exception e)
 		{
 		    e.printStackTrace();
 		}
-		
+
 		System.out.println("new cycle");
 	    }
 	});
@@ -192,6 +191,16 @@ public class HumoIDE extends GuiaVisualActivity
 
     public void build()
     {
-	createEnvironment("prueba+de+objetos2.humo");
+	String filename= "test1.humo";
+
+	if (ServiceLocator.getInstance().getParametersHandler() != null)
+	{
+	    String file= ServiceLocator.getInstance().getParametersHandler().getParameter("file");
+
+	    if (file != null && file.trim().length() > 0)
+		filename= file;
+	}
+
+	createEnvironment(filename);
     }
 }

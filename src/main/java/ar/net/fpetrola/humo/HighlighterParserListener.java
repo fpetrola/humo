@@ -55,8 +55,8 @@ public class HighlighterParserListener extends DefaultParserListener implements 
     public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition, StringBuilder name)
     {
 	updateFrame(currentFrame);
-	if (debugDelegator.isVisible())
-	    showProductionMatch(currentFrame.getProduction(), currentFrame.getCurrent(), currentFrame.getLast(), TextViewHelper.PRODUCTION_BEFORE_REPLACEMENT_STYLE);
+//	if (debugDelegator.isVisible())
+//	    showProductionMatch(currentFrame.getProduction(), currentFrame.getCurrent(), currentFrame.getLast(), TextViewHelper.PRODUCTION_BEFORE_REPLACEMENT_STYLE);
     }
 
     private void highlightCurlys(StringBuilder sourcecode, int startPosition, HumoTextDocument doc, int length)
