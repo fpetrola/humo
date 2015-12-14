@@ -12,13 +12,13 @@ public class DebuggerParserListener extends DefaultParserListener implements Par
     {
 	public void startParsingLoop(StringBuilder sourcecode, int first, int current, int last, char currentChar)
 	{
-	if (isVisible())
-	    stepper.pause();
+	    if (isVisible())
+		stepper.pause();
 	}
 	public void afterProductionFound(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder name, StringBuilder production)
 	{
-	if (isVisible())
-	    stepper.pause();
+	    if (isVisible())
+		stepper.pause();
 	}
     }
 
@@ -86,9 +86,9 @@ public class DebuggerParserListener extends DefaultParserListener implements Par
     {
 	this.controls= controls;
 	this.stepper= new Stepper(executionHandler);
-	
+
 	this.setNextVisibleFrame(null);
-	this.setParserListenerDelegate(new StepIntoParserListener());	
+	this.setParserListenerDelegate(new StepIntoParserListener());
     }
 
     private void setParserListenerDelegate(ParserListener parserListenerDelegate)
@@ -97,7 +97,7 @@ public class DebuggerParserListener extends DefaultParserListener implements Par
     }
 
     public void startProductionParsing(StringBuilder sourcecode, int first, int current, int last)
-    { 
+    {
 	parserListenerDelegate.startProductionParsing(sourcecode, first, current, last);
     }
 

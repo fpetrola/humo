@@ -1,16 +1,21 @@
-package ar.net.fpetrola.humo;
+package ar.net.fpetrola.h;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 
 import com.dragome.render.html.renderers.AbstractHTMLComponentRenderer;
 
+import ar.net.fpetrola.humo.HumoTextDocument;
+import ar.net.fpetrola.humo.StyledSpan;
+
 public class HTMLHumoTextDocumentListener implements HumoTextDocument
 {
     private HumoTextDocument humoTextDocument;
     private Element textFieldElement;
+    private Map<StyledSpan, Integer> spanElementsIds= new HashMap<>();
 
     public HTMLHumoTextDocumentListener(HumoTextDocument humoTextDocument, Element textFieldElement)
     {
@@ -40,7 +45,7 @@ public class HTMLHumoTextDocumentListener implements HumoTextDocument
 
     public void setSpan(String style, int start, int end)
     {
-//	updateWholeText();
+	//	updateWholeText();
     }
 
     public void clear()
@@ -65,6 +70,10 @@ public class HTMLHumoTextDocumentListener implements HumoTextDocument
 		{
 		    styledSpan.setEnd(styledSpan.getEnd() + string.length());
 		}
+		else if (start >= styledSpan.getStart() && start < styledSpan.getEnd())
+		{
+		    styledSpan.setEnd(start);
+		}
 
 		//		else if (start <= styledSpan.getStart())
 		//		{
@@ -84,7 +93,12 @@ public class HTMLHumoTextDocumentListener implements HumoTextDocument
 	for (StyledSpan styledSpan : spans)
 	{
 	    int delta= endPosition - startPosition;
-	    if (startPosition <= styledSpan.getStart())
+
+	    if (endPosition == styledSpan.getEnd() && startPosition == styledSpan.getStart() + 1)
+	    {
+		styledSpan.setStyle("");
+	    }
+	    else if (startPosition <= styledSpan.getStart())
 	    {
 		if (endPosition >= styledSpan.getEnd())
 		{
@@ -158,6 +172,7 @@ public class HTMLHumoTextDocumentListener implements HumoTextDocument
 
 	String lastStyle= "";
 	int lastStart= 0;
+	int id= 0;
 	for (int i= 0; i < classes.length; i++)
 	{
 	    String currentStyle= classes[i];
@@ -174,15 +189,16 @@ public class HTMLHumoTextDocumentListener implements HumoTextDocument
 		}
 		else
 		{
-		    String str= "<span class='" + currentStyle + "'>" + escapeHTML + "</span>";
+		    String str= "<span id='styled-span-" + id + "' class='" + lastStyle + "'>" + escapeHTML + "</span>";
 		    result.append(str);
+		    id++;
 		}
 		lastStart= i;
 	    }
-	    
+
 	    lastStyle= currentStyle;
 	}
-	
+
 	if (lastStart < text1.length())
 	    result.append(escapeHTML(text1.substring(lastStart)));
 

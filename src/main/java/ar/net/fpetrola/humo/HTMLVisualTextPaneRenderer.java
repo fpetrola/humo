@@ -10,6 +10,7 @@ import com.dragome.render.canvas.interfaces.Canvas;
 import com.dragome.render.html.renderers.AbstractHTMLComponentRenderer;
 import com.dragome.render.html.renderers.MergeableElement;
 
+import ar.net.fpetrola.h.HTMLHumoTextDocumentListener;
 import ar.net.fpetrola.humo.delegates.DelegateMultiplexer;
 
 public class HTMLVisualTextPaneRenderer extends AbstractHTMLComponentRenderer<VisualTextPaneImpl<HumoTextDocumentImpl>>
