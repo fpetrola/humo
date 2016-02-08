@@ -34,23 +34,21 @@ public class HumoInterpreter
             if (currentChar == '{')
             {
                 current = parse(sourcecode, last);
-                productions.put(sourcecode.subSequence(first, last - 1), sourcecode.subSequence(last, current));
-                last = first = ++current;
+                productions.put(sourcecode.subSequence(first, last - 1), sourcecode.subSequence(last, current - 1));
+                last = first = current;
             }
-            else
+            
+            CharSequence production = productions.get(sourcecode.subSequence(current, last));
+            if (production != null)
             {
-                CharSequence production = productions.get(sourcecode.subSequence(current, last));
-                if (production != null)
-                {
-                    StringBuilder value = new StringBuilder(production);
-                    parse(value, 0);
-                    sourcecode.replace(current, last, value.toString());
-                    last = current += value.length();
-                }
+                StringBuilder value = new StringBuilder(production);
+                parse(value, 0);
+                sourcecode.replace(current, last, value.toString());
+                last = current += value.length();
             }
         }
 
-        return last - 1;
+        return last;
     }
 }
 ```
