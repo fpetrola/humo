@@ -258,7 +258,7 @@ public class Test1 {
     textDocument.setSpan("green", 16, 25);
     result = textDocument.getRenderedText();
     assertEquals(
-        "this_is_a_te<span class=\"red\">xt_t</span><span class=\"green\">o_be</span>_wrapped",
+        "this_is_a_te<span class=\"red\">xt_t</span><span class=\"green\">o_be_wrap</span>ped",
         result);
   }
 

@@ -38,6 +38,10 @@ public class DefaultTextDocument {
     for (StyledSpan storedStyledSpan : arrayList) {
       int deltaStart = storedStyledSpan.getStyle().length()
           + spanOpeningTemplate.length() - 2;
+      boolean isAroundStart = storedStyledSpan.getEnd() > start
+          && storedStyledSpan.getStart() < start;
+      boolean isAroundEnd = storedStyledSpan.getStart() < end
+          && storedStyledSpan.getEnd() > end;
 
       if (storedStyledSpan.getStart() != start
           && storedStyledSpan.getEnd() < end)
@@ -46,11 +50,15 @@ public class DefaultTextDocument {
       if (storedStyledSpan.getStart() < start)
         startPositionDisplacement += deltaStart + deltaEnd;
 
-      if (storedStyledSpan.getStart() < end
-          && storedStyledSpan.getEnd() > end) {
+      if (isAroundStart || isAroundEnd)
         removeSpan(storedStyledSpan.getStart(), storedStyledSpan.getEnd());
+
+      if (isAroundStart)
+        setSpan(storedStyledSpan.getStyle(), storedStyledSpan.getStart(),
+            start);
+
+      if (isAroundEnd)
         setSpan(storedStyledSpan.getStyle(), end, storedStyledSpan.getEnd());
-      }
 
       updateOlderReplacements(spanOverhead, storedStyledSpan);
     }
