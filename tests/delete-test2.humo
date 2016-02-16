@@ -1,0 +1,60 @@
+programa
+{
+
+	sistema:macros de sintaxis
+	{
+		<funcion>{}
+		<procedimiento>{%}
+		<metodo>{%}
+		<clase>{nuevo}
+		<cierra clase>{termina_de_crear_la_clase_}
+	}
+
+	sistema:ayudantes1
+	{
+		[te{[t}mp]{emp]}  
+		[re{[r}m]{em]}  
+		[nada]{}
+		<*>{%}
+		<**{<*}
+	}
+		
+	<clase> del
+	{ 
+		<**>del->(%del::head %del::tail)
+		{
+			<*>delH%del::head%del::tail %delT%del::head%del::tail
+			{
+				%delH%del::head%del::tail %delT%del::head%del::tail
+			}
+			<*>delH%del::head%del::tail
+			{
+				<*>del::head
+			}
+			<*>delT%del::head%del::tail
+			{
+				<*>del::tail
+			}
+		}
+	
+	
+	}
+		del->({delete->(}
+		%del[{}
+		%delH{H}
+		%delT{T}
+		%del_result[{}
+
+	[temp]defino_dels
+	{
+		<*>del::head{%vector:} <*>del::tail{:valor}	[temp]{nuevo del}
+	}
+
+	[temp]borro_valor{%delete->(%vector::valor)}
+	
+	[temp]pruebo_borrado{%vector::valor}
+	
+	%vector::valor{1}
+	
+	[temp]nuevo_valor{%vector::valor}
+}

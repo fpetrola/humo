@@ -191,7 +191,7 @@ public class HumoIDE extends GuiaVisualActivity
 
     public void build()
     {
-	String filename= "test1.humo";
+	String filename= "delete-test.humo";
 
 	if (ServiceLocator.getInstance().getParametersHandler() != null)
 	{
