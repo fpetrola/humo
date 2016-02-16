@@ -27,7 +27,7 @@ public class HighlighterTester
     {
 	TextHighlighter textHighlighter= new TextHighlighter();
 	textHighlighter.insert(4, "text1");
-	textHighlighter.remove(0, 9);
+	textHighlighter.delete(0, 9);
 
 	assertEquals("", textHighlighter.getResultingText());
     }
@@ -37,11 +37,11 @@ public class HighlighterTester
     {
 	TextHighlighter textHighlighter= new TextHighlighter();
 	textHighlighter.insert(4, "text1");
-	textHighlighter.remove(0, 6);
+	textHighlighter.delete(0, 6);
 
 	assertEquals("xt1", textHighlighter.getResultingText());
     }
-    
+
     @Test
     public void removingPartialTextInsideHighlightedRangeShouldReturnTail()
     {
@@ -49,7 +49,7 @@ public class HighlighterTester
 	textHighlighter.insert(0, "this is a text to be highlighted");
 	textHighlighter.highlight("red", 3, 18);
 	assertEquals("thi<span class='red'>s is a text to </span>be highlighted", textHighlighter.getResultingText());
-	textHighlighter.remove(6, 10);
+	textHighlighter.delete(6, 10);
 	assertEquals("thi<span class='red'>s itext to </span>be highlighted", textHighlighter.getResultingText());
     }
 
@@ -84,7 +84,7 @@ public class HighlighterTester
 
 	assertEquals("thi<span class='red'>s is a [other text]text to </span>be highlighted", textHighlighter.getResultingText());
     }
-    
+
     @Test
     public void insertingAfterHightlightedRangeShouldAppendText()
     {
@@ -168,4 +168,30 @@ public class HighlighterTester
 
 	assertEquals("this <span class='blue'>is a <span class='red'>text </span>to be</span> highlighted", textHighlighter.getResultingText());
     }
+
+    @Test
+    public void hightlightingAlreadyHighlightedRangeShouldReturnExpandRange()
+    {
+	TextHighlighter textHighlighter= new TextHighlighter();
+	textHighlighter.insert(0, "this is a text to be highlighted");
+	textHighlighter.highlight("blue", 5, 20);
+	assertEquals("this <span class='blue'>is a text to be</span> highlighted", textHighlighter.getResultingText());
+	textHighlighter.highlight("blue", 7, 25);
+
+	assertEquals("this <span class='blue'>is a text to be high</span>lighted", textHighlighter.getResultingText());
+    }
+
+    @Test
+    public void hightlightingMultipleTimesAlreadyHighlightedRangeShouldReturnExpandRange()
+    {
+	TextHighlighter textHighlighter= new TextHighlighter();
+	textHighlighter.insert(0, "this is a text to be highlighted");
+	textHighlighter.highlight("blue", 0, 5);
+	assertEquals("<span class='blue'>this </span>is a text to be highlighted", textHighlighter.getResultingText());
+	textHighlighter.highlight("blue", 0, 6);
+	assertEquals("<span class='blue'>this i</span>s a text to be highlighted", textHighlighter.getResultingText());
+	textHighlighter.highlight("blue", 0, 7);
+	assertEquals("<span class='blue'>this is</span> a text to be highlighted", textHighlighter.getResultingText());
+    }
+
 }

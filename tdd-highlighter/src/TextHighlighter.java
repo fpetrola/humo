@@ -36,7 +36,7 @@ public class TextHighlighter
 	return relocationDelta;
     }
 
-    public void remove(int start, int end)
+    public void delete(int start, int end)
     {
 	int deletedChars= -(end - start);
 	int relocationDelta= relocateRanges(start, deletedChars);
@@ -49,19 +49,32 @@ public class TextHighlighter
 	String startSpanText= "<span class='" + style + "'>";
 
 	int relocationDelta= 0;
+	boolean alreadyInserted= false;
 
 	for (TextRange textRange : ranges)
 	{
 	    if (textRange.end < start)
 		relocationDelta+= textRange.spanTagsLength;
-	    else if (textRange.start < start)
+	    else if (textRange.start <= start)
+	    {
 		relocationDelta+= textRange.startSpanLength;
+		alreadyInserted= textRange.style.equals(style) && start < textRange.end && end > textRange.end;
+		if (alreadyInserted)
+		{
+		    textBuffer.delete(textRange.end + relocationDelta, textRange.end + relocationDelta + textRange.closeSpanLength);
+		    textRange.end= end;
+		}
+	    }
 	}
 
 	textBuffer.insert(relocationDelta + end, closeSpanText);
-	textBuffer.insert(relocationDelta + start, startSpanText);
 
-	TextRange textRange= new TextRange(start, end, closeSpanText.length() + startSpanText.length(), startSpanText.length(), closeSpanText.length());
-	ranges.add(textRange);
+	if (!alreadyInserted)
+	{
+	    textBuffer.insert(relocationDelta + start, startSpanText);
+
+	    TextRange textRange= new TextRange(style, start, end, closeSpanText.length() + startSpanText.length(), startSpanText.length(), closeSpanText.length());
+	    ranges.add(textRange);
+	}
     }
 }

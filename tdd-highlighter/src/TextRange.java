@@ -6,9 +6,11 @@ public class TextRange
     public int spanTagsLength;
     public int startSpanLength;
     public int closeSpanLength;
+    public String style;
 
-    public TextRange(int start, int end, int spanTagsLength, int startSpanLength, int closeSpanLength)
+    public TextRange(String style, int start, int end, int spanTagsLength, int startSpanLength, int closeSpanLength)
     {
+	this.style= style;
 	this.start= start;
 	this.end= end;
 	this.spanTagsLength= spanTagsLength;
