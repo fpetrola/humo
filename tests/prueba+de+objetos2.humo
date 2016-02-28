@@ -1,0 +1,235 @@
+programa
+{
+
+	sistema:macros de sintaxis
+	{
+		<subclasear> {nuevo}
+		<objeto>{definicion_de_}
+		<funcion>{}
+		<procedimiento>{%}
+		<metodo>{%}
+		<clase>{nuevo}
+		<cierra clase>{termina_de_crear_la_clase_}
+	}
+
+	sistema:ayudantes1
+	{
+		(4) {<....>}
+		(3) {<...>}
+		(2) {<..>}
+		(1) {<.>}
+		[te{[t}mp]{emp]}  
+		[re{[r}m]{em]}  
+		[nada]{}
+		(1) {%}
+		<..{<.}
+	}
+		
+	<clase> del
+	{ 
+		<metodo> del->%delHead %delTail
+		{
+			head=>%delHead %delTail tail=>%delHead %delTail
+			{
+				head2=>%delHead %delTail tail2=>%delHead %delTail
+			}
+		}
+	
+		head=>%delHead %delTail {%delHead}
+		tail=>%delHead %delTail {%delTail}
+		head2=>%delHead %delTail {h}
+		tail2=>%delHead %delTail {ead=>%delHead %delTail tail=>%delHead %delTail}
+	}
+	<cierra clase> del
+	{
+		%del->{%del.}head=>{head->}tail=>{tail->}ead=>{ead->}head2=>{head2->}tail2=>{tail2->}
+	}
+
+	<clase> math
+	{
+		<metodo> math.incr 
+		{
+			 (2) resultado{%incrValor.incr}
+		}
+		<metodo> math.decr 
+		{
+			 (2) resultado{%decrValor.decr}
+		}
+
+		<funcion> 000+ { (2) resultado{0}  (2) acarreo{0}} 
+		<funcion> 001+ { (2) resultado{1}  (2) acarreo{0}} 
+		<funcion> 010+ { (2) resultado{1}  (2) acarreo{0}} 
+		<funcion> 011+ { (2) resultado{0}  (2) acarreo{1}} 
+		
+		<funcion> 100+ { (2) resultado{1}  (2) acarreo{0}}
+		<funcion> 101+ { (2) resultado{0}  (2) acarreo{1}}
+		<funcion> 110+ { (2) resultado{0}  (2) acarreo{1}}
+		<funcion> 111+ { (2) resultado{1}  (2) acarreo{1}}
+
+		15.decr{14}14.decr{13}13.decr{12}12.decr{11}11.decr{10}10.decr{9}9.decr{8}8.decr{7}7.decr{6}6.decr{5}5.decr{4}4.decr{3}3.decr{2}2.decr{1}1.decr{0}0.decr{15}
+		0.incr{1}1.incr{2}2.incr{3}3.incr{4}4.incr{5}5.incr{6}6.incr{7}7.incr{8}8.incr{9}9.incr{10}10.incr{11}11.incr{12}12.incr{13}13.incr{14}14.incr{15}15.incr{0}
+		0.esCero{true}1.esCero{false}2.esCero{false}3.esCero{false}4.esCero{false}5.esCero{false}6.esCero{false}7.esCero{false}8.esCero{false}9.esCero{false}10.esCero{false}11.esCero{false}12.esCero{false}13.esCero{false}14.esCero{false}15.esCero{false}
+
+		(1) delHead{%resul} (1) delTail{tado} [temp]{nuevo del}
+	}
+	
+	sistema:ayudantes2
+	{
+		sistema:abro_corchete{[}
+
+		#0 { (2) vectorValor{0} agregaDigito}
+		#1 { (2) vectorValor{1} agregaDigito}
+		agregaDigito { (2) llama_add {%vectorActual.agregar}(1) llama_add}
+	}
+
+
+	<clase> boolean
+	{
+		<metodo> booleanName.not{}	
+		<metodo> booleanName.or{}	
+		<metodo> booleanName.and{}	
+		<metodo> booleanName.ifTrue{}	
+	}
+
+	<objeto> false
+	{
+		[rem]heredo boolean
+		{
+			(1) booleanName {false::super}		
+			nuevo boolean
+		}
+
+		false.not{true}	
+		false.or{aBoolean}	
+		false.and{false}	
+		false.ifTrue{}	
+	}
+
+	<objeto> true
+	{
+		[rem]heredo boolean
+		{
+			(1) booleanName {true::super}		
+			nuevo boolean
+		}
+
+		true.not{false}	
+		true.or{true}	
+		true.and{aBoolean}	
+		true.ifTrue{(1) trueBlock}	
+	}
+
+	<clase> nibble
+	{
+		[temp]defino_dels
+		{
+			 (2) delHead{(1) nibbleName}  (2) delTail{.getValor} 		[temp]{<..>nuevo del}
+			 (2) delHead{(1) nibbleName}  (2) delTail{.dec} 			[temp]{<..>nuevo del}
+			 (2) delHead{(1) nibbleName}  (2) delTail{.inc} 			[temp]{<..>nuevo del}
+			 (2) delHead{(1) nibbleName}  (2) delTail{.esCero} 		[temp]{<..>nuevo del}
+			 (2) delHead{%nibble:} 		 	(2) delTail{:numero} 		[temp]{<..>nuevo del}
+		}
+		
+		[temp]borro_parametros
+		{
+			(1) del.%nibble::numero
+		}
+		
+		<metodo> nibbleName.setValor
+		{
+			[temp]borra_metodos
+			{
+				[temp]{(1) del->%nibbleName.getValor}
+				[temp]{(1) del->%nibbleName.dec}
+				[temp]{(1) del->%nibbleName.inc}
+				[temp]{(1) del->%nibbleName.esCero}
+			}
+	
+			<metodo> nibbleName.dec
+			{
+				[rem]decremento {(4) decrValor {(1) nibbleName.getValor} (3) math.decr}
+				[temp]borra_getValor{ (2) del->%nibbleName.getValor}
+				(1) nibbleName.getValor { (3) resultado}
+				[temp]borra_resultado{ (3) del.%resultado}
+			} 
+			[temp]borra_getValor {(1) del->%nibbleName.getValor}
+
+			<metodo> nibbleName.inc
+			{
+				[rem]incremento {(4) incrValor {(1) nibbleName.getValor} (3) math.incr}
+				[temp]borra_getValor{ (2) del->%nibbleName.getValor}
+				(1) nibbleName.getValor { (3) resultado}
+				[temp]borra_resultado{ (3) del.%resultado}
+			} 
+			[temp]borra_getValor {(1) del->%nibbleName.getValor}
+			
+			<metodo> nibbleName.esCero
+			{
+				(1) nibbleName.getValor.esCero
+			}
+			
+			<metodo> nibbleName.getValor
+			{
+				%nibble::numero
+			}
+		}
+	}
+
+	
+	<clase> block
+	{
+		<metodo> blockName.whileTrue 
+		{
+			[rem]evalue el bloque{(1) blockName.eval} 
+			
+			[rem]seteo el bloque de true
+			{
+				(3) trueBlock
+				{
+					[rem]{ (3) block:whileTrue:trueBlock}
+					[rem]{ (2) blockName.whileTrue}
+				} 
+			}
+			
+			[rem]isTrue?
+			{
+				 (3) if {(1) blockName.result.ifTrue}
+				 (2) if
+			} 
+		}
+		
+		<metodo> blockName.eval 
+		{
+			[rem]evaluo el cuerpo{(1) blockName.body}
+			[rem]seteo el resultado{ (2) blockName.result{(1) return}}
+		}
+
+		<metodo> blockName.body
+		{
+			(1) block:body
+		}
+	}
+
+
+	[rem]prueba_de_while
+	{
+		[rem]cargo_nombre{(1) blockName{%w1}}
+		[rem]creo_guarda
+		{
+			(1) block:body
+			{
+				 (3) resultado{ (1) contador.esCero.not}
+				 (3) return{ (2) resultado}
+			}
+		}
+		[rem]creo_while{nuevo block}
+		
+		[rem]creo_contador{(1) nibbleName{%contador}nuevo nibble}
+		[rem]seteo_contador{(1) nibble::numero{8}%contador.setValor}
+
+		[rem]creo_cuerpo{(1) block:whileTrue:trueBlock{(1) contador.dec}}
+		%w1.whileTrue
+	}
+
+	
+}

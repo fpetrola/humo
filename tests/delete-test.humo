@@ -1,0 +1,90 @@
+programa
+{
+
+	sistema:macros de sintaxis
+	{
+		<funcion>{}
+		<procedimiento>{%}
+		<metodo>{%}
+		<clase>{nuevo}
+		<cierra clase>{termina_de_crear_la_clase_}
+	}
+
+	sistema:ayudantes1
+	{
+		[te{[t}mp]{emp]}  
+		[re{[r}m]{em]}  
+		[nada]{}
+		<*>{%}
+		<**{<*}
+		
+		(two){(o)(ne)}
+		(three){(t)(wo)}
+		(four){(th)(ree)}
+		(five){(fo)(ur)}
+		
+		(o){(on}
+		(ne){e)}
+		(t){(tw}
+		(wo){o)}
+		(th){(thr}
+		(ree){ee)}
+		(fo){(fou}
+		(ur){r)}
+	}
+		
+	<clase> del
+	{ 
+		<*>delete->%del::head %del::tail)
+		{
+			<**>+head %del::head %del::tail <*>+tail %del::head %del::tail
+			{
+				(three)+head %del::head %del::tail (two) +tail %del::head %del::tail
+			}
+
+			(four) +head %del::head %del::tail
+			{
+				<**>+head %del::head %del::tail
+			}
+				
+			(four) +tail %del::head %del::tail
+			{
+				<**>+tail %del::head %del::tail
+			}
+		}
+		
+		<**> +head %del::head %del::tail
+		{
+			%del::head 
+		}
+			
+		<**> +tail %del::head %del::tail
+		{
+			%del::tail 
+		}
+	}
+
+	<cierra clase> del
+	{
+		+head{.head}
+		+tail{.tail}
+		%delete->{%del->(}
+	}
+
+	[temp]defino_dels
+	{
+		<*>del::head{%vector:} <*>del::tail{:valor}	[temp]{nuevo del}
+	}
+
+	[temp]asigno_valor{%vector::valor{1}}
+	[temp]pruebo_asignacion{%vector::valor}
+
+
+	[temp]borro_valor{%del->(%vector::valor)}
+	
+	[temp]pruebo_borrado{%vector::valor}
+	
+	[temp]asigno_valor{%vector::valor{2}}
+	
+	[temp]nuevo_valor{%vector::valor}
+}
