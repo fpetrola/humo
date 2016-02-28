@@ -4,6 +4,7 @@ Humo is a programming language with a tiny interpreter implementation and the sm
 
 This is an experimental language that uses very few concepts to perform Turing complete computations.
 
+Live demo: [Humo IDE](http://fpetrola.github.io/humo/humo-ide.html?file=http://fpetrola.github.io/humo/tests/1i.humo)
 
 **Complete interpreter implementation code** (the following code executes any Humo program) :
 
