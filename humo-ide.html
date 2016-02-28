@@ -1,0 +1,71 @@
+<html>
+<head>
+<script type="text/javascript" src="dragome-resources/dragome-debug.js"></script>
+
+<style type="text/css">
+.Cursor {
+	color: #A00 !important;
+	background-color: #EEE;
+}
+
+.production-found.fetch {
+	color: blue;
+	background-color: #EEE;
+	font-weight: bold;
+}
+
+.production-found {
+	color: blue;
+	background-color: #EEE;
+	font-weight: bold;
+}
+
+.default {
+	color: black;
+}
+
+.fetch {
+	color: green;
+	background-color: #EEE;
+}
+
+.curly {
+	color: black;
+	font-weight: bold;
+}
+
+.production-before-replacement {
+	color: orange;
+	font-weight: bold;
+}
+</style>
+
+</head>
+
+<body>
+	<div style="position: fixed;">
+		<button data-template="nextReplacementButton">
+			<img src="images/runtocomp.gif" /><br>Next replacement
+		</button>
+		<button data-template="stepButton">
+			<img src="images/stepover.gif" /><br>Step over
+		</button>
+		<button data-template="miniStepButton">
+			<img src="images/stepinto.gif" /><br>Step into
+		</button>
+		<button data-template="stepoutButton">
+			<img src="images/stepreturn.gif" /><br>stepoutButton
+		</button>
+		<button data-template="continueButton">
+			<img src="images/resume.gif" /><br>continueButton
+		</button>
+		<br>
+	</div>
+	<div
+		style="margin:10px; position: absolute; top: 50px; height: 90%; width: 95%; overflow: scroll; border: 1px solid;">
+		<div data-template="textPane" style="font-family: courier;"></div>
+	</div>
+</body>
+
+</html>
+
