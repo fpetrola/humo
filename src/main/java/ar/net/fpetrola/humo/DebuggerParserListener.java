@@ -263,7 +263,7 @@ public class DebuggerParserListener extends DefaultParserListener implements Par
 		    if ((length - last) <= start && (length - last) >= end)
 		    {
 			setInvisible(false);
-			// stepper.pause();
+			stepper.pause();
 			runToNextReplacement();
 		    }
 		}

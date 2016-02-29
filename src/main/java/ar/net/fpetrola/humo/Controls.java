@@ -2,7 +2,7 @@ package ar.net.fpetrola.humo;
 
 public class Controls
 {
-    private boolean skipSmall= true;
+    private boolean skipSmall= false;
     private int skipSize= 50;
     private boolean skipAll;
 

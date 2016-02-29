@@ -109,4 +109,14 @@ public class HumoTextDocumentImpl implements HumoTextDocument
     {
 	this.spans= spans;
     }
+
+    public int hashCode()
+    {
+        return text.hashCode();
+    }
+    
+    public boolean equals(Object obj)
+    {
+        return getText().equals(((HumoTextDocument)obj).getText());
+    }
 }

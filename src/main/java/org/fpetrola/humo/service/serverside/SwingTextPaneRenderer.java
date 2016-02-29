@@ -1,6 +1,8 @@
 package org.fpetrola.humo.service.serverside;
 
 import java.awt.Color;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
@@ -9,14 +11,11 @@ import javax.swing.event.ChangeListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.JTextComponent;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 
-import com.dragome.guia.components.interfaces.VisualTextField;
-import com.dragome.guia.events.listeners.interfaces.ListenerMultiplexer;
 import com.dragome.model.interfaces.ValueChangeEvent;
 import com.dragome.model.interfaces.ValueChangeHandler;
 import com.dragome.render.canvas.CanvasImpl;
@@ -34,6 +33,8 @@ import ar.net.fpetrola.humo.delegates.DelegateMultiplexer;
 
 public class SwingTextPaneRenderer implements ComponentRenderer<Object, VisualTextPaneImpl<HumoTextDocumentImpl>>
 {
+    private Map<HumoTextDocument, StyledDocument> documents= new HashMap<>();
+
     public Canvas<Object> render(final VisualTextPaneImpl<HumoTextDocumentImpl> visualTextField)
     {
 	StyleContext styleContext= createStyleDocument();
@@ -59,24 +60,30 @@ public class SwingTextPaneRenderer implements ComponentRenderer<Object, VisualTe
 
 		visualTextField.addValueChangeHandler(new ValueChangeHandler<HumoTextDocumentImpl>()
 		{
+
 		    public void onValueChange(ValueChangeEvent<HumoTextDocumentImpl> event)
 		    {
 			try
 			{
 			    HumoTextDocument humoTextDocument= event.getValue();
-			    StyledDocument styledDocument= createStyledDocumentFromHumoTextDocument(humoTextDocument);
-
-			    DelegateMultiplexer<HumoTextDocument> delegateMultiplexer= (DelegateMultiplexer<HumoTextDocument>) humoTextDocument;
-			    delegateMultiplexer.addDelegate(new HumoTextDocumentListener(styledDocument, jTextPane));
 
 			    SwingUtilities.invokeLater(new Runnable()
 			    {
 				public void run()
 				{
-				    jTextPane.setDocument(styledDocument);
+				    StyledDocument foundStyledDocument= documents.get(humoTextDocument);
+				    
+				    if (foundStyledDocument == null)
+				    {
+					foundStyledDocument= createStyledDocumentFromHumoTextDocument(humoTextDocument);
+					DelegateMultiplexer<HumoTextDocument> delegateMultiplexer= (DelegateMultiplexer<HumoTextDocument>) humoTextDocument;
+					HumoTextDocumentListener humoTextDocumentListener= new HumoTextDocumentListener(foundStyledDocument, jTextPane);
+					delegateMultiplexer.addDelegate(humoTextDocumentListener);
+					documents.put(humoTextDocument, foundStyledDocument);
+				    }
+				    jTextPane.setDocument(foundStyledDocument);
 				}
 			    });
-
 
 			    //			    if (!jTextPane.getText().equals(text))
 			    //				jTextPane.setText(text);
@@ -99,7 +106,7 @@ public class SwingTextPaneRenderer implements ComponentRenderer<Object, VisualTe
 				int length= styledSpan.getEnd() - styledSpan.getStart();
 				result.setCharacterAttributes(styledSpan.getStart(), length, getStyle(styledSpan.getStyle()), false);
 			    }
-			    
+
 			    return result;
 			}
 			catch (BadLocationException e)

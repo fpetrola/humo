@@ -15,13 +15,13 @@ public class TextViewHelper
 
 	styleDocument.clear();
 	styleDocument.insert(0, sourceCode.toString());
-	for (int i= 0; i < sourceCode.length(); i++)
-	{
-	    if (sourceCode.charAt(i) == '{' || sourceCode.charAt(i) == '}')
-		styleDocument.setSpan(CURLY_STYLE, i, i+1);
-	    else
-		styleDocument.setSpan(DEFAULT_STYLE, i, i+1);
-	}
+//	for (int i= 0; i < sourceCode.length(); i++)
+//	{
+//	    if (sourceCode.charAt(i) == '{' || sourceCode.charAt(i) == '}')
+//		styleDocument.setSpan(CURLY_STYLE, i, i+1);
+//	    else
+//		styleDocument.setSpan(DEFAULT_STYLE, i, i+1);
+//	}
 
 	return styleDocument;
     }

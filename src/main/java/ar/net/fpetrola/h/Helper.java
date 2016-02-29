@@ -23,4 +23,32 @@ public class Helper
     {
 	return text1.replace("<", "&lt;").replace("<", "&gt;").replaceAll("\n", "<br>");
     }
+
+    public static void verifySpans(TextRange firstRange, StringBuffer textBuffer)
+    {
+//        TextRange currentRange= firstRange;
+//        int spans= 0;
+//    
+//        while (currentRange != null)
+//        {
+//            if (currentRange instanceof SpanTextRange)
+//            {
+//        	SpanTextRange spanTextRange= (SpanTextRange) currentRange;
+//        	String actualString= textBuffer.substring(currentRange.mapPosition(currentRange.getStart()), currentRange.mapPosition(currentRange.getStart() + spanTextRange.overflow));
+//        	if (!actualString.equals(currentRange.text))
+//        	    throw new RuntimeException("bug!");
+//    
+//        	if (currentRange instanceof OpenSpanTextRange)
+//        	    spans++;
+//    
+//        	if (currentRange instanceof CloseSpanTextRange)
+//        	    spans--;
+//            }
+//    
+//            currentRange= currentRange.getNextRange();
+//        }
+//    
+//        if (spans != 0)
+//            throw new RuntimeException("bug: open/close tags");
+    }
 }

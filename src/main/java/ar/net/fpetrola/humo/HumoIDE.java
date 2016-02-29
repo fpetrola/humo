@@ -8,6 +8,8 @@
 
 package ar.net.fpetrola.humo;
 
+import java.util.HashMap;
+
 import org.fpetrola.humo.service.ExamplesProviderService;
 
 import com.dragome.commons.ExecutionHandler;
@@ -21,8 +23,10 @@ import com.dragome.guia.components.interfaces.VisualPanel;
 import com.dragome.guia.components.interfaces.VisualTextField;
 import com.dragome.render.html.renderers.HTMLComponentRenderer;
 import com.dragome.services.ServiceLocator;
+import com.dragome.services.interfaces.AsyncCallback;
 import com.dragome.templates.interfaces.Template;
 import com.dragome.web.annotations.PageAlias;
+import com.dragome.web.services.RequestExecutorImpl;
 
 @PageAlias(alias= "humo-ide")
 public class HumoIDE extends GuiaVisualActivity
@@ -65,7 +69,23 @@ public class HumoIDE extends GuiaVisualActivity
 		try
 		{
 		    String file= filenameTextField.getValue();
-		    String example= examplesProviderService.getExample(file);
+		    String example;
+		    if (file.startsWith("http"))
+		    {
+			example= RequestExecutorImpl.executeHttpRequest(false, file, new HashMap<>(), new AsyncCallback<String>()
+			{
+			    public void onSuccess(String result)
+			    {
+			    }
+
+			    public void onError()
+			    {
+			    }
+			}, false, true);
+		    }
+		    else
+			example= examplesProviderService.getExample(file);
+
 		    StringBuilder sourcecode= new StringBuilder(example);
 
 		    parser.setDisabled(false);

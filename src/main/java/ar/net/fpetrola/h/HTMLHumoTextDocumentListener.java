@@ -76,7 +76,7 @@ public class HTMLHumoTextDocumentListener implements HumoTextDocument
 
     private String escapeHTML(String text1)
     {
-	return text1.replace("<", "&lt;").replace("<", "&gt;").replaceAll("\n", "<br>");
+	return text1.replace("<", "&lt;").replace("<", "&gt;").replaceAll("\n", "<br>").replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
     }
 
     private String escapeSpans(String text1)
@@ -87,7 +87,7 @@ public class HTMLHumoTextDocumentListener implements HumoTextDocument
 
 	String escapedHTML= escapeHTML(text1);
 
-	escapedHTML= escapedHTML.replace("[/span]", "</span");
+	escapedHTML= escapedHTML.replace("[/span]", "</span>");
 	escapedHTML= escapedHTML.replace("[span", "<span");
 	escapedHTML= escapedHTML.replace("'¿", "'>");
 
@@ -111,7 +111,7 @@ public class HTMLHumoTextDocumentListener implements HumoTextDocument
 
     public String getText()
     {
-	return null;
+	return escapeHTML(textHighlighter.getResultingText());
     }
 
     public List<StyledSpan> getSpans()

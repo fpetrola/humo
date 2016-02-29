@@ -1,82 +1,179 @@
 package ar.net.fpetrola.h;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TextHighlighter
 {
-    private StringBuffer textBuffer= new StringBuffer();
-    private List<TextRange> ranges= new ArrayList<>();
+    StringBuffer textBuffer= new StringBuffer();
+    private TextRange firstRange= new NullTextRange();
+
+    public void insert(int position, String text)
+    {
+	TextRange foundRange= firstRange.findRangeForPosition(position);
+	
+	if (foundRange == null)
+	{
+	    TextRange lastRange= firstRange.findLastRange();
+	    foundRange= new TextRange(text.length(), lastRange, textBuffer);
+	}
+
+	if (foundRange instanceof NullTextRange)
+	    foundRange= new TextRange(text.length(), foundRange, textBuffer);
+
+	foundRange.insert(position, text);
+	Helper.verifySpans(firstRange, textBuffer);
+    }
 
     public String getResultingText()
     {
+	Helper.verifySpans(firstRange, textBuffer);
 	return textBuffer.toString();
-    }
-
-    public void insert(int start, String aText)
-    {
-	int delta= aText.length();
-	int relocationDelta= relocateRanges(start, delta);
-	Helper.insertIntoStringBufferSafely(textBuffer, relocationDelta + start, aText);
-    }
-
-    protected int relocateRanges(int start, int delta)
-    {
-	int relocationDelta= 0;
-	for (TextRange textRange : ranges)
-	{
-	    if (textRange.start < start)
-		relocationDelta+= textRange.startSpanLength;
-	    else
-		textRange.start+= delta;
-
-	    if (textRange.end < start)
-		relocationDelta+= textRange.closeSpanLength;
-	    else
-		textRange.end+= delta;
-	}
-	return relocationDelta;
-    }
-
-    public void delete(int start, int end)
-    {
-	int deletedChars= -(end - start);
-	int relocationDelta= relocateRanges(start, deletedChars);
-	textBuffer.delete(start + relocationDelta, end + relocationDelta);
     }
 
     public void highlight(String style, int start, int end)
     {
-	String closeSpanText= "</span>";
-	String startSpanText= "<span class='" + style + "'>";
+	TextRange startRange= firstRange.findRangeForPosition(start);
+	TextRange endRange= firstRange.findRangeForPosition(end);
 
-	int relocationDelta= 0;
-	boolean alreadyInserted= false;
+	if (startRange != endRange)
+	    wrapHighlightedRange(style, start, end, startRange, endRange);
+	else if (startRange != null)
+	    highlightFromPlainTextRange(style, start, end, startRange);
 
-	for (TextRange textRange : ranges)
+	Helper.verifySpans(firstRange, textBuffer);
+    }
+
+    private void highlightFromPlainTextRange(String style, int start, int end, TextRange startRange)
+    {
+	TextRange previousRange= startRange.getPreviousRange();
+	if (previousRange != null && style.equals(previousRange.style) && previousRange instanceof CloseSpanTextRange && start == previousRange.getStart())
 	{
-	    if (textRange.end < start)
-		relocationDelta+= textRange.spanTagsLength;
-	    else if (textRange.start <= start)
+	    ((CloseSpanTextRange) previousRange).moveRangeTo(end);
+	}
+	else
+	{
+	    int nextRangeStart= 0;
+	    TextRange nextRange= startRange.getNextRange();
+	    if (nextRange != null)
+		nextRangeStart= nextRange.getStart();
+
+	    startRange.setLength(start - startRange.getStart());
+
+	    OpenSpanTextRange openTagTextRange= new OpenSpanTextRange(style, startRange, textBuffer);
+	    TextRange middleTagTextRange= new TextRange(end - start, openTagTextRange, textBuffer);
+	    CloseSpanTextRange closeTagTextRange= new CloseSpanTextRange(style, middleTagTextRange, textBuffer);
+	    openTagTextRange.setCloseTagRange(closeTagTextRange);
+
+	    int length= textBuffer.length() - closeTagTextRange.getMappedStart();
+	    if (nextRange != null)
+		length= nextRangeStart - closeTagTextRange.getStart();
+
+	    if (length > 0)
 	    {
-		relocationDelta+= textRange.startSpanLength;
-		alreadyInserted= textRange.style.equals(style) && start < textRange.end && end > textRange.end;
-		if (alreadyInserted)
-		{
-		    textBuffer.delete(textRange.end + relocationDelta, textRange.end + relocationDelta + textRange.closeSpanLength);
-		    textRange.end= end;
-		}
+		TextRange afterTagTextRange= new TextRange(length, closeTagTextRange, textBuffer);
+		afterTagTextRange.setNextRange(nextRange);
 	    }
+	    else
+		closeTagTextRange.setNextRange(nextRange);
 	}
+    }
 
-	textBuffer.insert(relocationDelta + end, closeSpanText);
-
-	if (!alreadyInserted)
+    private void wrapHighlightedRange(String style, int start, int end, TextRange startRange, TextRange endRange)
+    {
+	if (startRange.getPreviousRange() != null && style.equals(startRange.getPreviousRange().style) && startRange.getPreviousRange() instanceof OpenSpanTextRange)
 	{
-	    textBuffer.insert(relocationDelta + start, startSpanText);
-
-	    TextRange textRange= new TextRange(style, start, end, closeSpanText.length() + startSpanText.length(), startSpanText.length(), closeSpanText.length());
-	    ranges.add(textRange);
+	    ((CloseSpanTextRange) startRange.getNextRange()).moveRangeTo(end);
 	}
+	else
+	{
+	    TextRange splitEnd= endRange.splitAt(end);
+	    TextRange splitStart= startRange.splitAt(start);
+	    if (checkOpenClose(startRange, endRange, new EndsBeforeCloseChecker()))
+	    {
+		SpanTextRange openSpanTextRange= splitStart.findFirst(OpenSpanTextRange.class);
+		openSpanTextRange.moveBetween(endRange, splitEnd);
+		splitEnd= openSpanTextRange;
+	    }
+	    if (checkOpenClose(startRange, endRange, new EndsWithoutOpen()))
+	    {
+		CloseSpanTextRange closeSpanTextRange= splitStart.findFirst(CloseSpanTextRange.class);
+		closeSpanTextRange.moveBetween(startRange, splitStart);
+		CloseSpanTextRange closeTagTextRange= new CloseSpanTextRange(style, endRange, textBuffer);
+		OpenSpanTextRange openTagTextRange= new OpenSpanTextRange(style, closeSpanTextRange, textBuffer);
+		openTagTextRange.setNextRange(splitStart);
+		closeTagTextRange.setNextRange(splitEnd);
+		openTagTextRange.setCloseTagRange(closeTagTextRange);
+		return;
+	    }
+
+	    OpenSpanTextRange openTagTextRange= new OpenSpanTextRange(style, startRange, textBuffer);
+	    openTagTextRange.setNextRange(splitStart);
+	    CloseSpanTextRange closeTagTextRange= new CloseSpanTextRange(style, endRange, textBuffer);
+	    closeTagTextRange.setNextRange(splitEnd);
+	    openTagTextRange.setCloseTagRange(closeTagTextRange);
+	}
+    }
+
+    private boolean checkOpenClose(TextRange startInternalRange, TextRange endInternalRange, OpenCloseChecker openCloseChecker)
+    {
+	TextRange currentRange= startInternalRange;
+	boolean openFound= false;
+	boolean closeFound= false;
+	while (currentRange != null && currentRange != endInternalRange)
+	{
+	    if (currentRange instanceof OpenSpanTextRange)
+		openFound= true;
+	    if (currentRange instanceof CloseSpanTextRange)
+		closeFound= true;
+
+	    currentRange= currentRange.getNextRange();
+	}
+
+	return openCloseChecker.checkOpenClose(openFound, closeFound);
+    }
+
+    public void delete(int start, int end)
+    {
+	TextRange startRange= firstRange.findRangeForPosition(start);
+
+	startRange.deleteInRange(start, end);
+
+	Helper.verifySpans(firstRange, textBuffer);
+    }
+
+    public void removeStyle(int start, int end)
+    {
+	start--;
+	TextRange startRange= firstRange.findRangeForPosition(start);
+	TextRange endRange= firstRange.findRangeForPosition(end);
+
+	TextRange currentRange= startRange;
+
+	while (currentRange != null)
+	{
+	    if (currentRange instanceof OpenSpanTextRange)
+	    {
+		OpenSpanTextRange openSpanTextRange= (OpenSpanTextRange) currentRange;
+		CloseSpanTextRange closeTagTextRange= openSpanTextRange.getCloseTagTextRange();
+		closeTagTextRange.deleteRange();
+		openSpanTextRange.deleteRange();
+		//				if (closeTagTextRange.getEnd() < end)
+		//				{
+		//				}
+		//				else
+		//				{
+		//					openSpanTextRange.stash();
+		//					openSpanTextRange.set
+		//				}
+	    }
+
+	    currentRange= currentRange.getNextRange();
+	}
+
+	Helper.verifySpans(firstRange, textBuffer);
+    }
+
+    public int getLength()
+    {
+	TextRange foundRange= firstRange.findRangeForPosition(textBuffer.length());
+	return foundRange.getEnd();
     }
 }

@@ -7,6 +7,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
+import ar.net.fpetrola.h.TextHighlighter;
 import ar.net.fpetrola.humo.HumoTextDocument;
 import ar.net.fpetrola.humo.StyledSpan;
 
@@ -14,10 +15,22 @@ public class HumoTextDocumentListener implements HumoTextDocument
 {
     private StyledDocument styledDocument;
     private JTextPane jTextPane;
+    private TextHighlighter textHighlighter= new TextHighlighter();
 
     public HumoTextDocumentListener(StyledDocument styledDocument, JTextPane jTextPane)
     {
 	this.styledDocument= styledDocument;
+	String text;
+	try
+	{
+	    text= styledDocument.getText(0, styledDocument.getLength());
+	    textHighlighter.insert(0, text);
+	}
+	catch (BadLocationException e)
+	{
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
 	this.jTextPane= jTextPane;
     }
 
@@ -28,6 +41,9 @@ public class HumoTextDocumentListener implements HumoTextDocument
 
     public void setSpan(String style, int start, int end)
     {
+	System.out.println("highlight:" + style + ":" + start + ":" + end);
+	textHighlighter.highlight(style, start, end);
+
 	SwingUtilities.invokeLater(new Runnable()
 	{
 	    public void run()
@@ -46,7 +62,7 @@ public class HumoTextDocumentListener implements HumoTextDocument
 		try
 		{
 		    if (caretPosition < jTextPane.getDocument().getLength())
-		        jTextPane.setCaretPosition(caretPosition);
+			jTextPane.setCaretPosition(caretPosition);
 		}
 		catch (Exception e)
 		{
@@ -67,6 +83,9 @@ public class HumoTextDocumentListener implements HumoTextDocument
 
     public void insert(int start, String string)
     {
+	System.out.println("insert:" + start + ":" + string);
+
+	textHighlighter.insert(start, string);
 	SwingUtilities.invokeLater(new Runnable()
 	{
 	    public void run()
@@ -122,6 +141,9 @@ public class HumoTextDocumentListener implements HumoTextDocument
 
     public void delete(int startPosition, int endPosition)
     {
+	System.out.println("delete:" + startPosition + ":" + endPosition);
+
+	textHighlighter.delete(startPosition, endPosition);
 	SwingUtilities.invokeLater(new Runnable()
 	{
 	    public void run()
