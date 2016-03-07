@@ -1,56 +1,51 @@
-begin
+[te{[t}mp]{emp]}  
+[re{[r}m]{em]}  
+
+(begin)
 {
-	(met)(hod)
+	<*>temp1{(method)}
+
+	[temp]{delete:[method]}
+
+	[temp]
 	{
-		less-than *>
-	}
-  
-	(be)(gin)
-	{
-	  (met2)(hod2)
-	  {
-	    (less)(-than) *>
-	  }
+		(method){%temp1***}
 	}
 }
 
-
-(met2){(me}
-(hod2){t)(hod)}
-(met){[met}
-(hod){hod]}
-(be){be}
-(gin){gin}
-
-(less){less}
-(-than){-than}
-
-less-than{<}
-greater-than{>}
-<***{<**}
+<**{<*}
 <*>{%}
-*>{(*)(*)(*)>}
-**>{(*)(*)(*)(*)>}
-***>{(*)(*)(*)(*)(*)>}
-****>{(*)(*)(*)(*)(*)(*)(*)(*)(*)(*)>}
 (*){*}
+
+delete:[method]
+{
+	(head:method)(tail:method) {(head2:method)(tail2:method)}
+}
+(head:method){(meth}
+(tail:method){od)}
+(head2:method){(head:meth}
+(tail2:method){od)(tail:method)}
+
+[temp]{delete:[method]}
+
+(method){<**}
+
 
 temp1
 {
-	begin
-
-	[method] m0{code1}
-
-	t2
+	(begin)
 	{
-		begin
-		[method] m1{code2}
-		
-		t3
+		(method) m0{code1}
+	
+		t2
 		{
-			begin
-			[method] m2{code3}
+			(begin)
+			{
+				(method) m1{code2}
+			}
 		}
-		
 	}
 }
+
+[temp]{delete:[method]}
+[temp]{temp1}

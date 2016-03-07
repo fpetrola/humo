@@ -1,0 +1,86 @@
+[te{[t}mp]{emp]}
+[statement]{[temp]}
+
+<class>{new}
+<method>{<*>instance:name.}
+<field>{<*>instance:name.}
+<parameter-definition>{<***>}
+<parameter-usage>{<*>}
+<invocation>{<***>}
+<method-invocation>{}
+<create-parameter>{<*>}
+<process-result>{<**>}
+
+<**{<*}
+<*>{$}
+
+10x20{200}
+:mult:{x}
+
+
+<class> Rectangle
+{
+	<method> getArea
+	{
+		[statement]{<parameter-definition> multiplier:p1{<field> width}}
+		[statement]{<parameter-definition> multiplier:p2{<field> length}}
+		[statement]{<parameter-definition> instance:name{mult1}}
+		[statement]{<invocation> new Multiplier}
+		[statement]{<method-invocation> mult1.multiply}
+		[statement]{<parameter-definition> area:result{<process-result>multiply:result}}
+	}
+
+	<field> width
+	{
+		<parameter-usage> rectangle:width
+	}
+
+	<field> length
+	{
+		<parameter-usage> rectangle:length
+	}
+}
+
+<class> Multiplier
+{
+	<method> multiply
+	{
+		[statement]{<parameter-definition> multiply:first{<field> firstValue}}
+		[statement]{<parameter-definition> multiply:second{<field> secondValue}}
+		[statement]{<invocation> multiply:combined{$multiply:first:mult:$multiply:second}}
+		[statement]{<parameter-definition> multiply:result{$multiply:combined}}
+	}
+
+	<field> firstValue
+	{
+		<parameter-usage> multiplier:p1
+	}
+
+	<field> secondValue
+	{
+		<parameter-usage> multiplier:p2
+	}
+}
+
+
+
+
+[statement]1
+{
+	[statement]{<create-parameter>rectangle:width{10}}
+	[statement]{<create-parameter>rectangle:length{20}}
+	[statement]{<create-parameter>instance:name{rect1}}
+	[statement]{new Rectangle}
+	[statement]{rect1.getArea}
+	[statement]{$area:result}
+}
+
+[statement]2
+{
+	[statement]{<create-parameter>rectangle:width{30}}
+	[statement]{<create-parameter>rectangle:length{40}}
+	[statement]{<create-parameter>instance:name{rect2}}
+	[statement]{new Rectangle}
+	[statement]{rect2.getArea}
+	[statement]{$area:result}
+}

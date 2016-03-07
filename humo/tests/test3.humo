@@ -95,29 +95,35 @@ def:{<}
 
 temp1
 {
-	[begin] 
+	[temp][begin] 
 	{
 		[method] m1a{code1}
 	
-		[begin]
+		[temp][begin]
 		{
 			[method] m2a{code2}
 
-			[begin]
+			[temp][begin]
 			{
 				[method] m3a{code2a}
 				[method] m3b{code2a}
 				[method] m3c{code2a}
 			}
-			[end]
+			[temp][end]
 			
 			[method] m2b{code2b}
 
 		}
-		[end]
+		[temp][end]
 	
 		[method] m1b{code3}
 	
 	}
-	[end]
+	[temp][end]
+}
+
+
+[temp]
+{
+	temp1
 }
