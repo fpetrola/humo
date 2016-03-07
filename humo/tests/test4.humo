@@ -1,0 +1,56 @@
+begin
+{
+	(met)(hod)
+	{
+		less-than *>
+	}
+  
+	(be)(gin)
+	{
+	  (met2)(hod2)
+	  {
+	    (less)(-than) *>
+	  }
+	}
+}
+
+
+(met2){(me}
+(hod2){t)(hod)}
+(met){[met}
+(hod){hod]}
+(be){be}
+(gin){gin}
+
+(less){less}
+(-than){-than}
+
+less-than{<}
+greater-than{>}
+<***{<**}
+<*>{%}
+*>{(*)(*)(*)>}
+**>{(*)(*)(*)(*)>}
+***>{(*)(*)(*)(*)(*)>}
+****>{(*)(*)(*)(*)(*)(*)(*)(*)(*)(*)>}
+(*){*}
+
+temp1
+{
+	begin
+
+	[method] m0{code1}
+
+	t2
+	{
+		begin
+		[method] m1{code2}
+		
+		t3
+		{
+			begin
+			[method] m2{code3}
+		}
+		
+	}
+}
