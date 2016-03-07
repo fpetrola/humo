@@ -1,2 +1,22 @@
-p2{p3{v3}}
-result{p2}
+less-than{<}
+greater-than{>}
+<**{<*}
+<*>{%}
+begin
+{
+  [method]
+  {
+    less-than *>
+  }
+}
+
+temp1
+{
+ begin
+
+ t2{
+begin
+[method] m1{their}
+}
+}
+
