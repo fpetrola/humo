@@ -1,5 +1,7 @@
 package ar.net.fpetrola.humo;
 
+import java.lang.reflect.InvocationTargetException;
+
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
@@ -17,7 +19,7 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 	    {
 		public void run()
 		{
-		    StyledDocument styledDocument= (StyledDocument) aFrame.getDocument();
+		    StyledDocument styledDocument= aFrame.getDocument();
 		    int length= styledDocument.getLength();
 		    int caretPosition= aFrame.getFirst();
 		    if (length > caretPosition + 300)
@@ -59,6 +61,37 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 	updateFrame(currentFrame);
     }
 
+    private void highlightNewProduction(final CharSequence name, final StringBuilder sourcecode)
+    {
+	try
+	{
+	    SwingUtilities.invokeAndWait(new Runnable()
+	    {
+		public void run()
+		{
+		    String clearText= ClearCharSequence.clearText(name.toString());
+
+		    StyledDocument doc= currentFrame.getDocument();
+		    Style curlyStyle= doc.getStyle(TextViewHelper.SPECIAL_STYLE);
+
+		    String string= clearText.toString();
+		    int position= sourcecode.indexOf(string);
+
+		    while (position != -1)
+		    {
+			doc.setCharacterAttributes(position, string.length(), curlyStyle, false);
+			position= sourcecode.indexOf(string, position + clearText.length());
+		    }
+		}
+	    });
+	}
+	catch (Exception e)
+	{
+	    e.printStackTrace();
+	}
+
+    }
+
     public void afterProductionReplacement(final StringBuilder sourcecode, int first, final int current, int last, char currentChar, final StringBuilder value, final int startPosition, final int endPosition)
     {
 	if (debugDelegator.isVisible())
@@ -71,7 +104,7 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 		    {
 			try
 			{
-			    StyledDocument doc= (StyledDocument) currentFrame.getDocument();
+			    StyledDocument doc= currentFrame.getDocument();
 			    doc.putProperty("auto", true);
 			    int length= endPosition - startPosition;
 			    doc.remove(startPosition, length);
@@ -130,7 +163,7 @@ public class HighlighterParserListener extends DefaultParserListener implements 
     {
 	if (debugDelegator.isVisible())
 	{
-	    StyledDocument doc= (StyledDocument) currentFrame.getDocument();
+	    StyledDocument doc= currentFrame.getDocument();
 	    highlightCurlys(sourcecode, current, doc, last - current);
 	    Style style= doc.getStyle(styleId);
 	    doc.setCharacterAttributes(current, last - current, style, false);
@@ -143,7 +176,7 @@ public class HighlighterParserListener extends DefaultParserListener implements 
 	{
 	    if (debugDelegator.isVisible())
 	    {
-		StyledDocument doc= (StyledDocument) currentFrame.getDocument();
+		StyledDocument doc= currentFrame.getDocument();
 		//	    highlightCurlys(sourcecode, lastCurrent, doc, current - lastCurrent);
 		Style style= doc.getStyle(TextViewHelper.FETCH_STYLE);
 		doc.setCharacterAttributes(current, last - current, style, false);
@@ -210,5 +243,12 @@ public class HighlighterParserListener extends DefaultParserListener implements 
     public void setCurrentFrame(ProductionFrame productionFrame)
     {
 	this.currentFrame= productionFrame;
+    }
+
+    public void afterParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar, CharSequence name, CharSequence value)
+    {
+        super.afterParseProductionBody(sourcecode, first, current, last, currentChar, name, value);
+
+	highlightNewProduction(name, sourcecode);
     }
 }

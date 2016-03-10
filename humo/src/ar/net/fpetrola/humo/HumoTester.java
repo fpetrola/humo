@@ -10,7 +10,6 @@ package ar.net.fpetrola.humo;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,16 +41,18 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
 
-import com.digitprop.tonic.TonicLookAndFeel;
+import com.jtattoo.plaf.noire.NoireLookAndFeel;
 
 public class HumoTester
 {
     public static void main(String[] args) throws Exception
     {
-	UIManager.setLookAndFeel(new TonicLookAndFeel());
+	//	UIManager.setLookAndFeel(new TonicLookAndFeel());
+
+//	UIManager.setLookAndFeel(new NoireLookAndFeel());
 
 	if (args.length == 0)
-	    args= new String[] { "prueba+de+objetos2.humo" };
+	    args= new String[] { "test-simple-2.humo" };
 
 	String filename= args[0];
 
@@ -294,6 +295,7 @@ public class HumoTester
 	aButton.setFont(font);
 	return toolBar.add(aButton);
     }
+
     public static void addPopupMenu(final JTextPane textPane, final DebuggerParserListener debugDelegator)
     {
 	final JPopupMenu menu= new JPopupMenu();
@@ -320,6 +322,7 @@ public class HumoTester
 		    menu.show(evt.getComponent(), evt.getX(), evt.getY());
 		}
 	    }
+
 	    public void mouseReleased(MouseEvent evt)
 	    {
 		if (evt.isPopupTrigger())

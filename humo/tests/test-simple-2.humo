@@ -1,0 +1,132 @@
+[te{[t}mp]{emp]}
+[line]{[temp]}
+
+#class{new}
+#method{<*>instance:name.}
+#this.{<*>instance:name.}
+#var{<***>}
+#parameter{<*>}
+#new{<***>new}
+#call{}
+<process-result>{<**>}
+#local{<**>}
+
+<**{<*}
+<*>{$}
+
+10x20{200}
+30x40{1200}
+:mult:{x}
+
+
+#class del
+{ 
+	$del=>( $del::head $del::tail )
+	{
+		head=>$del::head $del::tail tail=>$del::head $del::tail
+		{
+			head2=>$del::head $del::tail tail2=>$del::head $del::tail
+		}
+	}
+
+	head=>$del::head $del::tail {$del::head}
+	tail=>$del::head $del::tail {$del::tail}
+	head2=>$del::head $del::tail {h}
+	tail2=>$del::head $del::tail {ead=>$del::head $del::tail tail=>$del::head $del::tail}
+}
+#end-class del
+{
+	$del=>({$del->(}head=>{head->}tail=>{tail->}ead=>{ead->}head2=>{head2->}tail2=>{tail2->}
+}
+
+[temp]instance:name:delete
+{
+	$del::head{$instance:} $del::tail{name} [temp]{new del}
+}
+
+#class Rectangle
+{
+	#method getArea
+	{
+		[line]{#var multiplier:p1{#this.width}}
+		[line]{#var multiplier:p2{#this.length}}
+		[line]{#var instance:name{#local mult1}}
+		[line]{#new Multiplier}
+		[line]{#call #local mult1.multiply}
+		[line]{#var area:result{<process-result>multiply:result}}
+	}
+
+	#this.width
+	{
+		#parameter rectangle:width
+	}
+
+	#this.length
+	{
+		#parameter rectangle:length
+	}
+	
+	#parameter del->($instance:name)
+}
+
+#class Multiplier
+{
+	#method multiply
+	{
+		[line]{#var multiply:first{#this.firstValue}}
+		[line]{#var multiply:second{#this.secondValue}}
+		[line]{#var multiply:combined{#var $multiply:first:mult: #var $multiply:second}}
+		[line]{#var multiply:result{#call $multiply:combined}}
+	}
+
+	#this.firstValue
+	{
+		#parameter multiplier:p1
+	}
+
+	#this.secondValue
+	{
+		#parameter multiplier:p2
+	}
+
+	#parameter del->($instance:name)
+}
+
+
+#class Main
+{
+	#method execute
+	{
+		[line]{#call #this.m1}
+		[line]{#call #this.m2}
+	}
+
+	#method m1
+	{
+		[line]{#var rectangle:width{10}}
+		[line]{#var rectangle:length{20}}
+		[line]{#var instance:name{rect1}}
+		[line]{#new Rectangle}
+		[line]{#call rect1.getArea}
+		[line]{$area:result}
+	}
+
+	#method m2
+	{
+		[line]{#var rectangle:width{30}}
+		[line]{#var rectangle:length{40}}
+		[line]{#var instance:name{rect2}}
+		[line]{#new Rectangle}
+		[line]{#call rect2.getArea}
+		[line]{$area:result}
+	}
+
+	#parameter del->($instance:name)
+}
+
+[temp]
+{
+	[line]{$instance:name{main1}}
+	[line]{new Main}
+	[line]{main1.execute}
+}
