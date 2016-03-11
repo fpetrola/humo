@@ -1,95 +1,65 @@
 [te{[t}mp]{emp]}
-[line]{[temp]}
+[exec]{[temp]}
 
 #class{new}
-#method{<*>instance:name.}
-#this.{<*>instance:name.}
+#method{[do][llar]<*>instance:name.}
+#field{[do][llar]<*>instance:name.}
+#this.{[do][llar]<*>instance:name.}
 #var{<***>}
+#previous-value-of{<****>}
 #parameter{<*>}
 #new{<***>new}
-#call{}
+#call{<**>}
 <process-result>{<**>}
-#local{<**>}
+#finish-class-building{<**> instance:name{<***>instance:name}}
 
 <**{<*}
 <*>{$}
+[dollar]{$}
+[do]{[do}
+[llar]{llar]}
 
-10x20{200}
-30x40{1200}
-:mult:{x}
-
-
-#class del
-{ 
-	$del=>( $del::head $del::tail )
-	{
-		head=>$del::head $del::tail tail=>$del::head $del::tail
-		{
-			head2=>$del::head $del::tail tail2=>$del::head $del::tail
-		}
-	}
-
-	head=>$del::head $del::tail {$del::head}
-	tail=>$del::head $del::tail {$del::tail}
-	head2=>$del::head $del::tail {h}
-	tail2=>$del::head $del::tail {ead=>$del::head $del::tail tail=>$del::head $del::tail}
-}
-#end-class del
-{
-	$del=>({$del->(}head=>{head->}tail=>{tail->}ead=>{ead->}head2=>{head2->}tail2=>{tail2->}
-}
-
-[temp]instance:name:delete
-{
-	$del::head{$instance:} $del::tail{name} [temp]{new del}
-}
+10[_x_]20{200}
+30[_x_]40{1200}
+[_x{[_}
+_]{x_]}
 
 #class Rectangle
 {
 	#method getArea
 	{
-		[line]{#var multiplier:p1{#this.width}}
-		[line]{#var multiplier:p2{#this.length}}
-		[line]{#var instance:name{#local mult1}}
-		[line]{#new Multiplier}
-		[line]{#call #local mult1.multiply}
-		[line]{#var area:result{<process-result>multiply:result}}
+		[exec]{#var multiplier:p1{#this.width}}
+		[exec]{#var multiplier:p2{#this.length}}
+		[exec]{#var instance:name{mult1}}
+		[exec]{#new Multiplier}
+		[exec]{#call mult1.multiply}
+		[exec]{#var area:result{<process-result>multiply:result}}
 	}
 
-	#this.width
-	{
-		#parameter rectangle:width
-	}
-
-	#this.length
-	{
-		#parameter rectangle:length
-	}
+	#field width {#parameter rectangle:width}
+	#field length {#parameter rectangle:length}
 	
-	#parameter del->($instance:name)
+	#finish-class-building
 }
 
 #class Multiplier
 {
 	#method multiply
 	{
-		[line]{#var multiply:first{#this.firstValue}}
-		[line]{#var multiply:second{#this.secondValue}}
-		[line]{#var multiply:combined{#var $multiply:first:mult: #var $multiply:second}}
-		[line]{#var multiply:result{#call $multiply:combined}}
+		[exec]{#var multiply:first{#this.firstValue}}
+		[exec]{#var multiply:second{#this.secondValue}}
+		[exec]{#var multiply:combined{$multiply:first [_x_] $multiply:second}}
+		[exec]{#var multiply:result{$multiply:combined}}
+		
+		[exec]{#var multiply:first{#previous-value-of multiply:first}}
+		[exec]{#var multiply:second{#previous-value-of multiply:second}}
+		[exec]{#var multiply:combined{#previous-value-of multiply:combined}}
 	}
 
-	#this.firstValue
-	{
-		#parameter multiplier:p1
-	}
-
-	#this.secondValue
-	{
-		#parameter multiplier:p2
-	}
-
-	#parameter del->($instance:name)
+	#field firstValue {#parameter multiplier:p1}
+	#field secondValue {#parameter multiplier:p2}
+	
+	#finish-class-building
 }
 
 
@@ -97,36 +67,36 @@
 {
 	#method execute
 	{
-		[line]{#call #this.m1}
-		[line]{#call #this.m2}
+		[exec]{#this.m1}
+		[exec]{#this.m2}
 	}
 
 	#method m1
 	{
-		[line]{#var rectangle:width{10}}
-		[line]{#var rectangle:length{20}}
-		[line]{#var instance:name{rect1}}
-		[line]{#new Rectangle}
-		[line]{#call rect1.getArea}
-		[line]{$area:result}
+		[exec]{#var rectangle:width{10}}
+		[exec]{#var rectangle:length{20}}
+		[exec]{#var instance:name{rect1}}
+		[exec]{#new Rectangle}
+		[exec]{#call rect1.getArea}
+		[exec]{$area:result}
 	}
 
 	#method m2
 	{
-		[line]{#var rectangle:width{30}}
-		[line]{#var rectangle:length{40}}
-		[line]{#var instance:name{rect2}}
-		[line]{#new Rectangle}
-		[line]{#call rect2.getArea}
-		[line]{$area:result}
+		[exec]{#var rectangle:width{30}}
+		[exec]{#var rectangle:length{40}}
+		[exec]{#var instance:name{rect2}}
+		[exec]{#new Rectangle}
+		[exec]{#call rect2.getArea}
+		[exec]{$area:result}
 	}
 
-	#parameter del->($instance:name)
+	#finish-class-building
 }
 
 [temp]
 {
-	[line]{$instance:name{main1}}
-	[line]{new Main}
-	[line]{main1.execute}
+	[exec]{$instance:name{main1}}
+	[exec]{new Main}
+	[exec]{$main1.execute}
 }
