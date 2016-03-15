@@ -56,13 +56,14 @@ public class HumoInterpreter
 
 Coding example:
 ``` CartoCSS
+[te{[t}mp]{emp]}
+[exec]{[temp]}
+//{[temp]}
+
 //--------------------------------------------------------------------------{}
 //---------------------- Humo Runtime Environment --------------------------{}
 //--------------------------------------------------------------------------{}
 
-[te{[t}mp]{emp]}
-[exec]{[temp]}
-//{[temp]}
 
 run-main-class
 {
