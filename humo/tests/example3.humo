@@ -6,3 +6,28 @@
 [exec]{[temp]}
 //{[temp]}
 
+
+#run-main-class
+{
+    [exec]{#ref instance{main1}}
+    [exec]{new Main}
+    [exec]{$main1.execute}
+}
+
+#class{new}
+#method{[do][llar]<*>instance.}
+#field{[do][llar]<*>instance.}
+#reassign-field{(3)<*>instance.}
+#this.{[do][llar]<*>instance.}
+#instance-name{#var instance}
+#constructor-parameter {<***>}
+#set-method-parameter {<***>}
+#var {<***>}
+#previous-value-of{<****>}
+#use-constructor-parameter {<*>}
+#use-method-parameter {<**>}
+#new{<***>new}
+#call{<**>}
+#last-result{<**> result}
+#return{<***> result}
+#ref{<*>}
