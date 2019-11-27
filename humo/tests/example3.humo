@@ -6,10 +6,3 @@
 [exec]{[temp]}
 //{[temp]}
 
-
-#run-main-class
-{
-    [exec]{#ref instance{main1}}
-    [exec]{new Main}
-    [exec]{$main1.execute}
-}
