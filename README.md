@@ -6,8 +6,9 @@ This is an experimental language that uses very few concepts to perform Turing c
 
 Live demo: [Humo IDE](http://fpetrola.github.io/humo/humo-ide.html?file=https://raw.githubusercontent.com/fpetrola/humo/master/humo/tests/example2.humo)
 
-**Complete interpreter implementation code** (the following code executes any Humo program) :
+[Humo in QR](humo-qr.jpg)
 
+**Complete interpreter implementation code** (the following code executes any Humo program) :
 ``` Java
 /*
  * Humo Language 
