@@ -1,0 +1,128 @@
+[te{[t}mp]{emp]}
+[co{[c}mmand]{ommand]}
+[exec]{[command]}
+
+#class{new}
+#method:{[me][thod]<*>instance:name.}
+#property:{[prop][erty]<*>instance:name.}
+#this.{[do][llar]<*>instance:name.}
+#previous-value-of{<****>}
+#new{<***>new}
+#call{<**>}
+<process-result>{<**>}
+
+<**{<*}
+<*>{$}
+<..{<.}
+<.>{}
+[dollar]{$}
+[do]{[do}
+[llar]{llar]}
+[method]{$}
+[me]{[me}
+[thod]{thod]}
+[property]{$}
+[prop]{[prop}
+[erty]{erty]}
+
+10[_x_]20{200}
+30[_x_]40{1200}
+[_x{[_}
+_]{x_]}
+[-{[}
+->]{-->]}
+[def1]{[}
+[def2]{-}
+#init-class
+{
+[command]{<...>[def1]-{}<...>[def2]>]{<*****>}}
+}
+
+#close-class
+{
+[command]{<***> instance:name{<****>instance:name}}
+[command]{<...>[def1]-{[}<...>[def2]>]{-->]}}
+}
+
+#class Rectangle
+{
+#init-class
+
+#method:getArea
+{
+[command]{[-->]multiplier:p1{#this.width}}
+[command]{[-->]multiplier:p2{#this.length}}
+[command]{[-->]instance:name{mult1}}
+[command]{[-->]#new Multiplier}
+[command]{[-->]#call mult1.multiply}
+[command]{[-->]area:result{<process-result>multiply:result}}
+}
+
+#property:width {[-->]rectangle:width}
+#property:length {[-->]rectangle:length}
+
+#close-class
+}
+
+#class Multiplier
+{
+#init-class
+
+#method:multiply
+{
+[command]{[-->]multiply:first{#this.firstValue}}
+[command]{[-->]multiply:second{#this.secondValue}}
+[command]{[-->]multiply:combined{$multiply:first [_x_] $multiply:second}}
+[command]{[-->]multiply:result{$multiply:combined}}
+
+[command]{[-->]multiply:first{#previous-value-of multiply:first}}
+[command]{[-->]multiply:second{#previous-value-of multiply:second}}
+[command]{[-->]multiply:combined{#previous-value-of multiply:combined}}
+}
+
+#property:firstValue {[-->]multiplier:p1}
+#property:secondValue {[-->]multiplier:p2}
+
+#close-class
+}
+
+
+#class Main
+{
+#init-class
+
+#method:execute
+{
+[command]{#this.m1}
+[command]{#this.m2}
+}
+
+#method:m1
+{
+[command]{[-->]rectangle:width{10}}
+[command]{[-->]rectangle:length{20}}
+[command]{[-->]instance:name{rect1}}
+[command]{[-->]#new Rectangle}
+[command]{[-->]#call rect1.getArea}
+[command]{[-->]$area:result}
+}
+
+#method:m2
+{
+[command]{[-->]rectangle:width{30}}
+[command]{[-->]rectangle:length{40}}
+[command]{[-->]instance:name{rect2}}
+[command]{[-->]#new Rectangle}
+[command]{[-->]#call rect2.getArea}
+[command]{[-->]$area:result}
+}
+
+#close-class
+}
+
+[temp]
+{
+[command]{$instance:name{main1}}
+[command]{new Main}
+[command]{$main1.execute}
+}

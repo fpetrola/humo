@@ -70,7 +70,7 @@ _]{x_]}
 	{
 		[run]{  -->  multiply:first{#this.firstValue} }
 		[run]{  -->  multiply:second{#this.secondValue} }
-		[run]{  -->  multiply:combined{multiply:first [_x_] $multiply:second} }
+		[run]{  -->  multiply:combined{ --> multiply:first [_x_] --> multiply:second} }
 		[run]{  -->  multiply:result{$multiply:combined} }
 
 		[run]{  -->  multiply:first{#previous-value-of multiply:first} }

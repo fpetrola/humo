@@ -41,7 +41,6 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
 
-import com.jtattoo.plaf.noire.NoireLookAndFeel;
 
 public class HumoTester
 {
