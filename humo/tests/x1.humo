@@ -1,0 +1,153 @@
+//--------------------------------------------------------------------------{}
+//---------------------- Humo Runtime Environment --------------------------{}
+//-------------------------------------------------------------------------.{}
+
+[te{[t}mp]{emp]}
+[exec]{[temp]}
+//{[temp]}
+
+
+#run-main-class
+{
+[exec]{#ref instance{main1}}
+[exec]{new Main}
+[exec]{$main1.execute}
+}
+
+#class{new}
+#method{[do][llar]<*>instance.}
+#field{[do][llar]<*>instance.}
+#reassign-field{(3)<*>instance.}
+#this.{[do][llar]<*>instance.}
+#instance-name{#var instance}
+#constructor-parameter {<***>}
+#set-method-parameter {<***>}
+#var {<***>}
+#previous-value-of{<****>}
+#use-constructor-parameter {<*>}
+#use-method-parameter {<**>}
+#new{<***>new}
+#call{<**>}
+#last-result{<**> result}
+#return{<***> result}
+#ref{<*>}
+
+<**{<*}
+<*>{$}
+[**{[*}
+[*]{}
+
+[dollar]{$}
+[do]{[do}
+[llar]{llar]}
+
+(3){open-parenthesis2)}
+(2){open-parenthesis1)}
+(1){$}
+open-parenthesis{(}
+
+
+10[_x_]20{200}
+30[_x_]40{1200}
+
+_x_{underscore_x_}
+_-_{underscore_-_}
+_+_{underscore_+_}
+_==_{underscore_==_}
+
+underscore_{_}
+
+
+[add_bits 0 0 0]{0 0}
+[add_bits 0 0 1]{1 0}
+[add_bits 0 1 0]{1 0}
+[add_bits 0 1 1]{0 1}
+[add_bits 1 0 0]{1 0}
+[add_bits 1 0 1]{0 1}
+[add_bits 1 1 0]{0 1}
+[add_bits 1 1 1]{1 1}
+
+
+#class ByteAdder
+{
+    #method add
+    {
+        [exec]{#var byte1{#this.byte1}}
+        [exec]{#var byte2{#this.byte2}}
+        [exec]{#var result{[process_bits $byte1 $byte2 0 0]}}
+        [exec]{#return {#ref result}}
+    }
+
+    #method process_bits
+    {
+        [exec]{#if {#eq {#length {#param 1}} 0}}
+            [exec]{#return {#param 3}}  // Return accumulated result
+        [exec]{#end}
+
+        [exec]{#var b1{#first {#param 1}}}
+        [exec]{#var b2{#first {#param 2}}}
+        [exec]{#var carry_in{#param 4}}
+
+        [exec]{#var sum_carry {[add_bits $b1 $b2 $carry_in]}}
+        [exec]{#var sum {#first $sum_carry}}
+        [exec]{#var carry_out {#last $sum_carry}}
+
+        [exec]{#var new_result {#concat {#param 3} $sum}}
+        [exec]{#var remaining1 {#rest {#param 1}}}
+        [exec]{#var remaining2 {#rest {#param 2}}}
+        [exec]{#return {[process_bits $remaining1 $remaining2 $new_result $carry_out]}}
+    }
+
+    #field byte1 {#parameter b1}
+    #field byte2 {#parameter b2}
+}
+
+
+#class ByteUtils
+{
+    #method to_bits
+    {
+        [exec]{#var num{#param 1}}
+        [exec]{#var bits{[convert $num 7]}}
+        [exec]{#return {#ref bits}}
+    }
+
+    #method convert
+    {
+        [exec]{#if {#eq {#param 2} -1}}
+            [exec]{#return {}}
+        [exec]{#end}
+        
+        [exec]{#var bit {#if {#gte $num {#pow 2 {#param 2}}} 1 0}}
+        [exec]{#var new_num {#if $bit {#sub $num {#pow 2 {#param 2}}} $num}}
+        [exec]{#return {#concat $bit {[convert $new_num {#sub {#param 2} 1}]}}}
+    }
+}
+
+#class Main
+{
+    #method execute
+    {
+        [exec]{#var byte1 {[ByteUtils.to_bits 255]}}
+        [exec]{#var byte2 {[ByteUtils.to_bits 3]}}
+        
+        [exec]{#new ByteAdder {b1 $byte1} {b2 $byte2}}
+        [exec]{#call add}
+        [exec]{#last-result}  // Returns sum bits (00000010 with carry)
+    }
+}
+
+
+[first [bit][rest]]{$bit}
+[rest [bit][rest]]{$rest}
+[concat [a][b]]{[a}{b]}
+[length {}]{0}
+[length [bit][rest]]{[inc {[length $rest}]}
+
+[pow 2 0]{1}
+[pow 2 n]{[mul 2 {[pow 2 {[dec $n]}]}]}
+[inc n]{[add $n 1]}
+[dec n]{[sub $n 1]}
+[gte a b]{[sub $a $b] >= 0 ? 1 : 0}
+
+[run-main-class]
