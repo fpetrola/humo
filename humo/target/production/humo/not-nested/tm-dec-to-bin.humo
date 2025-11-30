@@ -308,7 +308,7 @@ $CHECK_HALT_continue2{ [run]{ <**> tm:running{true} } }
                         [run]{ [variable] tape_-2{_} } 
                         [run]{ [variable] tape_-1{_} } 
                         [run]{ [variable] tape_0{1} }
-                        [run]{ [variable] tape_1{7} }
+                        [run]{ [variable] tape_1{0} }
                         [run]{ [variable] tape_2{_} } 
                         [run]{ [variable] tape_3{_} } 
                         [run]{ [variable] tape_4{_} } 
