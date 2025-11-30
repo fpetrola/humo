@@ -1,0 +1,220 @@
+[comm{[com}ent]{ment]} 
+[comment] {----------------------------------------------------- Humo Runtime  -----------------------------------------------------}
+[comment] {-------------------------------------------------------------------------------------------------------------------------}
+[te{[t}mp]{emp]}
+[sent{[sen}ence]{tence]}
+[exec]{[run]}
+[run]{[sentence]}
+[vari{[var}able]{iable]}
+[exec{[exe}ute]{cute]}
+[cre{[cr}ate]{eate]}
+[field]{[variable]$instance:name.}
+[call-method]{[execute]<*>instance:name.}
+#class{new}
+#method:{[me][thod]<*>instance:name.}
+#property:{[prop][erty]<*>instance:name.}
+#this.{[do][llar]<*>instance:name.}
+#previous-value-of{<****>}
+#new{[crnew}
+#call{<**>}
+<process-result>{<**>}
+<--{<-}
+<->{@}
+<**{<*}
+<*>{$}
+[dollar]{$}
+[do]{[do}
+[llar]{llar]}
+[method]{$}
+[me]{[me}
+[thod]{thod]}
+[property]{$}
+[prop]{[prop}
+[erty]{erty]}
+
+10[_x_]20{200}
+30[_x_]40{1200}
+
+[_x{[_}
+_]{x_]}
+[def1]{[}
+[def2]{-}
+@[{[}
+@a{a}
+@b{b}
+@e{e}
+@t{t}
+@v{v}
+@u{u}
+@r{r}
+@${$}
+
+#begin-construction {
+  [run]{<-->[@vari{<*}<-->a@ble]{>}}
+  [run]{<-->[@exec{}<-->u@te]{$}}
+  [run]{<-->@[cre{}<-->@ate]{new}}
+}
+#end-construction {
+  [run]{<***>instance:name{<****>instance:name}}
+  [run]{<-->[@vari{[var}<-->a@ble]{iable]}}
+  [run]{<-->[@exec{[exe}<-->u@te]{cute]}}
+  [run]{<-->@[cre{@[cr}<-->@ate]{<-->e@ate]}}
+}
+
+
+[comment] {------------------- ARITMETICA BASICA (Para el Cabezal) -------------------}
+[comment] { Tablas para mover el indice de la cinta (Head Position) }
+INC_0{1} INC_1{2} INC_2{3} INC_3{4} INC_4{5} INC_5{6}
+DEC_1{0} DEC_2{1} DEC_3{2} DEC_4{3} DEC_5{4} DEC_6{5}
+
+[comment] {------------------- REGLAS DE LA MAQUINA DE TURING -------------------}
+[comment] { Formato de la Regla: RULE_EstadoActual_SimboloLeido }
+[comment] { Accion: Establece nuevas variables globales para la siguiente iteracion }
+
+[comment] { ESTADO q0: Invertir bits }
+[comment] { Si leo 0 -> Escribo 1, Muevo R, Estado q0 }
+$RULE_q0_0{
+    [run]{ <**> nextState{q0} }
+    [run]{ <**> writeVal{1} }
+    [run]{ <**> moveDir{R} }
+}
+
+[comment] { Si leo 1 -> Escribo 0, Muevo R, Estado q0 }
+$RULE_q0_1{
+    [run]{ <**> nextState{q0} }
+    [run]{ <**> writeVal{0} }
+    [run]{ <**> moveDir{R} }
+}
+
+[comment] { Si leo _ (fin) -> Escribo _, Muevo N (Nada), Estado halt }
+$RULE_q0__{
+    [run]{ <**> nextState{halt} }
+    [run]{ <**> writeVal{_} }
+    [run]{ <**> moveDir{N} }
+}
+
+
+[comment] {------------------- LOGICA DE LA MAQUINA -------------------}
+
+#class TuringMachine {
+    #begin-construction
+
+    [comment] { --- Inicializacion --- }
+    #method:init {
+        [run]{ [variable] tm:headPos{0} }
+        [run]{ [variable] tm:currentState{q0} }
+        [run]{ [variable] tm:running{true} }
+    }
+
+    [comment] { --- Ciclo Principal (Recursivo) --- }
+    #method:ran {
+        [run]{ [variable] isRunning{#this.running} }
+
+        [comment] { Despacho dinamico: si isRunning es true, llama a step, si no, para }
+        [run]{ [variable] b1{[execute]action_} }
+        [run]{ [variable] nextAction{[execute]b1 $isRunning} }
+        [run]{ [execute] nextAction }
+    }
+
+    [comment] { --- Un paso de la maquina --- }
+    #method:step {
+        [comment] { 1. LEER CINTA }
+        [run]{ [variable] pos{#this.headPos} }
+        [run]{ [variable] _tape_{[execute]tape_} }
+        [run]{ [variable] currentSym{[execute]_tape_ $pos} }
+
+        [comment] { 2. BUSCAR REGLA (Transition Function) }
+        [run]{ [variable] state{#this.currentState_} }
+        [run]{ [variable] _rule_{[execute]RULE_} }
+        [run]{ [variable] ruleName{[execute]_rule_ $state $currentSym} }
+
+        [comment] { 3. EJECUTAR REGLA (Esto carga nextState, writeVal y moveDir) }
+        [run]{ [execute] ruleName }
+
+        [comment] { 4. ESCRIBIR EN CINTA }
+        [run]{ [variable] valToWrite{$writeVal} }
+        [run]{ [execute] _tape_ $pos{$valToWrite} }
+
+        [comment] { 5. MOVER CABEZAL }
+        [run]{ [variable] dir{$moveDir} }
+        [run]{ [variable] _move_{[execute]MOVE_} }
+        [run]{ [variable] moveCmd{[execute]_move_ $dir} }
+        [run]{ [execute] moveCmd }
+
+        [comment] { 6. ACTUALIZAR ESTADO }
+        [run]{ [field] currentState{$nextState} }
+
+        [comment] { 7. VERIFICAR HALT }
+        [run]{ [variable] _check_halt_{[execute]CHECK_HALT_} }
+        [run]{ [variable] checker{[execute]_check_halt_ $nextState} }
+        [run]{ [execute] checker }
+
+        [comment] { 8. RECURSION (Bucle Infinito) }
+        [run]{ [execute] tm1.ran }
+    }
+
+    #property:headPos      { [execute] tm:headPos }
+    #property:currentState { [execute] tm:currentState }
+    #property:running      { [execute] tm:running }
+
+    #end-construction
+}
+
+[comment] {------------------- HELPERS DE CONTROL -------------------}
+
+[comment] { Helpers para el bucle while }
+$action_true{  $tm1.step }
+$action_false{ [comment] { Termino el programa } }
+
+[comment] { Helpers para mover el cabezal }
+$MOVE_R{
+    [run]{ <**> _position_{$tm:headPos} }
+    [run]{ <**> _inc_{INC_} }
+    [run]{ <**> temp1{<*>_inc_ $_position_} }
+    [run]{ <**> tm:headPos{<*> temp1} }
+}
+$MOVE_L{
+    [run]{ <**> _position_{$tm:headPos} }
+    [run]{ <**> _dec_{DEC_} }
+    [run]{ <**> temp1{<*>_dec_ $_position_} }
+    [run]{ <**> tm:headPos{<*> temp1} }
+}
+$MOVE_N{ }
+
+[comment] { Helper para detectar estado de parada }
+$CHECK_HALT_q0{ }
+$CHECK_HALT_halt{ [run]{ <**> tm:running{false} } }
+
+
+[comment] {------------------- MAIN -------------------}
+
+#class Main {
+    #begin-construction
+    #method:execute {
+        [comment] { 1. Configurar Cinta Inicial: 0 1 0 _ }
+        [run]{ [variable] tape_0{0} }
+        [run]{ [variable] tape_1{1} }
+        [run]{ [variable] tape_2{0} }
+        [run]{ [variable] tape_3{_} }
+
+        [comment] { 2. Crear Maquina }
+        [run]{ [variable] instance:name{tm1} }
+        [run]{ [create] TuringMachine }
+        [run]{ [execute] tm1.init }
+
+        [comment] { 3. Ejecutar }
+        [run]{ [execute] tm1.ran }
+
+        [comment] { 4. Ver Resultado (Deberia ser 1 0 1) }
+        [run]{ [variable] res0{$tape_0} }
+        [run]{ [variable] res1{$tape_1} }
+        [run]{ [variable] res2{$tape_2} }
+    }
+    #end-construction
+}
+
+[temp] {
+  [run]{ $instance:name{mainApp} }
+  [run]{ new Main }
+  [run]{ $mainApp.execute }
+}
