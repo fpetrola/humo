@@ -47,11 +47,7 @@ public class ProductionsParserListener extends DefaultParserListener implements 
 	if (createComponents)
 	{
 	    productionsTree= new JTree(root);
-	    DefaultTreeCellRenderer renderer= new DefaultTreeCellRenderer();
-	    Icon customOpenIcon= new ImageIcon(HumoTester.class.getResource("/images/scalarvar.gif"));
-	    Icon customClosedIcon= new ImageIcon(HumoTester.class.getResource("/images/genericvariable.gif"));
-	    renderer.setOpenIcon(customOpenIcon);
-	    renderer.setClosedIcon(customClosedIcon);
+	    ProductionTreeCellRenderer renderer= new ProductionTreeCellRenderer();
 	    productionsTree.setCellRenderer(renderer);
 	}
 
