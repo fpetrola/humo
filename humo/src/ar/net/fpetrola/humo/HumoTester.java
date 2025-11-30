@@ -297,9 +297,9 @@ public class HumoTester
 	    public void actionPerformed(ActionEvent e)
 	    {
 		if (hideVariableProductions.isSelected()) {
-		    productionsParserListener.setProductionFilter(true, "[", "<");
+		    productionsParserListener.setProductionFilter(true, "[variable]");
 		} else {
-		    productionsParserListener.setProductionFilter(false, null);
+		    productionsParserListener.setProductionFilter(false);
 		}
 	    }
 	}));

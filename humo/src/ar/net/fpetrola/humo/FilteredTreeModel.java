@@ -34,15 +34,20 @@ public class FilteredTreeModel extends DefaultTreeModel {
         }
 
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) parent;
-        int count = 0;
         
-        for (int i = 0; i < node.getChildCount(); i++) {
-            DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
-            if (shouldShowNode(child)) {
-                count++;
+        // Solo filtrar si es el root (primer nivel)
+        if (node == root) {
+            int count = 0;
+            for (int i = 0; i < node.getChildCount(); i++) {
+                DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
+                if (shouldShowFirstLevelNode(child)) {
+                    count++;
+                }
             }
+            return count;
         }
-        return count;
+        
+        return super.getChildCount(parent);
     }
 
     @Override
@@ -52,28 +57,33 @@ public class FilteredTreeModel extends DefaultTreeModel {
         }
 
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) parent;
-        int visibleIndex = 0;
         
-        for (int i = 0; i < node.getChildCount(); i++) {
-            DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
-            if (shouldShowNode(child)) {
-                if (visibleIndex == index) {
-                    return child;
+        // Solo filtrar si es el root
+        if (node == root) {
+            int visibleIndex = 0;
+            for (int i = 0; i < node.getChildCount(); i++) {
+                DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
+                if (shouldShowFirstLevelNode(child)) {
+                    if (visibleIndex == index) {
+                        return child;
+                    }
+                    visibleIndex++;
                 }
-                visibleIndex++;
             }
+            return null;
         }
-        return null;
+        
+        return super.getChild(parent, index);
     }
 
-    private boolean shouldShowNode(DefaultMutableTreeNode node) {
+    private boolean shouldShowFirstLevelNode(DefaultMutableTreeNode node) {
         if (filterPrefix == null || !hideFiltered) {
             return true;
         }
         
         String nodeText = node.getUserObject().toString().trim();
-        for (String filterPrefix : filterPrefix) {
-            if (nodeText.startsWith(filterPrefix)) {
+        for (String prefix : filterPrefix) {
+            if (nodeText.startsWith(prefix)) {
                 return false;
             }
         }
