@@ -49,6 +49,12 @@ public class CallStackParserListener extends DefaultParserListener implements Pa
 	    usedProductionsStack.pop();
 	    if (!debugDelegator.isTotallyInvisible())
 		((DefaultTreeModel) stacktraceTree.getModel()).reload();
+	    // Seleccionar la producción del nuevo nivel activo
+	    if (productionsParserListener != null && usedProductionsStack.size() > 1)
+	    {
+		DefaultMutableTreeNode topNode= usedProductionsStack.peek();
+		productionsParserListener.selectAndExpandProduction((CharSequence) topNode.getUserObject());
+	    }
 	}
     }
 
