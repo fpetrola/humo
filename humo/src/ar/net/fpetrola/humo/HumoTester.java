@@ -36,7 +36,6 @@ import javax.swing.JTree;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
@@ -77,6 +76,7 @@ public class HumoTester
 	JSpinner skipSizeSpinner= new JSpinner(new SpinnerNumberModel(50, 0, 100000, 1000));
 	JCheckBox skipSmall= new JCheckBox("skip productions smaller than:");
 	JCheckBox skipAll= new JCheckBox("skip all  ");
+	JCheckBox hideVariableProductions= new JCheckBox("hide [variable] productions");
 
 	DebuggerParserListener debugListener= new DebuggerParserListener(skipSmall.getModel(), skipSizeSpinner.getModel(), skipAll.getModel());
 	CallStackParserListener callStackParserListener= new CallStackParserListener(debugListener);
@@ -113,7 +113,7 @@ public class HumoTester
 
 		if (!initialized)
 		{
-		    showTree(highlighterParserListener, debugListener, parser, sourcecode, textPane, callStackParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe, filenameTextField, skipSmall, skipSizeSpinner, parserListenerMultiplexer, skipAll);
+		    showTree(highlighterParserListener, debugListener, parser, sourcecode, textPane, callStackParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe, filenameTextField, skipSmall, skipSizeSpinner, parserListenerMultiplexer, skipAll, hideVariableProductions, productionsParserListener);
 		    initialized= true;
 		}
 		parser.init();
@@ -128,7 +128,7 @@ public class HumoTester
 	}
     }
 
-    public static void showTree(final HighlighterParserListener highlighterParserListener, final DebuggerParserListener debugListener, final ListenedParser parser, StringBuilder sourceCode, final JTextPane textPane, JTree stacktraceTree, JTree executionTree, JTree productionsTree, final JFrame jframe, final JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner, final ParserListenerMultiplexer parserListenerMultiplexer, JCheckBox skipAll)
+    public static void showTree(final HighlighterParserListener highlighterParserListener, final DebuggerParserListener debugListener, final ListenedParser parser, StringBuilder sourceCode, final JTextPane textPane, JTree stacktraceTree, JTree executionTree, JTree productionsTree, final JFrame jframe, final JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner, final ParserListenerMultiplexer parserListenerMultiplexer, JCheckBox skipAll, final JCheckBox hideVariableProductions, final ProductionsParserListener productionsParserListener)
     {
 	jframe.setLocation(100, 100);
 
@@ -144,7 +144,7 @@ public class HumoTester
 
 	JPanel mainPanel= new JPanel(new BorderLayout());
 
-	JToolBar toolBar= createToolbar(highlighterParserListener, debugListener, parser, stacktraceTree, textField, skipSmall, skipSizeSpinner, skipAll, textPane);
+	JToolBar toolBar= createToolbar(highlighterParserListener, debugListener, parser, stacktraceTree, textField, skipSmall, skipSizeSpinner, skipAll, textPane, hideVariableProductions, productionsParserListener);
 	mainPanel.add(toolBar, BorderLayout.PAGE_START);
 	mainPanel.add(verticalSplitPane, BorderLayout.CENTER);
 
@@ -153,7 +153,7 @@ public class HumoTester
 	jframe.setVisible(true);
     }
 
-    private static JToolBar createToolbar(final HighlighterParserListener highlighterParserListener, final DebuggerParserListener debugListener, final ListenedParser parser, JTree stacktraceTree, final JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner, JCheckBox skipAll, final JTextPane textPane)
+    private static JToolBar createToolbar(final HighlighterParserListener highlighterParserListener, final DebuggerParserListener debugListener, final ListenedParser parser, JTree stacktraceTree, final JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner, JCheckBox skipAll, final JTextPane textPane, final JCheckBox hideVariableProductions, final ProductionsParserListener productionsParserListener)
     {
 	JToolBar toolBar= new JToolBar("debugger actions");
 
@@ -288,6 +288,23 @@ public class HumoTester
 	toolBar.add(skipAll);
 	toolBar.add(skipSmall);
 	toolBar.add(skipSizeSpinner);
+
+	toolBar.add(new JSeparator(SwingConstants.VERTICAL));
+
+	hideVariableProductions.setSelected(false);
+	hideVariableProductions.addActionListener(new ThreadSafeActionListener(new ActionListener()
+	{
+	    public void actionPerformed(ActionEvent e)
+	    {
+		if (hideVariableProductions.isSelected()) {
+		    productionsParserListener.setProductionFilter(true, "[", "<");
+		} else {
+		    productionsParserListener.setProductionFilter(false, null);
+		}
+	    }
+	}));
+
+	toolBar.add(hideVariableProductions);
 	return toolBar;
     }
 

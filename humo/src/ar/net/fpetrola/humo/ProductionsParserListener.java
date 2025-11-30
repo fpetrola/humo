@@ -17,7 +17,6 @@ import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
 
 public class ProductionsParserListener extends DefaultParserListener implements ParserListener
 {
@@ -26,6 +25,7 @@ public class ProductionsParserListener extends DefaultParserListener implements 
     private int productionsCount= 0;
     protected JTree productionsTree;
     private DebuggerParserListener debugDelegator;
+    private FilteredTreeModel filteredTreeModel;
 
     public ProductionsParserListener(DebuggerParserListener debugDelegator)
     {
@@ -55,12 +55,19 @@ public class ProductionsParserListener extends DefaultParserListener implements 
 	    productionsTree.setCellRenderer(renderer);
 	}
 
-	productionsTree.setModel(new DefaultTreeModel(root));
+	filteredTreeModel = new FilteredTreeModel(root);
+	productionsTree.setModel(filteredTreeModel);
     }
 
     public JTree getProductionsTree()
     {
 	return productionsTree;
+    }
+
+    public void setProductionFilter(boolean hideFiltered, String... filterPrefix) {
+        if (filteredTreeModel != null) {
+            filteredTreeModel.setFilter(hideFiltered, filterPrefix);
+        }
     }
 
     public void afterParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar, CharSequence name, CharSequence value)
