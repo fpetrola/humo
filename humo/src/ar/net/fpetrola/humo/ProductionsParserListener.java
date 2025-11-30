@@ -26,6 +26,8 @@ public class ProductionsParserListener extends DefaultParserListener implements 
   protected JTree productionsTree;
   private DebuggerParserListener debugDelegator;
   private FilteredTreeModel filteredTreeModel;
+  private boolean updatesPaused = false;
+  private CharSequence lastProductionName = null;
 
   public ProductionsParserListener(DebuggerParserListener debugDelegator) {
     this.debugDelegator = debugDelegator;
@@ -87,7 +89,7 @@ public class ProductionsParserListener extends DefaultParserListener implements 
   }
 
   private void updateTreeUI() {
-    if (!debugDelegator.isTotallyInvisible())
+    if (!updatesPaused && !debugDelegator.isTotallyInvisible())
       SwingUtilities.invokeLater(new Runnable() {
         public void run() {
           productionsTree.updateUI();
@@ -96,8 +98,13 @@ public class ProductionsParserListener extends DefaultParserListener implements 
   }
 
   public void selectAndExpandProduction(CharSequence productionName) {
-    //find in nodes but trimming node text
+    // Si las actualizaciones están pausadas, solo guardar el nombre para hacerlo después
+    if (updatesPaused) {
+      lastProductionName = productionName;
+      return;
+    }
 
+    //find in nodes but trimming node text
     String string = productionName.toString();
     nodes.keySet().forEach(key -> {
       if (key.toString().trim().equals(string.trim())) {
@@ -111,5 +118,19 @@ public class ProductionsParserListener extends DefaultParserListener implements 
         });
       }
     });
+  }
+
+  public void pauseUpdates() {
+    updatesPaused = true;
+  }
+
+  public void resumeUpdates() {
+    updatesPaused = false;
+    updateTreeUI();
+    // Seleccionar la última producción visitada si existe
+    if (lastProductionName != null) {
+      selectAndExpandProduction(lastProductionName);
+      lastProductionName = null;
+    }
   }
 }

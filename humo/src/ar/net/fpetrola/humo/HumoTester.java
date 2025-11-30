@@ -85,6 +85,7 @@ public class HumoTester
 	ExecutionParserListener treeParserListener= new ExecutionParserListener(debugListener);
 	ParserListenerMultiplexer parserListenerMultiplexer= new ParserListenerMultiplexer(productionsParserListener, treeParserListener, highlighterParserListener, callStackParserListener, debugListener);
 	debugListener.setProductionFrames(parserListenerMultiplexer.getProductionFrames());
+	debugListener.setProductionsParserListener(productionsParserListener);
 	callStackParserListener.setProductionsParserListener(productionsParserListener);
 	ListenedParser parser= new ListenedParser(parserListenerMultiplexer);
 	debugListener.stepInto();
