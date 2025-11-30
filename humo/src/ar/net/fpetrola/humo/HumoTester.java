@@ -51,7 +51,7 @@ public class HumoTester
 //	UIManager.setLookAndFeel(new NoireLookAndFeel());
 
 	if (args.length == 0)
-	    args= new String[] { "test-simple-2.humo" };
+	    args= new String[] { "not-nested/tm-dec-to-bin.humo" };
 
 	String filename= args[0];
 
