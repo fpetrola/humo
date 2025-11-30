@@ -85,6 +85,7 @@ public class HumoTester
 	ExecutionParserListener treeParserListener= new ExecutionParserListener(debugListener);
 	ParserListenerMultiplexer parserListenerMultiplexer= new ParserListenerMultiplexer(productionsParserListener, treeParserListener, highlighterParserListener, callStackParserListener, debugListener);
 	debugListener.setProductionFrames(parserListenerMultiplexer.getProductionFrames());
+	callStackParserListener.setProductionsParserListener(productionsParserListener);
 	ListenedParser parser= new ListenedParser(parserListenerMultiplexer);
 	debugListener.stepInto();
 
@@ -267,7 +268,11 @@ public class HumoTester
 		    StacktraceTreeNode stacktraceTreeNode= (StacktraceTreeNode) lastPathComponent;
 		    ProductionFrame frame= stacktraceTreeNode.getFrame();
 		    if (frame != null)
+		    {
 			highlighterParserListener.updateFrame(frame);
+			// Seleccionar y expandir la producción asociada
+			productionsParserListener.selectAndExpandProduction((CharSequence) stacktraceTreeNode.getUserObject());
+		    }
 		}
 	    }
 	});
