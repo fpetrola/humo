@@ -276,7 +276,7 @@ public class HumoTester
 
 	toolBar.add(new JSeparator(SwingConstants.VERTICAL));
 
-	skipSmall.setSelected(true);
+	skipSmall.setSelected(false);
 	skipSmall.addActionListener(new ThreadSafeActionListener(new ActionListener()
 	{
 	    public void actionPerformed(ActionEvent e)
@@ -291,7 +291,7 @@ public class HumoTester
 
 	toolBar.add(new JSeparator(SwingConstants.VERTICAL));
 
-	hideVariableProductions.setSelected(false);
+	hideVariableProductions.setSelected(true);
 	hideVariableProductions.addActionListener(new ThreadSafeActionListener(new ActionListener()
 	{
 	    public void actionPerformed(ActionEvent e)
