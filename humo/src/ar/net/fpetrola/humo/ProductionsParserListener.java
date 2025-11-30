@@ -73,12 +73,13 @@ public class ProductionsParserListener extends DefaultParserListener implements 
 	DefaultMutableTreeNode node= nodes.get(name);
 	DefaultMutableTreeNode child= new DefaultMutableTreeNode(value + " (count:" + productionsCount + ")");
 	if (node != null)
-	    node.add(child);
+	    // Insertar al inicio (índice 0) para mostrar las versiones más recientes primero
+	    node.insert(child, 0);
 	else
 	{
 	    DefaultMutableTreeNode parent= new DefaultMutableTreeNode(name);
 	    root.add(parent);
-	    parent.add(child);
+	    parent.insert(child, 0);
 	    nodes.put(name, parent);
 	}
 

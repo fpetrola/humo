@@ -80,8 +80,31 @@ public class ProductionTreeCellRenderer extends DefaultTreeCellRenderer {
             // Nombre de producción - en negritas azul
             return "<html><b><font color='#0066CC'>" + escapeHtml(text) + "</font></b></html>";
         } else {
-            // Contenido de producción - aplicar formato anidado
-            return "<html>" + formatProduction(text, 0) + "</html>";
+            // Contenido de producción - separar valor y count
+            return "<html>" + formatProductionWithCount(text) + "</html>";
+        }
+    }
+    
+    /**
+     * Formatea el contenido separando el valor del count
+     * Formato esperado: "valor (count:xxx)"
+     */
+    private String formatProductionWithCount(String text) {
+        // Buscar el patrón " (count:xxxx)"
+        int countStart = text.lastIndexOf(" (count:");
+        if (countStart != -1) {
+            String value = text.substring(0, countStart);
+            String countPart = text.substring(countStart);
+            
+            // Valor en negrita y oscuro
+            String formattedValue = "<b><font color='#333333'>" + formatProduction(value, 0) + "</font></b>";
+            // Count en gris claro
+            String formattedCount = "<font color='#BBBBBB'>" + escapeHtml(countPart) + "</font>";
+            
+            return formattedValue + formattedCount;
+        } else {
+            // Si no tiene el formato esperado, aplicar formato normal
+            return formatProduction(text, 0);
         }
     }
     
