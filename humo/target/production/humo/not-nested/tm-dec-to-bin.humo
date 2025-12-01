@@ -9,15 +9,10 @@
 [exec{[exe}ute]{cute]}
 [cre{[cr}ate]{eate]}
 [field]{[variable]$instance:name.}
-[call-method]{[execute]<*>instance:name.}
 #class{new}
 #method:{[me][thod]<*>instance:name.}
 #property:{[prop][erty]<*>instance:name.}
 #this.{[do][llar]<*>instance:name.}
-#previous-value-of{<****>}
-#new{[crnew}
-#call{<**>}
-<process-result>{<**>}
 <--{<-}
 <->{@}
 <**{<*}
@@ -32,13 +27,9 @@
 [prop]{[prop}
 [erty]{erty]}
 
-10[_x_]20{200}
-30[_x_]40{1200}
-
 [_x{[_}
 _]{x_]}
-[def1]{[}
-[def2]{-}
+
 @[{[}
 @a{a}
 @b{b}
@@ -268,22 +259,7 @@ $MOVE_L{
 $MOVE_N{ }
 
 [comment] { Helper para detectar estado de parada }
-$CHECK_HALT_qinit{ [run]{ <**> tm:running{true} } }
 $CHECK_HALT_qfin{ [run]{ <**> tm:running{false} } }
-$CHECK_HALT_halve{ [run]{ <**> tm:running{true} } }
-$CHECK_HALT_addHalf{ [run]{ <**> tm:running{true} } }
-$CHECK_HALT_jump{ [run]{ <**> tm:running{true} } }
-$CHECK_HALT_removezero{ [run]{ <**> tm:running{true} } }
-$CHECK_HALT_goBack{ [run]{ <**> tm:running{true} } }
-$CHECK_HALT_rest{ [run]{ <**> tm:running{true} } }
-$CHECK_HALT_rest0{ [run]{ <**> tm:running{true} } }
-$CHECK_HALT_rest1{ [run]{ <**> tm:running{true} } }
-$CHECK_HALT_setrest0{ [run]{ <**> tm:running{true} } }
-$CHECK_HALT_setrest1{ [run]{ <**> tm:running{true} } }
-$CHECK_HALT_continue{ [run]{ <**> tm:running{true} } }
-$CHECK_HALT_continue2{ [run]{ <**> tm:running{true} } }
-
-
 
 [comment] {------------------- MAIN -------------------}
 
@@ -292,12 +268,6 @@ $CHECK_HALT_continue2{ [run]{ <**> tm:running{true} } }
             #method:execute {
                         [comment] { 1. Configurar Cinta Inicial: Ampliada para índices negativos y positivos }
                         [comment] { Cinta Negativa (Indexación Lógica) }
-                        [run]{ [variable] tape_-F{_} }
-                        [run]{ [variable] tape_-E{_} }
-                        [run]{ [variable] tape_-D{_} }
-                        [run]{ [variable] tape_-C{_} }
-                        [run]{ [variable] tape_-B{_} }
-                        [run]{ [variable] tape_-A{_} }
                         [run]{ [variable] tape_-9{_} }
                         [run]{ [variable] tape_-8{_} }
                         [run]{ [variable] tape_-7{_} }
@@ -317,12 +287,6 @@ $CHECK_HALT_continue2{ [run]{ <**> tm:running{true} } }
                         [run]{ [variable] tape_7{_} } 
                         [run]{ [variable] tape_8{_} } 
                         [run]{ [variable] tape_9{_} } 
-                        [run]{ [variable] tape_A{_} } 
-                        [run]{ [variable] tape_B{_} } 
-                        [run]{ [variable] tape_C{_} }
-                        [run]{ [variable] tape_D{_} }
-                        [run]{ [variable] tape_E{_} }
-                        [run]{ [variable] tape_F{_} }
 
                         [comment] { 2. Crear Maquina }
                         [run]{ [variable] instance:name{tm1} }
@@ -340,9 +304,9 @@ $CHECK_HALT_continue2{ [run]{ <**> tm:running{true} } }
                         [run]{ [variable] res4{$tape_4} }
                         [run]{ [variable] res5{$tape_5} }
                         [run]{ [variable] res6{$tape_6} }
-                        [run]{ [variable] res6{$tape_7} }
-                        [run]{ [variable] res6{$tape_8} }
-                        [run]{ [variable] res6{$tape_9} }
+                        [run]{ [variable] res7{$tape_7} }
+                        [run]{ [variable] res8{$tape_8} }
+                        [run]{ [variable] res9{$tape_9} }
             }
             #end-construction
 }
