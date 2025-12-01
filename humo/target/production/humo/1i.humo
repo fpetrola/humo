@@ -1,0 +1,444 @@
+programa
+{
+
+	system:syntax-macros
+	{
+		<function>{}
+		<procedure>{%}
+		<method>{%}
+		<class>{new}
+		<class-end>{ending-class-}
+	}
+
+	system:helpers
+	{
+		[te{[t}mp]{emp]}  
+		[re{[r}m]{em]}  
+		[nothing]{}
+		<*>{%}
+		<**{<*}
+	}
+		
+	<class> del
+	{ 
+		<method> del=>( %del::head %del::tail )
+		{
+			head=>%del::head %del::tail tail=>%del::head %del::tail
+			{
+				head2=>%del::head %del::tail tail2=>%del::head %del::tail
+			}
+		}
+	
+		head=>%del::head %del::tail {%del::head}
+		tail=>%del::head %del::tail {%del::tail}
+		head2=>%del::head %del::tail {h}
+		tail2=>%del::head %del::tail {ead=>%del::head %del::tail tail=>%del::head %del::tail}
+	}
+	<class-end> del
+	{
+		%del=>({%del->(}head=>{head->}tail=>{tail->}ead=>{ead->}head2=>{head2->}tail2=>{tail2->}
+	}
+
+	<class> math
+	{
+		<method> math.incr 
+		{
+			<**>result{%incr::value.incr}
+		}
+		<method> math.decr 
+		{
+			<**>result{%decr::value.decr}
+		}
+
+		<function> 000+ {<**>result{0} <**>carry{0}} 
+		<function> 001+ {<**>result{1} <**>carry{0}} 
+		<function> 010+ {<**>result{1} <**>carry{0}} 
+		<function> 011+ {<**>result{0} <**>carry{1}} 
+		
+		<function> 100+ {<**>result{1} <**>carry{0}}
+		<function> 101+ {<**>result{0} <**>carry{1}}
+		<function> 110+ {<**>result{0} <**>carry{1}}
+		<function> 111+ {<**>result{1} <**>carry{1}}
+
+		15.decr{14}14.decr{13}13.decr{12}12.decr{11}11.decr{10}10.decr{9}9.decr{8}8.decr{7}7.decr{6}6.decr{5}5.decr{4}4.decr{3}3.decr{2}2.decr{1}1.decr{0}0.decr{15}
+		0.incr{1}1.incr{2}2.incr{3}3.incr{4}4.incr{5}5.incr{6}6.incr{7}7.incr{8}8.incr{9}9.incr{10}10.incr{11}11.incr{12}12.incr{13}13.incr{14}14.incr{15}15.incr{0}
+		0.isZero{true}1.isZero{false}2.isZero{false}3.isZero{false}4.isZero{false}5.isZero{false}6.isZero{false}7.isZero{false}8.isZero{false}9.isZero{false}10.isZero{false}11.isZero{false}12.isZero{false}13.isZero{false}14.isZero{false}15.isZero{false}
+
+		true.not {false}
+		false.not {true}
+
+		<*>del::head{%resul} <*>del::tail{t} [temp]{new del}
+	}
+	
+	system:2helpers
+	{
+		system:bracket-open{[}
+
+		#0 {<**>vector::value{0} add-digit}
+		#1 {<**>vector::value{1} add-digit}
+		add-digit {<**>calling-add {%current-vector.add}<*>calling-add}
+	}
+
+	<class> vector
+	{
+		[temp]dels-definition
+		{
+			<**>del::head{%vector:} <**>del::tail{:value}	[temp]{<**>new del}
+			<**>del::head{%vector:} <**>del::tail{:position}[temp]{<**>new del}
+		}
+
+		[temp]borro_parametros
+		{
+			[temp]borro_value{<*>del->(%vector::value)}
+			[temp]borro_position{<*>del->(%vector::position)}
+		}
+
+		<method> vector::name.add
+		{
+			<***>vector::position {%vector::name.index.getValue}
+			[temp]changing-value{<*>vector::name.change}
+			<*>vector::name.index.inc
+		} 
+
+		<method> vector::name.change 
+		{
+			<*>vector::name <*>system:bracket-open <*>vector::position ]{%vector::value}
+		}
+
+		[temp]creo_nibble 
+		{
+			<**>nibble::name {<*>vector::name.index} 
+			new nibble
+		}
+		[temp]pongo_en_cero 
+		{
+			<**>nibble::number {0} 
+			<**>vector::temp{<*>vector::name.index.setValue}<*>vector::temp
+		}
+		
+		<method> vector::name%[{<*>vector::name[}
+	}
+
+	<class> nibble
+	{
+		[temp]dels-definition
+		{
+			<**>del::head{<*>nibble::name} <**>del::tail{.getValue} 	[temp]{<**>new del}
+			<**>del::head{<*>nibble::name} <**>del::tail{.dec} 			[temp]{<**>new del}
+			<**>del::head{<*>nibble::name} <**>del::tail{.inc} 			[temp]{<**>new del}
+			<**>del::head{<*>nibble::name} <**>del::tail{.isZero} 		[temp]{<**>new del}
+			<**>del::head{%nibble:} 			<**>del::tail{:number} 		[temp]{<**>new del}
+		}
+		
+		[temp]borro_parametros
+		{
+			<*>del->(%nibble::number)
+		}
+		
+		<method> nibble::name.setValue
+		{
+			[temp]borra_metodos
+			{
+				[temp]{<*>del=>(%nibble::name.getValue)}
+				[temp]{<*>del=>(%nibble::name.dec)}
+				[temp]{<*>del=>(%nibble::name.inc)}
+				[temp]{<*>del=>(%nibble::name.isZero)}
+			}
+	
+			<method> nibble::name.dec
+			{
+				<****>decr::value {<*>nibble::name.getValue}
+				[temp]{<***>math.decr}
+				[temp]deleting-getValue{<**>del=>(%nibble::name.getValue)}
+				<*>nibble::name.getValue {<***>result}
+				[temp]borra_result{<***>del->(%result)}
+			} 
+			[temp]deleting-getValue {<*>del=>(%nibble::name.getValue)}
+
+			<method> nibble::name.inc
+			{
+				<****>incr::value {<*>nibble::name.getValue}
+				[temp]{<***>math.incr}
+				[temp]deleting-getValue{<**>del=>(%nibble::name.getValue)}
+				<*>nibble::name.getValue {<***>result}
+				[temp]borra_result{<***>del->(%result)}
+			} 
+			[temp]deleting-getValue {<*>del=>(%nibble::name.getValue)}
+			
+			<method> nibble::name.isZero
+			{
+				<*>nibble::name.getValue.isZero
+			}
+			
+			<method> nibble::name.getValue
+			{
+				%nibble::number
+			}
+		}
+	}
+
+	<class> while
+	{
+		<method> while::name true
+		{
+			[rem]executing-body{<*>while::name.body}
+			[rem]calling-execute{%while::name.execute}
+		} 
+	
+		<method> while::name.execute
+		{
+		   [rem]ejecuta_condition{%while::name.condition}
+		   <***>while.condition{%while::name.valueOfCondition}
+			<***>while::temp{<*>while::name->%while.condition}<**>while::temp
+		} 
+		
+		<method> while::name->{<*>while::name}
+	}
+
+	<procedure> addition
+	{
+		[temp]dels-definition
+		{
+			<**>del::head{%addition:} <**>del::tail{:number1} [temp]{<**>new del}
+			<**>del::head{%addition:} <**>del::tail{:number2} [temp]{<**>new del}
+		}
+		
+		<**>while::name {<**>addition.while}
+		[rem]creo_while{<**>new while}
+		
+		<**>addition.while.body
+		{
+			<***>value1{<*>addition::number1%[%addition.counter.getValue]}
+			<***>value2{<*>addition::number2%[%addition.counter.getValue]}
+		
+			[rem]sumo_valuees
+			{
+				<***>additionndo {<**>ultimo_carry %value1 %value2+} <**>additionndo
+			}
+			
+			[rem]asigno_result
+			{
+				<***>vector::position {<**>addition.counter.getValue}
+				<***>vector::value {<**>result}
+				<*>addition::number1.change
+			}
+		
+			<***>ultimo_carry {<**>carry}
+		
+			[rem]decremento_counter{<**>addition.counter.dec}
+		}
+
+		<*>addition.while.condition
+		{
+			<**>condition_temp1	{<**>addition.counter.getValue.incr.isZero.not}
+			<**>condition_temp2	{<*>condition_temp1}<**>condition_temp3{<*>condition_temp2}<**>condition_temp4{<*>condition_temp3}
+			<**>addition.while.valueOfCondition {<*>condition_temp4}
+		}
+	
+		[rem]creo_counter 	{<**>nibble::name {%addition.counter} <**>new nibble}
+		[rem]seteo_counter 	{<**>nibble::number {%addition::digitos} %addition.counter.setValue}
+
+		<**>ultimo_carry {0}
+
+		[rem]ejecuta {%addition.while.execute}
+
+		[temp]borro_parametros
+		{
+			[temp]borro_number1{<*>del->(%addition::number1)}
+			[temp]borro_number2{<*>del->(%addition::number2)}
+		}
+		
+	}
+	
+
+
+	<class> byte
+	{
+		[temp]dels-definition
+		{
+			<**>del::head{%byte:} <**>del::tail{:new_value} 			[temp]{<**>new del}
+			<**>del::head{%byte:} <**>del::tail{:addition::byte} 			[temp]{<**>new del}
+			<**>del::head{<*>nibble::name} <**>del::tail{.inc} 			[temp]{<**>new del}
+			<**>del::head{<*>nibble::name} <**>del::tail{.isZero} 		[temp]{<**>new del}
+			<**>del::head{%nibble:} 			<**>del::tail{:number} 		[temp]{<**>new del}
+		}
+		
+		[temp]borro_parametros
+		{
+			<*>del->(%byte::new_value)
+			<*>del->(%byte::addition::byte)
+		}
+
+		[rem]creo_vector_para_value {<**>vector::name {<*>byte::name.value} <**>new vector}
+
+		<method> byte::name.asignar
+		{
+			<***>current-vector {<*>byte::name.value}
+			<**>byte::new_value
+		}
+		
+		<method> byte::name.decrementar
+		{
+			[rem]parametro_para_addition	{<***>byte::addition::byte {<*>byteMenosUno}}
+			[rem]lo_sumo					{<*>byte::name.addition}
+		}
+
+		<method> byte::name.incrementar
+		{
+			[rem]parametro_para_addition	{<***>byte::addition::byte {<*>byteUno}}
+			[rem]lo_sumo					{<*>byte::name.addition}
+		}
+
+		<method> byte::name.addition
+		{
+			<***>addition::number1{<*>byte::name.value}
+			<***>addition::number2{<*>byte::addition::byte.value}
+			<***>addition::digitos{7}
+			[rem]sumo{<**>addition}
+		}
+
+		<method> byte::name.isZero
+		{
+			<***>result{false}
+			<***>byte::temp{byte:isZero:}
+			[rem]astring{<*>byte::name.toString}
+			<***>sera cero?{<*>byte::temp %comoString}
+			<*>seracero?
+		}
+		
+		<method> byte::name.toString
+		{
+			[rem]concateno_bits	{<***>comoString{<*>byte::name.value[7]}	<***>comoString{<*>byte::name.value[6]%comoString }	<***>comoString{<*>byte::name.value[5]%comoString } <***>comoString{<*>byte::name.value[4]%comoString }	<***>comoString{<*>byte::name.value[3]%comoString }	<***>comoString{<*>byte::name.value[2]%comoString }	<***>comoString{<*>byte::name.value[1]%comoString }	<***>comoString{<*>byte::name.value[0]%comoString }	<***>mi_name{<*>byte::name=}}
+			<**>mi_name %comoString{}
+		}
+	}
+	<class-end> byte
+	{
+		[rem]es_cero				{byte:isZero:00000000{<**>result{true}}}
+		
+		[rem]creo_byteMenosUno	{<*>byte::name{%byteMenosUno} new byte }
+		[rem]le_asigno_un_value	{<*>byte::new_value{<**>#1#1#1#1#1#1#1#1} %byteMenosUno.asignar}
+
+		[rem]creo_byteUno			{<*>byte::name{%byteUno} new byte }
+		[rem]le_asigno_un_value	{<*>byte::new_value{<**>#0#0#0#0#0#0#0#1} %byteUno.asignar}
+	}
+
+	[rem]prueba multiplicacion
+	{
+		<*> mul.while.body
+		{
+			[rem]sumo_con_b3		 		{<**>byte::addition::byte {<*>b3} <*>b2.addition}
+			[rem]decremento				{<*>b1.decrementar}
+		}
+		
+		<*> mul.while.condition
+		{	
+			<**>condition_temp1	{<*>b1.isZero}
+			<**>condition_temp2	{<*>result.not}
+			<**>mul.while.valueOfCondition {<*>condition_temp2}
+		}
+		
+		[rem]creo_byte1				{<*>byte::name{%b1} new byte }
+		[rem]le_asigno_un_value		{<*>byte::new_value{<**>#0#0#0#0#0#1#1#0} %b1.asignar}
+		[rem]creo_byte2				{<*>byte::name{%b2} new byte }
+		[rem]le_asigno_un_value		{<*>byte::new_value{<**>#0#0#0#0#0#1#0#0} %b2.asignar}
+		[rem]creo_byte3				{<*>byte::name{%b3} new byte }
+		[rem]le_asigno_un_value		{<*>byte::new_value{<**>#0#0#0#0#0#1#0#0} %b3.asignar}
+
+		<*>while::name 				{<*>mul.while}
+		[rem]creo_while				{<*>new while}
+					
+		[rem]ejecuta 					{%mul.while.execute}
+		
+		[rem]value						{%b2.toString }
+		
+	}
+
+	[rem]prueba_de_byte
+	{
+		[rem]creo_byte1				{<*>byte::name{%b1} new byte }
+		[rem]le_asigno_un_value		{<*>byte::new_value{<**>#0#1#1#1#0#1#1#0} %b1.asignar}
+		
+		[rem]value						{%b1.toString }
+		[rem]lo_decremento 			{%b1.decrementar}
+		[rem]value						{%b1.toString }
+
+		[rem]creo_byte2				{<*>byte::name{%b2} new byte }
+		[rem]le_asigno_un_value		{<*>byte::new_value{<**>#1#1#0#0#0#1#0#1} %b2.asignar}
+		[rem]value						{%b2.toString }
+		[rem]parametro_para_addition	{<*>byte::addition::byte {<*>b2}}
+		[rem]lo_sumo_con_b2			{%b1.addition}
+		[rem]value						{%b1.toString }
+	
+		[rem]value						{%byteUno.toString }
+		[rem]nose{%byteUno.decrementar}
+		[rem]value						{%byteUno.toString }
+		
+		[rem]me fijo si es cero 	{%byteUno.isZero}
+	}
+
+
+	[rem]prueba de addition 
+	{
+		[rem]creo_vector{<*>vector::name {%va1} new vector}
+		[rem]asigno_vector{<*>current-vector {%va1} #1#1#0#1#1}
+
+		[rem]creo_vector{<*>vector::name {%va2} new vector}
+		[rem]asigno_vector{<*>current-vector {%va2} #1#1#1#0#1}
+
+		[rem]primer number  {%va1[0] %va1[1] %va1[2] %va1[3] %va1[4]}
+		[rem]segundo number {%va2[0] %va2[1] %va2[2] %va2[3] %va2[4]}
+		
+		<*>addition::number1{<*>va1}
+		<*>addition::number2{<*>va2}
+		<*>addition::digitos{4}
+		[rem]sumo{%addition}
+		
+		[rem]numbers additiondos{%va1[0] %va1[1] %va1[2] %va1[3] %va1[4]}
+	}
+
+
+
+	[rem]prueba_de_while
+	{
+		[rem]cargo_name{<*>while::name{%w1}}
+		[rem]creo_while{new while}
+		[rem]creo_condition{%w1.condition{<**>w1.valueOfCondition{%counter.isZero.not}}}
+		[rem]creo_body{%w1.body{%counter.dec}}
+		
+		[rem]creo_counter{<*>nibble::name{%counter}new nibble}
+		[rem]seteo_counter{<*>nibble::number{8}%counter.setValue}
+		%w1.execute
+	}
+
+	[rem]prueba_de_vector 
+	{
+		[rem]cargo_name{<*>vector::name{%v1}}
+		[rem]creo_vector{new vector}
+	
+		[rem]cargo_number{<*>vector::value{"hola"}}
+		[rem]seteo_el_value{%v1.add}
+	
+		[rem]cargo_number{<*>vector::value{"mundo"}}
+		[rem]seteo_el_value{%v1.add}
+		
+		[temp]pos0{%v1[0]}
+		[temp]pos1{%v1[1]}
+	}
+
+	
+	[rem]prueba_de_nibble
+	{
+		[rem]cargo_name{<*>nibble::name{%n1}}
+		[rem]creo_nibble{new nibble}
+			
+		[rem]cargo_number{<*>nibble::number{5}}
+		[rem]seteo_el_value{%n1.setValue}
+		[rem]lo_decremento{%n1.dec}
+	
+		[rem]cargo_number{<*>nibble::number{11}}
+		[rem]seteo_el_value{%n1.setValue}
+		[rem]lo_incremento{%n1.inc}
+	}
+	
+}

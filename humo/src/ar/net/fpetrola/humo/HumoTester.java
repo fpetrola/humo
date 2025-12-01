@@ -36,12 +36,10 @@ import javax.swing.JTree;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
 
-import com.jtattoo.plaf.noire.NoireLookAndFeel;
 
 public class HumoTester
 {
@@ -51,8 +49,11 @@ public class HumoTester
 
 //	UIManager.setLookAndFeel(new NoireLookAndFeel());
 
-	if (args.length == 0)
-	    args= new String[] { "test-simple-2.humo" };
+	if (args.length == 0) {
+		String s = "not-nested/tm-dec-to-bin.humo";
+//		s= "not-nested/tm-invert.humo";
+		args= new String[] {s};
+	}
 
 	String filename= args[0];
 
@@ -75,6 +76,7 @@ public class HumoTester
 	JSpinner skipSizeSpinner= new JSpinner(new SpinnerNumberModel(50, 0, 100000, 1000));
 	JCheckBox skipSmall= new JCheckBox("skip productions smaller than:");
 	JCheckBox skipAll= new JCheckBox("skip all  ");
+	JCheckBox hideVariableProductions= new JCheckBox("hide [variable] productions");
 
 	DebuggerParserListener debugListener= new DebuggerParserListener(skipSmall.getModel(), skipSizeSpinner.getModel(), skipAll.getModel());
 	CallStackParserListener callStackParserListener= new CallStackParserListener(debugListener);
@@ -83,6 +85,8 @@ public class HumoTester
 	ExecutionParserListener treeParserListener= new ExecutionParserListener(debugListener);
 	ParserListenerMultiplexer parserListenerMultiplexer= new ParserListenerMultiplexer(productionsParserListener, treeParserListener, highlighterParserListener, callStackParserListener, debugListener);
 	debugListener.setProductionFrames(parserListenerMultiplexer.getProductionFrames());
+	debugListener.setProductionsParserListener(productionsParserListener);
+	callStackParserListener.setProductionsParserListener(productionsParserListener);
 	ListenedParser parser= new ListenedParser(parserListenerMultiplexer);
 	debugListener.stepInto();
 
@@ -111,7 +115,7 @@ public class HumoTester
 
 		if (!initialized)
 		{
-		    showTree(highlighterParserListener, debugListener, parser, sourcecode, textPane, callStackParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe, filenameTextField, skipSmall, skipSizeSpinner, parserListenerMultiplexer, skipAll);
+		    showTree(highlighterParserListener, debugListener, parser, sourcecode, textPane, callStackParserListener.getUsedProductionsTree(), treeParserListener.getExecutionTree(), productionsParserListener.getProductionsTree(), jframe, filenameTextField, skipSmall, skipSizeSpinner, parserListenerMultiplexer, skipAll, hideVariableProductions, productionsParserListener);
 		    initialized= true;
 		}
 		parser.init();
@@ -126,7 +130,7 @@ public class HumoTester
 	}
     }
 
-    public static void showTree(final HighlighterParserListener highlighterParserListener, final DebuggerParserListener debugListener, final ListenedParser parser, StringBuilder sourceCode, final JTextPane textPane, JTree stacktraceTree, JTree executionTree, JTree productionsTree, final JFrame jframe, final JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner, final ParserListenerMultiplexer parserListenerMultiplexer, JCheckBox skipAll)
+    public static void showTree(final HighlighterParserListener highlighterParserListener, final DebuggerParserListener debugListener, final ListenedParser parser, StringBuilder sourceCode, final JTextPane textPane, JTree stacktraceTree, JTree executionTree, JTree productionsTree, final JFrame jframe, final JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner, final ParserListenerMultiplexer parserListenerMultiplexer, JCheckBox skipAll, final JCheckBox hideVariableProductions, final ProductionsParserListener productionsParserListener)
     {
 	jframe.setLocation(100, 100);
 
@@ -142,7 +146,7 @@ public class HumoTester
 
 	JPanel mainPanel= new JPanel(new BorderLayout());
 
-	JToolBar toolBar= createToolbar(highlighterParserListener, debugListener, parser, stacktraceTree, textField, skipSmall, skipSizeSpinner, skipAll, textPane);
+	JToolBar toolBar= createToolbar(highlighterParserListener, debugListener, parser, stacktraceTree, textField, skipSmall, skipSizeSpinner, skipAll, textPane, hideVariableProductions, productionsParserListener);
 	mainPanel.add(toolBar, BorderLayout.PAGE_START);
 	mainPanel.add(verticalSplitPane, BorderLayout.CENTER);
 
@@ -151,7 +155,7 @@ public class HumoTester
 	jframe.setVisible(true);
     }
 
-    private static JToolBar createToolbar(final HighlighterParserListener highlighterParserListener, final DebuggerParserListener debugListener, final ListenedParser parser, JTree stacktraceTree, final JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner, JCheckBox skipAll, final JTextPane textPane)
+    private static JToolBar createToolbar(final HighlighterParserListener highlighterParserListener, final DebuggerParserListener debugListener, final ListenedParser parser, JTree stacktraceTree, final JTextField textField, final JCheckBox skipSmall, final JSpinner skipSizeSpinner, JCheckBox skipAll, final JTextPane textPane, final JCheckBox hideVariableProductions, final ProductionsParserListener productionsParserListener)
     {
 	JToolBar toolBar= new JToolBar("debugger actions");
 
@@ -265,7 +269,11 @@ public class HumoTester
 		    StacktraceTreeNode stacktraceTreeNode= (StacktraceTreeNode) lastPathComponent;
 		    ProductionFrame frame= stacktraceTreeNode.getFrame();
 		    if (frame != null)
+		    {
 			highlighterParserListener.updateFrame(frame);
+			// Seleccionar y expandir la producción asociada
+			productionsParserListener.selectAndExpandProduction((CharSequence) stacktraceTreeNode.getUserObject());
+		    }
 		}
 	    }
 	});
@@ -274,7 +282,7 @@ public class HumoTester
 
 	toolBar.add(new JSeparator(SwingConstants.VERTICAL));
 
-	skipSmall.setSelected(true);
+	skipSmall.setSelected(false);
 	skipSmall.addActionListener(new ThreadSafeActionListener(new ActionListener()
 	{
 	    public void actionPerformed(ActionEvent e)
@@ -286,6 +294,23 @@ public class HumoTester
 	toolBar.add(skipAll);
 	toolBar.add(skipSmall);
 	toolBar.add(skipSizeSpinner);
+
+	toolBar.add(new JSeparator(SwingConstants.VERTICAL));
+
+	hideVariableProductions.setSelected(true);
+	hideVariableProductions.addActionListener(new ThreadSafeActionListener(new ActionListener()
+	{
+	    public void actionPerformed(ActionEvent e)
+	    {
+		if (hideVariableProductions.isSelected()) {
+		    productionsParserListener.setProductionFilter(true, "[", "<", "#");
+		} else {
+		    productionsParserListener.setProductionFilter(false);
+		}
+	    }
+	}));
+
+	toolBar.add(hideVariableProductions);
 	return toolBar;
     }
 

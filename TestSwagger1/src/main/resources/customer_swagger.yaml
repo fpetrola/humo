@@ -1,0 +1,3569 @@
+---
+openapi: "3.0.1"
+info: 
+  title: "NetSuite REST Record API"
+  description: "NetSuite REST Record API generated 2025-07-24 at 20:52:25 UTC for account 7919113, user botm1@netsoft.com with role Administrador."
+  termsOfService: "http://www.netsuite.com/portal/resource/terms-of-service.shtml"
+  contact: 
+    name: "Oracle NetSuite"
+    url: "http://www.netsuite.com"
+    email: "info@netsuite.com"
+  version: "v1"
+  x-framework: 
+    name: "oracle-netsuite-suitetalk-rest"
+servers: 
+- url: "https://7919113.suitetalk.api.netsuite.com/services/rest/record/v1"
+security: 
+-
+  OAuth_1.0_authorization: 
+paths: 
+  /customer: 
+    get: 
+      tags: 
+      - "Customer"
+      summary: "Get list of records."
+      parameters: 
+      - name: "Prefer"
+        in: "header"
+        description: "The server behavior requested by the client. Use 'respond-async' to execute the request asynchronously. If the request is executed asynchronously, 'Preference-applied: respond-async' is returned in the response."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "respond-async"
+      - name: "X-NetSuite-Idempotency-Key"
+        in: "header"
+        description: "A user-defined unique idempotency key that is applied to every asynchronous requests to ensure that the request is executed only once. Only one request can be executed with every unique idempotency key. Use UUID in string format as defined by RFC 4122. If the request is executed synchronously, this value is ignored."
+        required: "false"
+        schema: 
+          type: "string"
+      - name: "q"
+        in: "query"
+        description: "The search query that is used to filter results."
+        required: "false"
+        schema: 
+          type: "string"
+      - name: "limit"
+        in: "query"
+        description: "The limit used to specify the number of results on a single page."
+        required: "false"
+        schema: 
+          type: "integer"
+          format: "int32"
+          default: "1000"
+      - name: "offset"
+        in: "query"
+        description: "The offset used for selecting a specific page of results."
+        required: "false"
+        schema: 
+          type: "integer"
+          format: "int32"
+          default: "0"
+      responses: 
+        200: 
+          description: "List of records."
+          content: 
+            application/vnd.oracle.resource+json; type=collection: 
+              schema: 
+                $ref: "#/components/schemas/customerCollection"
+        default: 
+          description: "Error response."
+          content: 
+            application/vnd.oracle.resource+json; type=error: 
+              schema: 
+                $ref: "#/components/schemas/nsError"
+    post: 
+      tags: 
+      - "Customer"
+      summary: "Insert record."
+      parameters: 
+      - name: "Prefer"
+        in: "header"
+        description: "The server behavior requested by the client. Use 'respond-async' to execute the request asynchronously. If the request is executed asynchronously, 'Preference-applied: respond-async' is returned in the response."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "respond-async"
+      - name: "X-NetSuite-Idempotency-Key"
+        in: "header"
+        description: "A user-defined unique idempotency key that is applied to every asynchronous requests to ensure that the request is executed only once. Only one request can be executed with every unique idempotency key. Use UUID in string format as defined by RFC 4122. If the request is executed synchronously, this value is ignored."
+        required: "false"
+        schema: 
+          type: "string"
+      - name: "replace"
+        in: "query"
+        description: "The names of sublists on this record. All sublist lines will be replaced with lines specified in the request. The names are delimited by comma."
+        required: "false"
+        schema: 
+          type: "string"
+        examples: 
+          multiple sublists: 
+            value: "sublist1,subrecord.sublist2"
+          sublist on subrecord: 
+            value: "subrecord.sublist"
+          single sublist: 
+            value: "sublist"
+      - name: "X-NetSuite-PropertyNameValidation"
+        in: "header"
+        description: "Sets the strictness of property name validation."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "Error"
+          - "Warning"
+          - "Ignore"
+          default: "Warning"
+      - name: "X-NetSuite-PropertyValueValidation"
+        in: "header"
+        description: "Sets the strictness of property value validation."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "Error"
+          - "Warning"
+          - "Ignore"
+          default: "Error"
+      requestBody: 
+        description: "Request body."
+        content: 
+          application/vnd.oracle.resource+json; type=singular: 
+            schema: 
+              $ref: "#/components/schemas/customer"
+        required: "true"
+      responses: 
+        204: 
+          description: "Inserted record."
+          headers: 
+            X-NetSuite-PropertyValidation: 
+              description: "The description of a property validation failure."
+              required: "false"
+              schema: 
+                type: "string"
+            X-NetSuite-Warning: 
+              description: "Warning messages that occurred during processing."
+              required: "false"
+              schema: 
+                type: "string"
+        default: 
+          description: "Error response."
+          content: 
+            application/vnd.oracle.resource+json; type=error: 
+              schema: 
+                $ref: "#/components/schemas/nsError"
+  /customer/{id}: 
+    get: 
+      tags: 
+      - "Customer"
+      summary: "Get record."
+      parameters: 
+      - name: "Prefer"
+        in: "header"
+        description: "The server behavior requested by the client. Use 'respond-async' to execute the request asynchronously. If the request is executed asynchronously, 'Preference-applied: respond-async' is returned in the response."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "respond-async"
+      - name: "X-NetSuite-Idempotency-Key"
+        in: "header"
+        description: "A user-defined unique idempotency key that is applied to every asynchronous requests to ensure that the request is executed only once. Only one request can be executed with every unique idempotency key. Use UUID in string format as defined by RFC 4122. If the request is executed synchronously, this value is ignored."
+        required: "false"
+        schema: 
+          type: "string"
+      - name: "id"
+        in: "path"
+        description: "Internal identifier."
+        required: "true"
+        schema: 
+          type: "integer"
+          format: "int32"
+      - name: "expandSubResources"
+        in: "query"
+        description: "Set to 'true' to automatically expand all sublists, sublist lines, and subrecords on this record."
+        required: "false"
+        schema: 
+          type: "boolean"
+          default: "false"
+      - name: "simpleEnumFormat"
+        in: "query"
+        description: "Set to true to return enumeration values in a format that only shows the internal ID value."
+        required: "false"
+        schema: 
+          type: "boolean"
+          default: "false"
+      - name: "fields"
+        in: "query"
+        description: "The names of the fields and sublists on the record. Only the selected fields and sublists will be returned in the response."
+        required: "false"
+        schema: 
+          type: "string"
+        examples: 
+          multiple fields: 
+            value: "field1,field2"
+          single field: 
+            value: "field"
+      responses: 
+        200: 
+          description: "Retrieved record."
+          headers: 
+            X-NetSuite-Warning: 
+              description: "Warning messages that occurred during processing."
+              required: "false"
+              schema: 
+                type: "string"
+          content: 
+            application/vnd.oracle.resource+json; type=singular: 
+              schema: 
+                $ref: "#/components/schemas/customer"
+        default: 
+          description: "Error response."
+          content: 
+            application/vnd.oracle.resource+json; type=error: 
+              schema: 
+                $ref: "#/components/schemas/nsError"
+    put: 
+      tags: 
+      - "Customer"
+      summary: "Insert or update record."
+      parameters: 
+      - name: "Prefer"
+        in: "header"
+        description: "The server behavior requested by the client. Use 'respond-async' to execute the request asynchronously. If the request is executed asynchronously, 'Preference-applied: respond-async' is returned in the response."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "respond-async"
+      - name: "X-NetSuite-Idempotency-Key"
+        in: "header"
+        description: "A user-defined unique idempotency key that is applied to every asynchronous requests to ensure that the request is executed only once. Only one request can be executed with every unique idempotency key. Use UUID in string format as defined by RFC 4122. If the request is executed synchronously, this value is ignored."
+        required: "false"
+        schema: 
+          type: "string"
+      - name: "id"
+        in: "path"
+        description: "External identifier."
+        required: "true"
+        schema: 
+          pattern: "eid:(.+)"
+          type: "string"
+      - name: "X-NetSuite-PropertyNameValidation"
+        in: "header"
+        description: "Sets the strictness of property name validation."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "Error"
+          - "Warning"
+          - "Ignore"
+          default: "Warning"
+      - name: "X-NetSuite-PropertyValueValidation"
+        in: "header"
+        description: "Sets the strictness of property value validation."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "Error"
+          - "Warning"
+          - "Ignore"
+          default: "Error"
+      - name: "replace"
+        in: "query"
+        description: "The names of sublists on this record. All sublist lines will be replaced with lines specified in the request. The names are delimited by comma."
+        required: "false"
+        schema: 
+          type: "string"
+        examples: 
+          multiple sublists: 
+            value: "sublist1,subrecord.sublist2"
+          sublist on subrecord: 
+            value: "subrecord.sublist"
+          single sublist: 
+            value: "sublist"
+      - name: "replaceSelectedFields"
+        in: "query"
+        description: "If set to 'true', all fields that should be deleted in the update request, including body fields, must be included in the 'replace' query parameter."
+        required: "false"
+        schema: 
+          type: "boolean"
+          default: "false"
+      requestBody: 
+        description: "Request body."
+        content: 
+          application/vnd.oracle.resource+json; type=singular: 
+            schema: 
+              $ref: "#/components/schemas/customer"
+        required: "true"
+      responses: 
+        204: 
+          description: "Upserted record."
+          headers: 
+            X-NetSuite-PropertyValidation: 
+              description: "The description of a property validation failure."
+              required: "false"
+              schema: 
+                type: "string"
+            X-NetSuite-Warning: 
+              description: "Warning messages that occurred during processing."
+              required: "false"
+              schema: 
+                type: "string"
+        default: 
+          description: "Error response."
+          content: 
+            application/vnd.oracle.resource+json; type=error: 
+              schema: 
+                $ref: "#/components/schemas/nsError"
+    delete: 
+      tags: 
+      - "Customer"
+      summary: "Remove record."
+      parameters: 
+      - name: "Prefer"
+        in: "header"
+        description: "The server behavior requested by the client. Use 'respond-async' to execute the request asynchronously. If the request is executed asynchronously, 'Preference-applied: respond-async' is returned in the response."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "respond-async"
+      - name: "X-NetSuite-Idempotency-Key"
+        in: "header"
+        description: "A user-defined unique idempotency key that is applied to every asynchronous requests to ensure that the request is executed only once. Only one request can be executed with every unique idempotency key. Use UUID in string format as defined by RFC 4122. If the request is executed synchronously, this value is ignored."
+        required: "false"
+        schema: 
+          type: "string"
+      - name: "id"
+        in: "path"
+        description: "Internal identifier."
+        required: "true"
+        schema: 
+          type: "integer"
+          format: "int32"
+      responses: 
+        204: 
+          description: "Removed record."
+        default: 
+          description: "Error response."
+          content: 
+            application/vnd.oracle.resource+json; type=error: 
+              schema: 
+                $ref: "#/components/schemas/nsError"
+    patch: 
+      tags: 
+      - "Customer"
+      summary: "Update record."
+      parameters: 
+      - name: "Prefer"
+        in: "header"
+        description: "The server behavior requested by the client. Use 'respond-async' to execute the request asynchronously. If the request is executed asynchronously, 'Preference-applied: respond-async' is returned in the response."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "respond-async"
+      - name: "X-NetSuite-Idempotency-Key"
+        in: "header"
+        description: "A user-defined unique idempotency key that is applied to every asynchronous requests to ensure that the request is executed only once. Only one request can be executed with every unique idempotency key. Use UUID in string format as defined by RFC 4122. If the request is executed synchronously, this value is ignored."
+        required: "false"
+        schema: 
+          type: "string"
+      - name: "id"
+        in: "path"
+        description: "Internal identifier."
+        required: "true"
+        schema: 
+          type: "integer"
+          format: "int32"
+      - name: "X-NetSuite-PropertyNameValidation"
+        in: "header"
+        description: "Sets the strictness of property name validation."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "Error"
+          - "Warning"
+          - "Ignore"
+          default: "Warning"
+      - name: "X-NetSuite-PropertyValueValidation"
+        in: "header"
+        description: "Sets the strictness of property value validation."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "Error"
+          - "Warning"
+          - "Ignore"
+          default: "Error"
+      - name: "replace"
+        in: "query"
+        description: "The names of sublists on this record. All sublist lines will be replaced with lines specified in the request. The names are delimited by comma."
+        required: "false"
+        schema: 
+          type: "string"
+        examples: 
+          multiple sublists: 
+            value: "sublist1,subrecord.sublist2"
+          sublist on subrecord: 
+            value: "subrecord.sublist"
+          single sublist: 
+            value: "sublist"
+      - name: "replaceSelectedFields"
+        in: "query"
+        description: "If set to 'true', all fields that should be deleted in the update request, including body fields, must be included in the 'replace' query parameter."
+        required: "false"
+        schema: 
+          type: "boolean"
+          default: "false"
+      requestBody: 
+        description: "Request body."
+        content: 
+          application/vnd.oracle.resource+json; type=singular: 
+            schema: 
+              $ref: "#/components/schemas/customer"
+        required: "true"
+      responses: 
+        204: 
+          description: "Updated record."
+          headers: 
+            X-NetSuite-PropertyValidation: 
+              description: "The description of a property validation failure."
+              required: "false"
+              schema: 
+                type: "string"
+            X-NetSuite-Warning: 
+              description: "Warning messages that occurred during processing."
+              required: "false"
+              schema: 
+                type: "string"
+        default: 
+          description: "Error response."
+          content: 
+            application/vnd.oracle.resource+json; type=error: 
+              schema: 
+                $ref: "#/components/schemas/nsError"
+  /customer/{id}/!transform/customerPayment: 
+    post: 
+      tags: 
+      - "Customer"
+      summary: "Transform to customerPayment."
+      parameters: 
+      - name: "Prefer"
+        in: "header"
+        description: "The server behavior requested by the client. Use 'respond-async' to execute the request asynchronously. If the request is executed asynchronously, 'Preference-applied: respond-async' is returned in the response."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "respond-async"
+      - name: "X-NetSuite-Idempotency-Key"
+        in: "header"
+        description: "A user-defined unique idempotency key that is applied to every asynchronous requests to ensure that the request is executed only once. Only one request can be executed with every unique idempotency key. Use UUID in string format as defined by RFC 4122. If the request is executed synchronously, this value is ignored."
+        required: "false"
+        schema: 
+          type: "string"
+      - name: "X-NetSuite-PropertyNameValidation"
+        in: "header"
+        description: "Sets the strictness of property name validation."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "Error"
+          - "Warning"
+          - "Ignore"
+          default: "Warning"
+      - name: "X-NetSuite-PropertyValueValidation"
+        in: "header"
+        description: "Sets the strictness of property value validation."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "Error"
+          - "Warning"
+          - "Ignore"
+          default: "Error"
+      - name: "replace"
+        in: "query"
+        description: "The names of sublists on this record. All sublist lines will be replaced with lines specified in the request. The names are delimited by comma."
+        required: "false"
+        schema: 
+          type: "string"
+        examples: 
+          multiple sublists: 
+            value: "sublist1,subrecord.sublist2"
+          sublist on subrecord: 
+            value: "subrecord.sublist"
+          single sublist: 
+            value: "sublist"
+      - name: "id"
+        in: "path"
+        description: "Internal identifier."
+        required: "true"
+        schema: 
+          type: "integer"
+          format: "int32"
+      requestBody: 
+        description: "Request body."
+        content: 
+          application/vnd.oracle.resource+json; type=singular: 
+            schema: 
+              $ref: "#/components/schemas/nsResource"
+        required: "true"
+      responses: 
+        204: 
+          description: "Transformed record."
+          headers: 
+            X-NetSuite-PropertyValidation: 
+              description: "The description of a property validation failure."
+              required: "false"
+              schema: 
+                type: "string"
+            X-NetSuite-Warning: 
+              description: "Warning messages that occurred during processing."
+              required: "false"
+              schema: 
+                type: "string"
+          content: 
+            application/vnd.oracle.resource+json; type=singular: 
+              schema: 
+                $ref: "#/components/schemas/nsResource"
+        default: 
+          description: "Error response."
+          content: 
+            application/vnd.oracle.resource+json; type=error: 
+              schema: 
+                $ref: "#/components/schemas/nsError"
+  /customer/{id}/!transform/cashSale: 
+    post: 
+      tags: 
+      - "Customer"
+      summary: "Transform to cashSale."
+      parameters: 
+      - name: "Prefer"
+        in: "header"
+        description: "The server behavior requested by the client. Use 'respond-async' to execute the request asynchronously. If the request is executed asynchronously, 'Preference-applied: respond-async' is returned in the response."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "respond-async"
+      - name: "X-NetSuite-Idempotency-Key"
+        in: "header"
+        description: "A user-defined unique idempotency key that is applied to every asynchronous requests to ensure that the request is executed only once. Only one request can be executed with every unique idempotency key. Use UUID in string format as defined by RFC 4122. If the request is executed synchronously, this value is ignored."
+        required: "false"
+        schema: 
+          type: "string"
+      - name: "X-NetSuite-PropertyNameValidation"
+        in: "header"
+        description: "Sets the strictness of property name validation."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "Error"
+          - "Warning"
+          - "Ignore"
+          default: "Warning"
+      - name: "X-NetSuite-PropertyValueValidation"
+        in: "header"
+        description: "Sets the strictness of property value validation."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "Error"
+          - "Warning"
+          - "Ignore"
+          default: "Error"
+      - name: "replace"
+        in: "query"
+        description: "The names of sublists on this record. All sublist lines will be replaced with lines specified in the request. The names are delimited by comma."
+        required: "false"
+        schema: 
+          type: "string"
+        examples: 
+          multiple sublists: 
+            value: "sublist1,subrecord.sublist2"
+          sublist on subrecord: 
+            value: "subrecord.sublist"
+          single sublist: 
+            value: "sublist"
+      - name: "id"
+        in: "path"
+        description: "Internal identifier."
+        required: "true"
+        schema: 
+          type: "integer"
+          format: "int32"
+      requestBody: 
+        description: "Request body."
+        content: 
+          application/vnd.oracle.resource+json; type=singular: 
+            schema: 
+              $ref: "#/components/schemas/nsResource"
+        required: "true"
+      responses: 
+        204: 
+          description: "Transformed record."
+          headers: 
+            X-NetSuite-PropertyValidation: 
+              description: "The description of a property validation failure."
+              required: "false"
+              schema: 
+                type: "string"
+            X-NetSuite-Warning: 
+              description: "Warning messages that occurred during processing."
+              required: "false"
+              schema: 
+                type: "string"
+          content: 
+            application/vnd.oracle.resource+json; type=singular: 
+              schema: 
+                $ref: "#/components/schemas/nsResource"
+        default: 
+          description: "Error response."
+          content: 
+            application/vnd.oracle.resource+json; type=error: 
+              schema: 
+                $ref: "#/components/schemas/nsError"
+  /customer/{id}/!transform/vendor: 
+    post: 
+      tags: 
+      - "Customer"
+      summary: "Transform to vendor."
+      parameters: 
+      - name: "Prefer"
+        in: "header"
+        description: "The server behavior requested by the client. Use 'respond-async' to execute the request asynchronously. If the request is executed asynchronously, 'Preference-applied: respond-async' is returned in the response."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "respond-async"
+      - name: "X-NetSuite-Idempotency-Key"
+        in: "header"
+        description: "A user-defined unique idempotency key that is applied to every asynchronous requests to ensure that the request is executed only once. Only one request can be executed with every unique idempotency key. Use UUID in string format as defined by RFC 4122. If the request is executed synchronously, this value is ignored."
+        required: "false"
+        schema: 
+          type: "string"
+      - name: "X-NetSuite-PropertyNameValidation"
+        in: "header"
+        description: "Sets the strictness of property name validation."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "Error"
+          - "Warning"
+          - "Ignore"
+          default: "Warning"
+      - name: "X-NetSuite-PropertyValueValidation"
+        in: "header"
+        description: "Sets the strictness of property value validation."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "Error"
+          - "Warning"
+          - "Ignore"
+          default: "Error"
+      - name: "replace"
+        in: "query"
+        description: "The names of sublists on this record. All sublist lines will be replaced with lines specified in the request. The names are delimited by comma."
+        required: "false"
+        schema: 
+          type: "string"
+        examples: 
+          multiple sublists: 
+            value: "sublist1,subrecord.sublist2"
+          sublist on subrecord: 
+            value: "subrecord.sublist"
+          single sublist: 
+            value: "sublist"
+      - name: "id"
+        in: "path"
+        description: "Internal identifier."
+        required: "true"
+        schema: 
+          type: "integer"
+          format: "int32"
+      requestBody: 
+        description: "Request body."
+        content: 
+          application/vnd.oracle.resource+json; type=singular: 
+            schema: 
+              $ref: "#/components/schemas/nsResource"
+        required: "true"
+      responses: 
+        204: 
+          description: "Transformed record."
+          headers: 
+            X-NetSuite-PropertyValidation: 
+              description: "The description of a property validation failure."
+              required: "false"
+              schema: 
+                type: "string"
+            X-NetSuite-Warning: 
+              description: "Warning messages that occurred during processing."
+              required: "false"
+              schema: 
+                type: "string"
+          content: 
+            application/vnd.oracle.resource+json; type=singular: 
+              schema: 
+                $ref: "#/components/schemas/nsResource"
+        default: 
+          description: "Error response."
+          content: 
+            application/vnd.oracle.resource+json; type=error: 
+              schema: 
+                $ref: "#/components/schemas/nsError"
+  /customer/{id}/!transform/estimate: 
+    post: 
+      tags: 
+      - "Customer"
+      summary: "Transform to estimate."
+      parameters: 
+      - name: "Prefer"
+        in: "header"
+        description: "The server behavior requested by the client. Use 'respond-async' to execute the request asynchronously. If the request is executed asynchronously, 'Preference-applied: respond-async' is returned in the response."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "respond-async"
+      - name: "X-NetSuite-Idempotency-Key"
+        in: "header"
+        description: "A user-defined unique idempotency key that is applied to every asynchronous requests to ensure that the request is executed only once. Only one request can be executed with every unique idempotency key. Use UUID in string format as defined by RFC 4122. If the request is executed synchronously, this value is ignored."
+        required: "false"
+        schema: 
+          type: "string"
+      - name: "X-NetSuite-PropertyNameValidation"
+        in: "header"
+        description: "Sets the strictness of property name validation."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "Error"
+          - "Warning"
+          - "Ignore"
+          default: "Warning"
+      - name: "X-NetSuite-PropertyValueValidation"
+        in: "header"
+        description: "Sets the strictness of property value validation."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "Error"
+          - "Warning"
+          - "Ignore"
+          default: "Error"
+      - name: "replace"
+        in: "query"
+        description: "The names of sublists on this record. All sublist lines will be replaced with lines specified in the request. The names are delimited by comma."
+        required: "false"
+        schema: 
+          type: "string"
+        examples: 
+          multiple sublists: 
+            value: "sublist1,subrecord.sublist2"
+          sublist on subrecord: 
+            value: "subrecord.sublist"
+          single sublist: 
+            value: "sublist"
+      - name: "id"
+        in: "path"
+        description: "Internal identifier."
+        required: "true"
+        schema: 
+          type: "integer"
+          format: "int32"
+      requestBody: 
+        description: "Request body."
+        content: 
+          application/vnd.oracle.resource+json; type=singular: 
+            schema: 
+              $ref: "#/components/schemas/nsResource"
+        required: "true"
+      responses: 
+        204: 
+          description: "Transformed record."
+          headers: 
+            X-NetSuite-PropertyValidation: 
+              description: "The description of a property validation failure."
+              required: "false"
+              schema: 
+                type: "string"
+            X-NetSuite-Warning: 
+              description: "Warning messages that occurred during processing."
+              required: "false"
+              schema: 
+                type: "string"
+          content: 
+            application/vnd.oracle.resource+json; type=singular: 
+              schema: 
+                $ref: "#/components/schemas/nsResource"
+        default: 
+          description: "Error response."
+          content: 
+            application/vnd.oracle.resource+json; type=error: 
+              schema: 
+                $ref: "#/components/schemas/nsError"
+  /customer/{id}/!transform/opportunity: 
+    post: 
+      tags: 
+      - "Customer"
+      summary: "Transform to opportunity."
+      parameters: 
+      - name: "Prefer"
+        in: "header"
+        description: "The server behavior requested by the client. Use 'respond-async' to execute the request asynchronously. If the request is executed asynchronously, 'Preference-applied: respond-async' is returned in the response."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "respond-async"
+      - name: "X-NetSuite-Idempotency-Key"
+        in: "header"
+        description: "A user-defined unique idempotency key that is applied to every asynchronous requests to ensure that the request is executed only once. Only one request can be executed with every unique idempotency key. Use UUID in string format as defined by RFC 4122. If the request is executed synchronously, this value is ignored."
+        required: "false"
+        schema: 
+          type: "string"
+      - name: "X-NetSuite-PropertyNameValidation"
+        in: "header"
+        description: "Sets the strictness of property name validation."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "Error"
+          - "Warning"
+          - "Ignore"
+          default: "Warning"
+      - name: "X-NetSuite-PropertyValueValidation"
+        in: "header"
+        description: "Sets the strictness of property value validation."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "Error"
+          - "Warning"
+          - "Ignore"
+          default: "Error"
+      - name: "replace"
+        in: "query"
+        description: "The names of sublists on this record. All sublist lines will be replaced with lines specified in the request. The names are delimited by comma."
+        required: "false"
+        schema: 
+          type: "string"
+        examples: 
+          multiple sublists: 
+            value: "sublist1,subrecord.sublist2"
+          sublist on subrecord: 
+            value: "subrecord.sublist"
+          single sublist: 
+            value: "sublist"
+      - name: "id"
+        in: "path"
+        description: "Internal identifier."
+        required: "true"
+        schema: 
+          type: "integer"
+          format: "int32"
+      requestBody: 
+        description: "Request body."
+        content: 
+          application/vnd.oracle.resource+json; type=singular: 
+            schema: 
+              $ref: "#/components/schemas/nsResource"
+        required: "true"
+      responses: 
+        204: 
+          description: "Transformed record."
+          headers: 
+            X-NetSuite-PropertyValidation: 
+              description: "The description of a property validation failure."
+              required: "false"
+              schema: 
+                type: "string"
+            X-NetSuite-Warning: 
+              description: "Warning messages that occurred during processing."
+              required: "false"
+              schema: 
+                type: "string"
+          content: 
+            application/vnd.oracle.resource+json; type=singular: 
+              schema: 
+                $ref: "#/components/schemas/nsResource"
+        default: 
+          description: "Error response."
+          content: 
+            application/vnd.oracle.resource+json; type=error: 
+              schema: 
+                $ref: "#/components/schemas/nsError"
+  /customer/{id}/!transform/invoice: 
+    post: 
+      tags: 
+      - "Customer"
+      summary: "Transform to invoice."
+      parameters: 
+      - name: "Prefer"
+        in: "header"
+        description: "The server behavior requested by the client. Use 'respond-async' to execute the request asynchronously. If the request is executed asynchronously, 'Preference-applied: respond-async' is returned in the response."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "respond-async"
+      - name: "X-NetSuite-Idempotency-Key"
+        in: "header"
+        description: "A user-defined unique idempotency key that is applied to every asynchronous requests to ensure that the request is executed only once. Only one request can be executed with every unique idempotency key. Use UUID in string format as defined by RFC 4122. If the request is executed synchronously, this value is ignored."
+        required: "false"
+        schema: 
+          type: "string"
+      - name: "X-NetSuite-PropertyNameValidation"
+        in: "header"
+        description: "Sets the strictness of property name validation."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "Error"
+          - "Warning"
+          - "Ignore"
+          default: "Warning"
+      - name: "X-NetSuite-PropertyValueValidation"
+        in: "header"
+        description: "Sets the strictness of property value validation."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "Error"
+          - "Warning"
+          - "Ignore"
+          default: "Error"
+      - name: "replace"
+        in: "query"
+        description: "The names of sublists on this record. All sublist lines will be replaced with lines specified in the request. The names are delimited by comma."
+        required: "false"
+        schema: 
+          type: "string"
+        examples: 
+          multiple sublists: 
+            value: "sublist1,subrecord.sublist2"
+          sublist on subrecord: 
+            value: "subrecord.sublist"
+          single sublist: 
+            value: "sublist"
+      - name: "id"
+        in: "path"
+        description: "Internal identifier."
+        required: "true"
+        schema: 
+          type: "integer"
+          format: "int32"
+      requestBody: 
+        description: "Request body."
+        content: 
+          application/vnd.oracle.resource+json; type=singular: 
+            schema: 
+              $ref: "#/components/schemas/nsResource"
+        required: "true"
+      responses: 
+        204: 
+          description: "Transformed record."
+          headers: 
+            X-NetSuite-PropertyValidation: 
+              description: "The description of a property validation failure."
+              required: "false"
+              schema: 
+                type: "string"
+            X-NetSuite-Warning: 
+              description: "Warning messages that occurred during processing."
+              required: "false"
+              schema: 
+                type: "string"
+          content: 
+            application/vnd.oracle.resource+json; type=singular: 
+              schema: 
+                $ref: "#/components/schemas/nsResource"
+        default: 
+          description: "Error response."
+          content: 
+            application/vnd.oracle.resource+json; type=error: 
+              schema: 
+                $ref: "#/components/schemas/nsError"
+  /customer/{id}/!transform/salesOrder: 
+    post: 
+      tags: 
+      - "Customer"
+      summary: "Transform to salesOrder."
+      parameters: 
+      - name: "Prefer"
+        in: "header"
+        description: "The server behavior requested by the client. Use 'respond-async' to execute the request asynchronously. If the request is executed asynchronously, 'Preference-applied: respond-async' is returned in the response."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "respond-async"
+      - name: "X-NetSuite-Idempotency-Key"
+        in: "header"
+        description: "A user-defined unique idempotency key that is applied to every asynchronous requests to ensure that the request is executed only once. Only one request can be executed with every unique idempotency key. Use UUID in string format as defined by RFC 4122. If the request is executed synchronously, this value is ignored."
+        required: "false"
+        schema: 
+          type: "string"
+      - name: "X-NetSuite-PropertyNameValidation"
+        in: "header"
+        description: "Sets the strictness of property name validation."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "Error"
+          - "Warning"
+          - "Ignore"
+          default: "Warning"
+      - name: "X-NetSuite-PropertyValueValidation"
+        in: "header"
+        description: "Sets the strictness of property value validation."
+        required: "false"
+        schema: 
+          type: "string"
+          enum: 
+          - "Error"
+          - "Warning"
+          - "Ignore"
+          default: "Error"
+      - name: "replace"
+        in: "query"
+        description: "The names of sublists on this record. All sublist lines will be replaced with lines specified in the request. The names are delimited by comma."
+        required: "false"
+        schema: 
+          type: "string"
+        examples: 
+          multiple sublists: 
+            value: "sublist1,subrecord.sublist2"
+          sublist on subrecord: 
+            value: "subrecord.sublist"
+          single sublist: 
+            value: "sublist"
+      - name: "id"
+        in: "path"
+        description: "Internal identifier."
+        required: "true"
+        schema: 
+          type: "integer"
+          format: "int32"
+      requestBody: 
+        description: "Request body."
+        content: 
+          application/vnd.oracle.resource+json; type=singular: 
+            schema: 
+              $ref: "#/components/schemas/nsResource"
+        required: "true"
+      responses: 
+        204: 
+          description: "Transformed record."
+          headers: 
+            X-NetSuite-PropertyValidation: 
+              description: "The description of a property validation failure."
+              required: "false"
+              schema: 
+                type: "string"
+            X-NetSuite-Warning: 
+              description: "Warning messages that occurred during processing."
+              required: "false"
+              schema: 
+                type: "string"
+          content: 
+            application/vnd.oracle.resource+json; type=singular: 
+              schema: 
+                $ref: "#/components/schemas/nsResource"
+        default: 
+          description: "Error response."
+          content: 
+            application/vnd.oracle.resource+json; type=error: 
+              schema: 
+                $ref: "#/components/schemas/nsError"
+components: 
+  schemas: 
+    nsResourceCollection: 
+      type: "object"
+      properties: 
+        links: 
+          title: "Links"
+          type: "array"
+          readOnly: "true"
+          items: 
+            $ref: "#/components/schemas/nsLink"
+        totalResults: 
+          title: "Total Results"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        items: 
+          type: "array"
+          items: 
+            $ref: "#/components/schemas/nsResource"
+        count: 
+          title: "Count"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        hasMore: 
+          title: "Has More Results"
+          type: "boolean"
+          readOnly: "true"
+        offset: 
+          title: "Query Offset"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+    nsResource: 
+      type: "object"
+      properties: 
+        id: 
+          title: "Internal identifier"
+          type: "string"
+        refName: 
+          title: "Reference Name"
+          type: "string"
+        externalId: 
+          title: "External identifier"
+          type: "string"
+        links: 
+          title: "Links"
+          type: "array"
+          readOnly: "true"
+          items: 
+            $ref: "#/components/schemas/nsLink"
+    customer-itemPricingCollection: 
+      type: "object"
+      properties: 
+        links: 
+          title: "Links"
+          type: "array"
+          readOnly: "true"
+          items: 
+            $ref: "#/components/schemas/nsLink"
+        totalResults: 
+          title: "Total Results"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        count: 
+          title: "Count"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        hasMore: 
+          title: "Has More Results"
+          type: "boolean"
+          readOnly: "true"
+        offset: 
+          title: "Query Offset"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        items: 
+          type: "array"
+          items: 
+            $ref: "#/components/schemas/customer-itemPricingElement"
+    nsError: 
+      type: "object"
+      properties: 
+        type: 
+          title: "Type"
+          type: "string"
+          description: "A URI reference to the documentation about the problem type."
+          format: "URI"
+          readOnly: "true"
+        title: 
+          title: "Title"
+          type: "string"
+          description: "A human-readable description of the problem type."
+          readOnly: "true"
+        status: 
+          title: "Status"
+          type: "integer"
+          description: "The HTTP status code generated by the server the request originates from."
+          format: "int32"
+          readOnly: "true"
+        o:errorDetails: 
+          type: "array"
+          description: "An array containing one or more problem types."
+          readOnly: "true"
+          items: 
+            type: "object"
+            properties: 
+              detail: 
+                title: "Detail"
+                type: "string"
+                description: "A detailed, human-readable description of the problem occurrence."
+                readOnly: "true"
+              o:errorPath: 
+                title: "Error Path"
+                type: "string"
+                description: "The JSON path that indicates where the problem occurs within the request body."
+                format: "JSONPath"
+                readOnly: "true"
+              o:errorUrl: 
+                title: "Error URL"
+                type: "string"
+                description: "The URI of the first element in the request URL where the problem occurs."
+                format: "URI"
+                readOnly: "true"
+              o:errorHeader: 
+                title: "Error Header"
+                type: "string"
+                description: "The name of the HTTP header where the problem occurs."
+                readOnly: "true"
+              o:errorQueryParam: 
+                title: "Error Query Parameter"
+                type: "string"
+                description: "The name of the query parameter where the problem occurs."
+                readOnly: "true"
+              o:errorCode: 
+                title: "Error Code"
+                type: "string"
+                description: "The application-specific error code. Similar problem types are grouped together."
+                readOnly: "true"
+    customer-currencyListCollection: 
+      type: "object"
+      properties: 
+        links: 
+          title: "Links"
+          type: "array"
+          readOnly: "true"
+          items: 
+            $ref: "#/components/schemas/nsLink"
+        totalResults: 
+          title: "Total Results"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        count: 
+          title: "Count"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        hasMore: 
+          title: "Has More Results"
+          type: "boolean"
+          readOnly: "true"
+        offset: 
+          title: "Query Offset"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        items: 
+          type: "array"
+          items: 
+            $ref: "#/components/schemas/customer-currencyListElement"
+    nsLink: 
+      type: "object"
+      properties: 
+        rel: 
+          title: "Relationship"
+          type: "string"
+          readOnly: "true"
+        href: 
+          title: "Hypertext Reference"
+          type: "string"
+          readOnly: "true"
+    customer-groupPricingCollection: 
+      type: "object"
+      properties: 
+        links: 
+          title: "Links"
+          type: "array"
+          readOnly: "true"
+          items: 
+            $ref: "#/components/schemas/nsLink"
+        totalResults: 
+          title: "Total Results"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        count: 
+          title: "Count"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        hasMore: 
+          title: "Has More Results"
+          type: "boolean"
+          readOnly: "true"
+        offset: 
+          title: "Query Offset"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        items: 
+          type: "array"
+          items: 
+            $ref: "#/components/schemas/customer-groupPricingElement"
+    customer-groupPricingElement: 
+      type: "object"
+      properties: 
+        links: 
+          title: "Links"
+          type: "array"
+          readOnly: "true"
+          items: 
+            $ref: "#/components/schemas/nsLink"
+        refName: 
+          title: "Reference Name"
+          type: "string"
+        group: 
+          $ref: "#/components/schemas/nsResource"
+        level: 
+          $ref: "#/components/schemas/nsResource"
+      x-ns-sublistkey: 
+        present: "false"
+      x-ns-filterable: 
+    customer-taxRegistrationElement: 
+      type: "object"
+      properties: 
+        links: 
+          title: "Links"
+          type: "array"
+          readOnly: "true"
+          items: 
+            $ref: "#/components/schemas/nsLink"
+        address: 
+          title: "Endereço"
+          type: "string"
+          nullable: "true"
+        taxRegistrationNumber: 
+          title: "Número reg. imposto"
+          type: "string"
+          nullable: "true"
+        nexusCountry: 
+          type: "object"
+          properties: 
+            id: 
+              title: "Internal identifier"
+              type: "string"
+              enum: 
+              - "PR"
+              - "PS"
+              - "PT"
+              - "PW"
+              - "PY"
+              - "QA"
+              - "AD"
+              - "AE"
+              - "AF"
+              - "AG"
+              - "AI"
+              - "AL"
+              - "AM"
+              - "AN"
+              - "AO"
+              - "AQ"
+              - "AR"
+              - "AS"
+              - "AT"
+              - "RE"
+              - "AU"
+              - "AW"
+              - "AX"
+              - "AZ"
+              - "RO"
+              - "BA"
+              - "BB"
+              - "RS"
+              - "BD"
+              - "BE"
+              - "RU"
+              - "BF"
+              - "BG"
+              - "RW"
+              - "BH"
+              - "BI"
+              - "BJ"
+              - "BL"
+              - "BM"
+              - "BN"
+              - "BO"
+              - "SA"
+              - "BQ"
+              - "SB"
+              - "BR"
+              - "SC"
+              - "BS"
+              - "SD"
+              - "BT"
+              - "SE"
+              - "BV"
+              - "SG"
+              - "BW"
+              - "SH"
+              - "SI"
+              - "BY"
+              - "SJ"
+              - "BZ"
+              - "SK"
+              - "SL"
+              - "SM"
+              - "SN"
+              - "SO"
+              - "CA"
+              - "SR"
+              - "CC"
+              - "SS"
+              - "CD"
+              - "ST"
+              - "CF"
+              - "SV"
+              - "CG"
+              - "CH"
+              - "SX"
+              - "CI"
+              - "SY"
+              - "SZ"
+              - "CK"
+              - "CL"
+              - "CM"
+              - "CN"
+              - "CO"
+              - "CR"
+              - "TC"
+              - "CS"
+              - "TD"
+              - "CU"
+              - "TF"
+              - "CV"
+              - "TG"
+              - "CW"
+              - "TH"
+              - "CX"
+              - "CY"
+              - "TJ"
+              - "CZ"
+              - "TK"
+              - "TL"
+              - "TM"
+              - "TN"
+              - "TO"
+              - "TR"
+              - "TT"
+              - "DE"
+              - "TV"
+              - "TW"
+              - "DJ"
+              - "TZ"
+              - "DK"
+              - "DM"
+              - "DO"
+              - "UA"
+              - "UG"
+              - "DZ"
+              - "UM"
+              - "EA"
+              - "EC"
+              - "US"
+              - "EE"
+              - "EG"
+              - "EH"
+              - "UY"
+              - "UZ"
+              - "VA"
+              - "ER"
+              - "VC"
+              - "ES"
+              - "ET"
+              - "VE"
+              - "VG"
+              - "VI"
+              - "VN"
+              - "VU"
+              - "FI"
+              - "FJ"
+              - "FK"
+              - "FM"
+              - "FO"
+              - "FR"
+              - "WF"
+              - "GA"
+              - "GB"
+              - "WS"
+              - "GD"
+              - "GE"
+              - "GF"
+              - "GG"
+              - "GH"
+              - "GI"
+              - "GL"
+              - "GM"
+              - "GN"
+              - "GP"
+              - "GQ"
+              - "GR"
+              - "GS"
+              - "GT"
+              - "GU"
+              - "GW"
+              - "GY"
+              - "XK"
+              - "HK"
+              - "HM"
+              - "HN"
+              - "HR"
+              - "HT"
+              - "YE"
+              - "HU"
+              - "IC"
+              - "ID"
+              - "YT"
+              - "IE"
+              - "IL"
+              - "IM"
+              - "IN"
+              - "IO"
+              - "ZA"
+              - "IQ"
+              - "IR"
+              - "IS"
+              - "IT"
+              - "ZM"
+              - "JE"
+              - "ZW"
+              - "JM"
+              - "JO"
+              - "JP"
+              - "KE"
+              - "KG"
+              - "KH"
+              - "KI"
+              - "KM"
+              - "KN"
+              - "KP"
+              - "KR"
+              - "KW"
+              - "KY"
+              - "KZ"
+              - "LA"
+              - "LB"
+              - "LC"
+              - "LI"
+              - "LK"
+              - "LR"
+              - "LS"
+              - "LT"
+              - "LU"
+              - "LV"
+              - "LY"
+              - "MA"
+              - "MC"
+              - "MD"
+              - "ME"
+              - "MF"
+              - "MG"
+              - "MH"
+              - "MK"
+              - "ML"
+              - "MM"
+              - "MN"
+              - "MO"
+              - "MP"
+              - "MQ"
+              - "MR"
+              - "MS"
+              - "MT"
+              - "MU"
+              - "MV"
+              - "MW"
+              - "MX"
+              - "MY"
+              - "MZ"
+              - "NA"
+              - "NC"
+              - "NE"
+              - "NF"
+              - "NG"
+              - "NI"
+              - "NL"
+              - "NO"
+              - "NP"
+              - "NR"
+              - "NU"
+              - "NZ"
+              - "OM"
+              - "PA"
+              - "PE"
+              - "PF"
+              - "PG"
+              - "PH"
+              - "PK"
+              - "PL"
+              - "PM"
+              - "PN"
+            refName: 
+              title: "Reference Name"
+              type: "string"
+        id: 
+          title: "ID"
+          type: "integer"
+          format: "int64"
+          nullable: "true"
+        refName: 
+          title: "Reference Name"
+          type: "string"
+        nexus: 
+          $ref: "#/components/schemas/nsResource"
+        nexusState: 
+          $ref: "#/components/schemas/nsResource"
+      x-ns-sublistkey: 
+        present: "true"
+        value: 
+          new: 
+          - "id"
+          existing: 
+          - "id"
+      x-ns-filterable: 
+    customer-partnersCollection: 
+      type: "object"
+      properties: 
+        links: 
+          title: "Links"
+          type: "array"
+          readOnly: "true"
+          items: 
+            $ref: "#/components/schemas/nsLink"
+        totalResults: 
+          title: "Total Results"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        count: 
+          title: "Count"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        hasMore: 
+          title: "Has More Results"
+          type: "boolean"
+          readOnly: "true"
+        offset: 
+          title: "Query Offset"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        items: 
+          type: "array"
+          items: 
+            $ref: "#/components/schemas/customer-partnersElement"
+    customer-addressBookElement: 
+      type: "object"
+      properties: 
+        links: 
+          title: "Links"
+          type: "array"
+          readOnly: "true"
+          items: 
+            $ref: "#/components/schemas/nsLink"
+        internalId: 
+          title: "ID interno"
+          type: "integer"
+          format: "int64"
+          nullable: "true"
+        defaultBilling: 
+          title: "Faturamento padrão"
+          type: "boolean"
+        lastModifiedDate: 
+          title: "Data da última alteração"
+          type: "string"
+          format: "date-time"
+          nullable: "true"
+        addressBookAddress_text: 
+          title: "Endereço"
+          type: "string"
+          nullable: "true"
+        defaultShipping: 
+          title: "Expedição padrão"
+          type: "boolean"
+        isResidential: 
+          title: "Endereço residencial"
+          type: "boolean"
+        label: 
+          title: "Nome do campo"
+          type: "string"
+          nullable: "true"
+        id: 
+          title: "ID"
+          type: "integer"
+          format: "int64"
+          nullable: "true"
+        addressId: 
+          title: "ID interno"
+          type: "string"
+          nullable: "true"
+        refName: 
+          title: "Reference Name"
+          type: "string"
+        addressBookAddress: 
+          $ref: "#/components/schemas/customer-addressBook-addressBookAddress"
+      x-ns-sublistkey: 
+        present: "true"
+        value: 
+          new: 
+          - "internalId"
+          existing: 
+          - "internalId"
+      x-ns-filterable: 
+    customer-partnersElement: 
+      type: "object"
+      properties: 
+        links: 
+          title: "Links"
+          type: "array"
+          readOnly: "true"
+          items: 
+            $ref: "#/components/schemas/nsLink"
+        contribution: 
+          title: "% de contribuição"
+          type: "number"
+          format: "double"
+          nullable: "true"
+        id: 
+          title: "ID"
+          type: "string"
+          nullable: "true"
+        isPrimary: 
+          title: "Principal"
+          type: "boolean"
+        refName: 
+          title: "Reference Name"
+          type: "string"
+        partnerRole: 
+          $ref: "#/components/schemas/nsResource"
+        partner: 
+          $ref: "#/components/schemas/nsResource"
+      x-ns-sublistkey: 
+        present: "true"
+        value: 
+          new: 
+          - "partner"
+          existing: 
+          - "partner"
+      x-ns-filterable: 
+    customer-campaignsElement: 
+      type: "object"
+      properties: 
+        links: 
+          title: "Links"
+          type: "array"
+          readOnly: "true"
+          items: 
+            $ref: "#/components/schemas/nsLink"
+        refName: 
+          title: "Reference Name"
+          type: "string"
+      x-ns-sublistkey: 
+        present: "false"
+      x-ns-filterable: 
+    customer-itemPricingElement: 
+      type: "object"
+      properties: 
+        links: 
+          title: "Links"
+          type: "array"
+          readOnly: "true"
+          items: 
+            $ref: "#/components/schemas/nsLink"
+        price: 
+          title: "Preço unitário"
+          type: "number"
+          format: "double"
+          nullable: "true"
+        refName: 
+          title: "Reference Name"
+          type: "string"
+        currency: 
+          $ref: "#/components/schemas/nsResource"
+        level: 
+          $ref: "#/components/schemas/nsResource"
+        item: 
+          oneOf: 
+          - $ref: "#/components/schemas/nsResource"
+      x-ns-sublistkey: 
+        present: "true"
+        value: 
+          new: 
+          - "item"
+          - "currency"
+          existing: 
+          - "item"
+          - "currency"
+      x-ns-filterable: 
+    customer-taxRegistrationCollection: 
+      type: "object"
+      properties: 
+        links: 
+          title: "Links"
+          type: "array"
+          readOnly: "true"
+          items: 
+            $ref: "#/components/schemas/nsLink"
+        totalResults: 
+          title: "Total Results"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        count: 
+          title: "Count"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        hasMore: 
+          title: "Has More Results"
+          type: "boolean"
+          readOnly: "true"
+        offset: 
+          title: "Query Offset"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        items: 
+          type: "array"
+          items: 
+            $ref: "#/components/schemas/customer-taxRegistrationElement"
+    customer-addressBook-addressBookAddress: 
+      type: "object"
+      properties: 
+        country: 
+          type: "object"
+          properties: 
+            id: 
+              title: "Internal identifier"
+              type: "string"
+              enum: 
+              - "PR"
+              - "PS"
+              - "PT"
+              - "PW"
+              - "PY"
+              - "QA"
+              - "AD"
+              - "AE"
+              - "AF"
+              - "AG"
+              - "AI"
+              - "AL"
+              - "AM"
+              - "AN"
+              - "AO"
+              - "AQ"
+              - "AR"
+              - "AS"
+              - "AT"
+              - "RE"
+              - "AU"
+              - "AW"
+              - "AX"
+              - "AZ"
+              - "RO"
+              - "BA"
+              - "BB"
+              - "RS"
+              - "BD"
+              - "BE"
+              - "RU"
+              - "BF"
+              - "BG"
+              - "RW"
+              - "BH"
+              - "BI"
+              - "BJ"
+              - "BL"
+              - "BM"
+              - "BN"
+              - "BO"
+              - "SA"
+              - "BQ"
+              - "SB"
+              - "BR"
+              - "SC"
+              - "BS"
+              - "SD"
+              - "BT"
+              - "SE"
+              - "BV"
+              - "SG"
+              - "BW"
+              - "SH"
+              - "SI"
+              - "BY"
+              - "SJ"
+              - "BZ"
+              - "SK"
+              - "SL"
+              - "SM"
+              - "SN"
+              - "SO"
+              - "CA"
+              - "SR"
+              - "CC"
+              - "SS"
+              - "CD"
+              - "ST"
+              - "CF"
+              - "SV"
+              - "CG"
+              - "CH"
+              - "SX"
+              - "CI"
+              - "SY"
+              - "SZ"
+              - "CK"
+              - "CL"
+              - "CM"
+              - "CN"
+              - "CO"
+              - "CR"
+              - "TC"
+              - "CS"
+              - "TD"
+              - "CU"
+              - "TF"
+              - "CV"
+              - "TG"
+              - "CW"
+              - "TH"
+              - "CX"
+              - "CY"
+              - "TJ"
+              - "CZ"
+              - "TK"
+              - "TL"
+              - "TM"
+              - "TN"
+              - "TO"
+              - "TR"
+              - "TT"
+              - "DE"
+              - "TV"
+              - "TW"
+              - "DJ"
+              - "TZ"
+              - "DK"
+              - "DM"
+              - "DO"
+              - "UA"
+              - "UG"
+              - "DZ"
+              - "UM"
+              - "EA"
+              - "EC"
+              - "US"
+              - "EE"
+              - "EG"
+              - "EH"
+              - "UY"
+              - "UZ"
+              - "VA"
+              - "ER"
+              - "VC"
+              - "ES"
+              - "ET"
+              - "VE"
+              - "VG"
+              - "VI"
+              - "VN"
+              - "VU"
+              - "FI"
+              - "FJ"
+              - "FK"
+              - "FM"
+              - "FO"
+              - "FR"
+              - "WF"
+              - "GA"
+              - "GB"
+              - "WS"
+              - "GD"
+              - "GE"
+              - "GF"
+              - "GG"
+              - "GH"
+              - "GI"
+              - "GL"
+              - "GM"
+              - "GN"
+              - "GP"
+              - "GQ"
+              - "GR"
+              - "GS"
+              - "GT"
+              - "GU"
+              - "GW"
+              - "GY"
+              - "XK"
+              - "HK"
+              - "HM"
+              - "HN"
+              - "HR"
+              - "HT"
+              - "YE"
+              - "HU"
+              - "IC"
+              - "ID"
+              - "YT"
+              - "IE"
+              - "IL"
+              - "IM"
+              - "IN"
+              - "IO"
+              - "ZA"
+              - "IQ"
+              - "IR"
+              - "IS"
+              - "IT"
+              - "ZM"
+              - "JE"
+              - "ZW"
+              - "JM"
+              - "JO"
+              - "JP"
+              - "KE"
+              - "KG"
+              - "KH"
+              - "KI"
+              - "KM"
+              - "KN"
+              - "KP"
+              - "KR"
+              - "KW"
+              - "KY"
+              - "KZ"
+              - "LA"
+              - "LB"
+              - "LC"
+              - "LI"
+              - "LK"
+              - "LR"
+              - "LS"
+              - "LT"
+              - "LU"
+              - "LV"
+              - "LY"
+              - "MA"
+              - "MC"
+              - "MD"
+              - "ME"
+              - "MF"
+              - "MG"
+              - "MH"
+              - "MK"
+              - "ML"
+              - "MM"
+              - "MN"
+              - "MO"
+              - "MP"
+              - "MQ"
+              - "MR"
+              - "MS"
+              - "MT"
+              - "MU"
+              - "MV"
+              - "MW"
+              - "MX"
+              - "MY"
+              - "MZ"
+              - "NA"
+              - "NC"
+              - "NE"
+              - "NF"
+              - "NG"
+              - "NI"
+              - "NL"
+              - "NO"
+              - "NP"
+              - "NR"
+              - "NU"
+              - "NZ"
+              - "OM"
+              - "PA"
+              - "PE"
+              - "PF"
+              - "PG"
+              - "PH"
+              - "PK"
+              - "PL"
+              - "PM"
+              - "PN"
+            refName: 
+              title: "Reference Name"
+              type: "string"
+        city: 
+          title: "Cidade"
+          type: "string"
+          nullable: "true"
+        custrecord_locality: 
+          title: "Locality"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        externalId: 
+          title: "ID externo"
+          type: "string"
+          nullable: "true"
+        custrecord_floor: 
+          title: "FL"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        custrecord_av_valid_timestamp: 
+          title: "Validation Time Stamp"
+          type: "string"
+          format: "date-time"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        custrecord_av_cond_comma: 
+          title: "Conditional comma"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        custrecord_village: 
+          title: "Village"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        custrecord_buildingname: 
+          title: "Building Name"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        custrecord_statecode: 
+          title: "UF"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        custrecord_streetname: 
+          title: "Logradouro"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        custrecord_pobox: 
+          title: "PO Box"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        state: 
+          title: "Estado/província"
+          type: "string"
+          nullable: "true"
+        override: 
+          title: "Sobrescrever"
+          type: "boolean"
+        custrecord_province: 
+          title: "Province"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        custrecord_street_complement: 
+          title: "Complemento"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        custrecord_ruralroute: 
+          title: "RR"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        zip: 
+          title: "Zip"
+          type: "string"
+          nullable: "true"
+        custrecord_av_before_placeholder: 
+          title: "AV - Before Placeholder"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        addr2: 
+          title: "Endereço 2"
+          type: "string"
+          nullable: "true"
+        addr1: 
+          title: "Endereço 1"
+          type: "string"
+          nullable: "true"
+        custrecord_station: 
+          title: "STN"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        custrecord_streetnum: 
+          title: "Número"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        custrecord_av_after_placeholder: 
+          title: "AV - After Placeholder"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        lastModifiedDate: 
+          title: "Data da última alteração"
+          type: "string"
+          format: "date-time"
+          nullable: "true"
+        custrecord_unit: 
+          title: "Unit Number"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        addr3: 
+          title: "Endereço 3"
+          type: "string"
+          nullable: "true"
+        custrecord_av_country_change_data: 
+          title: "AV - Country Change Data"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        custrecord_building: 
+          title: "Building"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        custrecord_neighborhood: 
+          title: "Bairro"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        addrPhone: 
+          title: "Telefone"
+          type: "string"
+          nullable: "true"
+        addressee: 
+          title: "Destinatário"
+          type: "string"
+          nullable: "true"
+        custrecord_colonia: 
+          title: "Colonia"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        custrecord_province_abbrev: 
+          title: "Province Abbreviation"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        attention: 
+          title: "Atenção"
+          type: "string"
+          nullable: "true"
+        addrText: 
+          title: "Endereço"
+          type: "string"
+          nullable: "true"
+        custrecord_av_cond_dash: 
+          title: "Conditional dash"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        custrecord_brl_addrform_t_complement: 
+          title: "Complemento do endereço"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        custrecord_subbuilding: 
+          title: "SUBBUILDING"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        refName: 
+          title: "Reference Name"
+          type: "string"
+        links: 
+          title: "Links"
+          type: "array"
+          readOnly: "true"
+          items: 
+            $ref: "#/components/schemas/nsLink"
+        custrecord_streetdirection: 
+          $ref: "#/components/schemas/nsResource"
+        custrecord_brl_addr_form_city: 
+          $ref: "#/components/schemas/nsResource"
+        custrecord_csaf_state_list_for_country: 
+          $ref: "#/components/schemas/nsResource"
+        custrecord_streettype: 
+          $ref: "#/components/schemas/nsResource"
+        custrecord_unittype: 
+          $ref: "#/components/schemas/nsResource"
+        custrecord_av_valid_status: 
+          $ref: "#/components/schemas/nsResource"
+      x-ns-filterable: 
+    customer: 
+      type: "object"
+      properties: 
+        emailTransactions: 
+          title: "Enviar transações por e-mail"
+          type: "boolean"
+          description: "Defina um método preferencial de entrega das transações para este cliente. Escolha enviar as transações por correio, e-mail, fax ou uma combinação destas três opções. Dessa forma, quando selecionar o cliente numa transação, o método preferencial de envio é marcado por padrão. * E-mail – Marque esta opção para que a opção Envio por E-mail seja marcada por padrão nas transações em que este cliente for selecionado. * Impressão – Marque esta opção para que a caixa Para Impressão seja marcada por padrão em transações quando este cliente é selecionado. * Fax – Marque esta opção para que a opção Envio por Fax seja marcada por padrão nas transações em que este cliente for selecionado. Quando você inserir estas configurações no registro do cliente, estas caixas estarão marcadas por padrão para transações criadas a partir do registro do cliente ou para transações que forem copiadas ou convertidas. Observação: Estas configurações substituirão qualquer configuração personalizada nos formulários de transação utilizados. Há também preferências para configurar valores padrão para registros de cliente novos em Configurações &gt; Empresa &gt; Preferências &gt; Preferências de Impressão, Fax e E-mail. Na sub-aba Impressão, Fax ou E-mail, marque Padrão de Clientes para [Imprimir/Enviar por Fax/Enviar por E-mail] as Transações. Estes campos também podem ser definidos utilizando a função Atualização em Massa. Vá para Listas &gt; Atualizações em Massa &gt; Atualizações em Massa &gt; Geral e clique em Cliente."
+        startDate: 
+          title: "Data de início"
+          type: "string"
+          description: "Insira a data em que esta pessoa ou empresa se tornou cliente, lead ou prospect. Se esta pessoa ou empresa tiver um contrato com você, insira a data de início do contrato. Se você inserir uma estimativa ou oportunidade para este cliente, este campo será atualizado com a data da transação."
+          format: "date"
+          nullable: "true"
+        lastSaleDate: 
+          title: "Data das últimas vendas"
+          type: "string"
+          description: "Returns the date of the last sale to the customer."
+          format: "date"
+          nullable: "true"
+        contribPct: 
+          title: "Porcentagem de contribuição"
+          type: "string"
+          nullable: "true"
+        custentity_edoc_use_sender_list: 
+          title: "Usar lista de e-mails de remetentes"
+          type: "boolean"
+          x-ns-custom-field: "true"
+        custentity_brl_entity_t_state_tx_reg: 
+          title: "Inscrição estadual"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        thirdPartyCountry: 
+          type: "object"
+          properties: 
+            id: 
+              title: "Internal identifier"
+              type: "string"
+              enum: 
+              - "PR"
+              - "PS"
+              - "PT"
+              - "PW"
+              - "PY"
+              - "QA"
+              - "AD"
+              - "AE"
+              - "AF"
+              - "AG"
+              - "AI"
+              - "AL"
+              - "AM"
+              - "AN"
+              - "AO"
+              - "AQ"
+              - "AR"
+              - "AS"
+              - "AT"
+              - "RE"
+              - "AU"
+              - "AW"
+              - "AX"
+              - "AZ"
+              - "RO"
+              - "BA"
+              - "BB"
+              - "RS"
+              - "BD"
+              - "BE"
+              - "RU"
+              - "BF"
+              - "BG"
+              - "RW"
+              - "BH"
+              - "BI"
+              - "BJ"
+              - "BL"
+              - "BM"
+              - "BN"
+              - "BO"
+              - "SA"
+              - "BQ"
+              - "SB"
+              - "BR"
+              - "SC"
+              - "BS"
+              - "SD"
+              - "BT"
+              - "SE"
+              - "BV"
+              - "SG"
+              - "BW"
+              - "SH"
+              - "SI"
+              - "BY"
+              - "SJ"
+              - "BZ"
+              - "SK"
+              - "SL"
+              - "SM"
+              - "SN"
+              - "SO"
+              - "CA"
+              - "SR"
+              - "CC"
+              - "SS"
+              - "CD"
+              - "ST"
+              - "CF"
+              - "SV"
+              - "CG"
+              - "CH"
+              - "SX"
+              - "CI"
+              - "SY"
+              - "SZ"
+              - "CK"
+              - "CL"
+              - "CM"
+              - "CN"
+              - "CO"
+              - "CR"
+              - "TC"
+              - "CS"
+              - "TD"
+              - "CU"
+              - "TF"
+              - "CV"
+              - "TG"
+              - "CW"
+              - "TH"
+              - "CX"
+              - "CY"
+              - "TJ"
+              - "CZ"
+              - "TK"
+              - "TL"
+              - "TM"
+              - "TN"
+              - "TO"
+              - "TR"
+              - "TT"
+              - "DE"
+              - "TV"
+              - "TW"
+              - "DJ"
+              - "TZ"
+              - "DK"
+              - "DM"
+              - "DO"
+              - "UA"
+              - "UG"
+              - "DZ"
+              - "UM"
+              - "EA"
+              - "EC"
+              - "US"
+              - "EE"
+              - "EG"
+              - "EH"
+              - "UY"
+              - "UZ"
+              - "VA"
+              - "ER"
+              - "VC"
+              - "ES"
+              - "ET"
+              - "VE"
+              - "VG"
+              - "VI"
+              - "VN"
+              - "VU"
+              - "FI"
+              - "FJ"
+              - "FK"
+              - "FM"
+              - "FO"
+              - "FR"
+              - "WF"
+              - "GA"
+              - "GB"
+              - "WS"
+              - "GD"
+              - "GE"
+              - "GF"
+              - "GG"
+              - "GH"
+              - "GI"
+              - "GL"
+              - "GM"
+              - "GN"
+              - "GP"
+              - "GQ"
+              - "GR"
+              - "GS"
+              - "GT"
+              - "GU"
+              - "GW"
+              - "GY"
+              - "XK"
+              - "HK"
+              - "HM"
+              - "HN"
+              - "HR"
+              - "HT"
+              - "YE"
+              - "HU"
+              - "IC"
+              - "ID"
+              - "YT"
+              - "IE"
+              - "IL"
+              - "IM"
+              - "IN"
+              - "IO"
+              - "ZA"
+              - "IQ"
+              - "IR"
+              - "IS"
+              - "IT"
+              - "ZM"
+              - "JE"
+              - "ZW"
+              - "JM"
+              - "JO"
+              - "JP"
+              - "KE"
+              - "KG"
+              - "KH"
+              - "KI"
+              - "KM"
+              - "KN"
+              - "KP"
+              - "KR"
+              - "KW"
+              - "KY"
+              - "KZ"
+              - "LA"
+              - "LB"
+              - "LC"
+              - "LI"
+              - "LK"
+              - "LR"
+              - "LS"
+              - "LT"
+              - "LU"
+              - "LV"
+              - "LY"
+              - "MA"
+              - "MC"
+              - "MD"
+              - "ME"
+              - "MF"
+              - "MG"
+              - "MH"
+              - "MK"
+              - "ML"
+              - "MM"
+              - "MN"
+              - "MO"
+              - "MP"
+              - "MQ"
+              - "MR"
+              - "MS"
+              - "MT"
+              - "MU"
+              - "MV"
+              - "MW"
+              - "MX"
+              - "MY"
+              - "MZ"
+              - "NA"
+              - "NC"
+              - "NE"
+              - "NF"
+              - "NG"
+              - "NI"
+              - "NL"
+              - "NO"
+              - "NP"
+              - "NR"
+              - "NU"
+              - "NZ"
+              - "OM"
+              - "PA"
+              - "PE"
+              - "PF"
+              - "PG"
+              - "PH"
+              - "PK"
+              - "PL"
+              - "PM"
+              - "PN"
+            refName: 
+              title: "Reference Name"
+              type: "string"
+        balance: 
+          title: "Saldo"
+          type: "number"
+          description: "O saldo atual devido das contas a receber do cliente aparece aqui. Se você usar o recurso de Moedas múltiplas, o valor nesse campo será mostrado na moeda do cliente."
+          format: "double"
+          nullable: "true"
+        unsubscribe: 
+          title: "Cancelar inscrição de campanhas"
+          type: "boolean"
+          description: "Esta caixa é marcada se este cliente tiver cancelado a assinatura de suas campanhas de marketing por e-mail. Clientes cancelados não recebem e-mails da campanha de marketing. Os clientes podem cancelar a assinatura de sua campanha de marketing por e-mail clicando em um link em qualquer e-mail da campanha recebido. Para se reinscrever em campanhas de e-mail, um cliente deve se inscrever pela Central do Cliente ou clicar no link Cancelar assinatura em uma mensagem de e-mail da campanha. Se você estiver usando a Edição dos Estados Unidos do NetSuite e desejar que novos clientes sejam cancelados por padrão, um administrador pode ir para Configuração&gt; Marketing&gt; Configurar Marketing e marcar a caixa Sair da Lista de E-mails de Marketing por Padrão."
+        printOnCheckAs: 
+          title: "Imprimir em Check como"
+          type: "string"
+          description: "Tudo que for inserido aqui é impresso na linha Pagar à Ordem de, e não o que foi inserido no campo Cliente."
+          nullable: "true"
+        id: 
+          title: "ID interno"
+          type: "string"
+          description: "O ID interno para este registro é mostrado aqui. Se você não quiser exibir as identificações internas, desmarque a caixa Exibir Identificações Internas em &gt; Configurar Preferências."
+          nullable: "true"
+        fax: 
+          title: "Fax"
+          type: "string"
+          description: "Insira um número de fax para este registro. Insira o número de fax exatamente como deve ser discado. Se for necessário &apos;1&apos; no número do fax, certifique-se de incluí-lo no início do número. O número inserido aqui aparecerá automaticamente no campo Envio por Fax, das transações quando selecionar este cliente. Para enviar um fax de formulários no NetSuite, um administrador precisa em primeiro lugar configurar um serviço de fax em Configuração &gt; Configurar Impressão, Fax e E-mail &gt; Fax."
+          nullable: "true"
+        custentity_brl_entity_t_municip_tx_reg: 
+          title: "Inscrição municipal"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        thirdPartyZipCode: 
+          title: "CEP de cobrança de terceiro"
+          type: "string"
+          description: "Insira o CEP associado ao número da conta UPS ou FedEx do cliente."
+          nullable: "true"
+        custentity_ns_cli_id_plataforma: 
+          title: "ID Plataforma"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        dateCreated: 
+          title: "Data de criação"
+          type: "string"
+          description: "Neste campo, o NetSuite registra automaticamente a data em que você criou o registro."
+          format: "date-time"
+          nullable: "true"
+        custentity_edoc_sender_domain: 
+          title: "Domínio de e-mail do remetente"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        custentity_atlas_churn_date: 
+          title: "Data de cancelamento"
+          type: "string"
+          format: "date"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        overdueBalance: 
+          title: "Após o vencimento"
+          type: "number"
+          description: "O campo Após o vencimento mostra o valor total devido das transações em aberto que já ultrapassaram a data de vencimento com base nas condições da fatura. Observação: Para transações em aberto que não têm uma data de vencimento, a data da transação é usada como a data de vencimento para calcular esse total. Se você usar o recurso de Moedas múltiplas, o valor nesse campo será mostrado na moeda do cliente."
+          format: "double"
+          nullable: "true"
+        alcoholRecipientType: 
+          type: "object"
+          properties: 
+            id: 
+              title: "Internal identifier"
+              type: "string"
+              enum: 
+              - "CONSUMER"
+              - "LICENSEE"
+            refName: 
+              title: "Reference Name"
+              type: "string"
+        lastName: 
+          title: "Sobrenome"
+          type: "string"
+          description: "Opcionalmente, insira aqui um sobrenome."
+          nullable: "true"
+        endDate: 
+          title: "Data de término"
+          type: "string"
+          description: "Caso possua um contrato com este cliente, insira aqui a data de término. Se estiver inserindo um registro de tarefa, insira aqui a data de término projetada da tarefa."
+          format: "date"
+          nullable: "true"
+        phone: 
+          title: "Telefone"
+          type: "string"
+          description: "Digite um número de telefone para o seu cliente. Ele aparecerá no relatório Lista de clientes."
+          nullable: "true"
+        companyName: 
+          title: "Nome da empresa"
+          type: "string"
+          description: "Digite a razão social do cliente. Se você usar Numeração gerada automaticamente, será importante digitar o nome do cliente aqui, pois o campo Nome do cliente será preenchido com o número ou código referente a esse registro."
+          nullable: "true"
+        custentity_atlas_customer_invoice_email: 
+          title: "E-mail de documento fiscal do cliente"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        defaultAddress: 
+          title: "Default Address"
+          type: "string"
+          description: "Este campo exibe automaticamente o endereço de faturamento padrão que você inserir e adicionar usando a sub-aba Endereço."
+          nullable: "true"
+        openingBalance: 
+          title: "Saldo inicial"
+          type: "number"
+          description: "Insira o saldo inicial da conta deste cliente."
+          format: "double"
+          nullable: "true"
+        custentity_brl_entity_t_suframa_reg: 
+          title: "Registro na SUFRAMA"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        custentity_ns_cli_cus_inv_txt: 
+          title: "Custom Invoice Text"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        custentity_ns_cli_dt_legado: 
+          title: "Data criação (legado)"
+          type: "string"
+          format: "date"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        creditHoldOverride: 
+          type: "object"
+          properties: 
+            id: 
+              title: "Internal identifier"
+              type: "string"
+              enum: 
+              - "AUTO"
+              - "OFF"
+              - "ON"
+            refName: 
+              title: "Reference Name"
+              type: "string"
+        isPerson: 
+          title: "É um indivíduo"
+          type: "boolean"
+          description: "Escolha o tipo de registro de cliente a criar selecionando Empresa ou Pessoa Física no campo Tipo. Esta seleção determina os campos e subabas a serem utilizados neste registro."
+        custentity_psg_ei_peppol_id: 
+          title: "PEPPOL ID"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        email: 
+          title: "E-mail de "
+          type: "string"
+          description: "Insira o endereço de e-mail de seu cliente. Se você permite que seus clientes acessem contas on-line, isso se torna parte do código de acesso deles."
+          nullable: "true"
+        custentity_atlas_avail_credit: 
+          title: "Crédito disponível"
+          type: "number"
+          format: "double"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        openingBalanceDate: 
+          title: "Saldo inicial Data"
+          type: "string"
+          description: "Insira a data do saldo inserido no campo Saldo Inicial."
+          format: "date"
+          nullable: "true"
+        depositBalance: 
+          title: "Saldo do depósito"
+          type: "number"
+          description: "O campo Saldo do Depósito do Cliente exibe o valor total de depósitos não aplicados do cliente. Os depósitos serão registrados no livro razão geral, como uma obrigação, quando o cliente fizer um pagamento antecipado antes da entrega de mercadorias ou serviços. Um saldo de depósito existirá até que as mercadorias ou serviços sejam entregues. Depósitos não afetam o saldo de contas a receber do cliente. Se você utiliza o recurso Moedas Múltiplas, o valor neste campo é mostrado na moeda do cliente."
+          format: "double"
+          nullable: "true"
+        custentity_brl_entity_t_int_tax_reg: 
+          title: "Registro fiscal internacional"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        lastOrderDate: 
+          title: "Data do último pedido de venda"
+          type: "string"
+          description: "Returns the date of the last order from the customer."
+          format: "date"
+          nullable: "true"
+        url: 
+          title: "URL"
+          type: "string"
+          description: "Insira a URL associada a este cliente."
+          nullable: "true"
+        custentity_ns_cli_google_acc_id: 
+          title: "GoogleAccountID"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        firstSaleDate: 
+          title: "Data da primeira venda"
+          type: "string"
+          description: "Returns the date of the first sale to the customer."
+          format: "date"
+          nullable: "true"
+        customForm: 
+          type: "object"
+          properties: 
+            id: 
+              title: "Internal identifier"
+              type: "string"
+              enum: 
+              - "354"
+              - "356"
+              - "-2"
+              - "7"
+              - "-8"
+              - "10"
+            refName: 
+              title: "Reference Name"
+              type: "string"
+        autoName: 
+          title: "Automático"
+          type: "boolean"
+          description: "Desmarque esta caixa para inserir manualmente um nome para este registro. Se esta caixa ficar marcada, o NetSuite atribuirá um nome ou número para este registro com base nas suas configurações em Configuração &gt; Configurar Números Gerados Automaticamente."
+        aging: 
+          title: "Atual"
+          type: "number"
+          description: "O saldo de CR vencido é exibido aqui, com os totais do saldo para cada período de vencimento."
+          format: "double"
+          nullable: "true"
+        shipComplete: 
+          title: "Envio concluído"
+          type: "boolean"
+          description: "Marque esta caixa se deseja enviar pedidos para este cliente quando estes tiverem sido completamente atendidos."
+        thirdPartyCarrier: 
+          type: "object"
+          properties: 
+            id: 
+              title: "Internal identifier"
+              type: "string"
+              enum: 
+              - "fedex"
+              - "ups"
+              - "usps"
+            refName: 
+              title: "Reference Name"
+              type: "string"
+        externalId: 
+          title: "ID externo"
+          type: "string"
+          description: "Returns the customer&apos;s external ID, if one is assigned."
+          nullable: "true"
+        entityId: 
+          title: "ID da entidade"
+          type: "string"
+          description: "Digite o nome desse cliente, prospect ou lead conforme ele deve aparecer em todas as listas e na linha de beneficiário do pagamento em cheques.Se você usar Numeração gerada automaticamente, o número ou código do cliente será preenchido aqui. Digite o nome do cliente no campo Nome da empresa."
+          nullable: "true"
+        language: 
+          type: "object"
+          properties: 
+            id: 
+              title: "Internal identifier"
+              type: "string"
+              enum: 
+              - "ro_RO"
+              - "af_ZA"
+              - "tl_PH"
+              - "pt_BR"
+              - "th_TH"
+              - "bn_BD"
+              - "cs_CZ"
+              - "ca_ES"
+              - "hu_HU"
+              - "kn_IN"
+              - "sk_SK"
+              - "es_ES"
+              - "nl_NL"
+              - "te_IN"
+              - "is_IS"
+              - "sq_AL"
+              - "sv_SE"
+              - "es_AR"
+              - "da_DK"
+              - "ta_IN"
+              - "sr_RS"
+              - "en"
+              - "ar"
+              - "hr_HR"
+              - "ko_KR"
+              - "en_US"
+              - "lt_LT"
+              - "no_NO"
+              - "it_IT"
+              - "ru_RU"
+              - "el_GR"
+              - "pl_PL"
+              - "en_AU"
+              - "tr_TR"
+              - "id_ID"
+              - "hi_IN"
+              - "mr_IN"
+              - "ja_JP"
+              - "fr_FR"
+              - "he_IL"
+              - "de_DE"
+              - "ms_MY"
+              - "zh_TW"
+              - "fr_CA"
+              - "pa_IN"
+              - "fa_IR"
+              - "bg_BG"
+              - "vi_VN"
+              - "hy_AM"
+              - "lb_LU"
+              - "sh_RS"
+              - "xx_US"
+              - "ht_HT"
+              - "fi_FI"
+              - "en_GB"
+              - "gu_IN"
+              - "et_EE"
+              - "en_CA"
+              - "bs_BA"
+              - "uk_UA"
+              - "lv_LV"
+              - "zh_CN"
+              - "sl_SI"
+              - "pt_PT"
+            refName: 
+              title: "Reference Name"
+              type: "string"
+        emailPreference: 
+          type: "object"
+          properties: 
+            id: 
+              title: "Internal identifier"
+              type: "string"
+              enum: 
+              - "PDF"
+              - "HTML"
+              - "DEFAULT"
+            refName: 
+              title: "Reference Name"
+              type: "string"
+        numberFormat: 
+          type: "object"
+          properties: 
+            id: 
+              title: "Internal identifier"
+              type: "string"
+              enum: 
+              - "0"
+              - "1"
+              - "2"
+              - "3"
+              - "4"
+              - "5"
+            refName: 
+              title: "Reference Name"
+              type: "string"
+        isBudgetApproved: 
+          title: "Orçamento aprovado"
+          type: "boolean"
+          description: "Marque esta caixa se o orçamento do cliente tiver sido aprovado."
+        mobilePhone: 
+          title: "Telefone celular"
+          type: "string"
+          description: "Insira um número de telefone celular para esta pessoa."
+          nullable: "true"
+        unbilledOrders: 
+          title: "Pedidos não faturados"
+          type: "number"
+          description: "Este campo exibe o valor total das ordens que foram inseridos mas ainda não foram faturados. Se você tiver habilitado a preferência Limite de Crédito do Cliente Inclui Ordens, este total será incluído em cálculos de limite de crédito. Configure esta preferência em Configuração&gt; Contabilidade&gt; Configurar Contabilidade &gt; Geral. Se você utiliza o recurso Moedas Múltiplas, o valor neste campo é mostrado na moeda do cliente."
+          format: "double"
+          nullable: "true"
+        custentity_brl_entity_t_fed_tax_reg: 
+          title: "Cadastro federal"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        searchStage: 
+          title: "Estágio"
+          type: "string"
+          description: "Returns the stage of the customer record, such as Customer or Lead."
+          nullable: "true"
+        altPhone: 
+          title: "Telefone alt."
+          type: "string"
+          description: "Se for aplicável, insira um número de telefone alternativo para este registro."
+          nullable: "true"
+        firstOrderDate: 
+          title: "Data do primeiro pedido de venda"
+          type: "string"
+          description: "Returns the date of the first order from the customer."
+          format: "date"
+          nullable: "true"
+        faxTransactions: 
+          title: "Enviar transações por fax"
+          type: "boolean"
+          description: "Defina um método preferencial de entrega das transações para este cliente. Escolha enviar as transações por correio, e-mail, fax ou uma combinação destas três opções. Dessa forma, quando selecionar o cliente numa transação, o método preferencial de envio é marcado por padrão. * E-mail – Marque esta opção para que a opção Envio por E-mail seja marcada por padrão nas transações em que este cliente for selecionado. * Impressão – Marque esta opção para que a caixa Para Impressão seja marcada por padrão em transações quando este cliente é selecionado. * Fax – Marque esta opção para que a opção Envio por Fax seja marcada por padrão nas transações em que este cliente for selecionado. Quando você inserir estas configurações no registro do cliente, estas caixas estarão marcadas por padrão para transações criadas a partir do registro do cliente ou para transações que forem copiadas ou convertidas. Observação: Estas configurações substituirão qualquer configuração personalizada nos formulários de transação utilizados. Há também preferências para configurar valores padrão para registros de cliente novos em Configurações &gt; Empresa &gt; Preferências &gt; Preferências de Impressão, Fax e E-mail. Na sub-aba Impressão, Fax ou E-mail, marque Padrão de Clientes para [Imprimir/Enviar por Fax/Enviar por E-mail] as Transações. Estes campos também podem ser definidos utilizando a função Atualização em Massa. Vá para Listas &gt; Atualizações em Massa &gt; Atualizações em Massa &gt; Geral e clique em Cliente."
+        globalSubscriptionStatus: 
+          type: "object"
+          properties: 
+            id: 
+              title: "Internal identifier"
+              type: "string"
+              enum: 
+              - "1"
+              - "2"
+              - "3"
+              - "4"
+            refName: 
+              title: "Reference Name"
+              type: "string"
+        altEmail: 
+          title: "E-mail alternativo"
+          type: "string"
+          description: "Insira um endereço de e-mail alternativo para este cliente. Se você usar Capturar Respostas de E-mail, o e-mail enviado com o endereço de e-mail alternativo será automaticamente anexado ao registro do cliente."
+          nullable: "true"
+        defaultOrderPriority: 
+          title: "Prioridade padrão de pedido"
+          type: "number"
+          description: "Insira um número para designar a prioridade para esse cliente."
+          format: "float"
+          nullable: "true"
+        custentity_atlas_customer_probability: 
+          title: "Probabilidade do cliente"
+          type: "number"
+          format: "double"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        salutation: 
+          title: "Sr./Sra...."
+          type: "string"
+          description: "Insira o título desta pessoa, como Sr., Sra., Srta., etc."
+          nullable: "true"
+        isInactive: 
+          title: "Inativo"
+          type: "boolean"
+          description: "Quando você marcar esta caixa, este cliente não será mais exibido na lista de clientes, prospects ou leads a menos que você marque a caixa Exibir Colunas Inativas na página da lista. O nome deste cliente também não será mais exibido em outras listas suspensas contendo clientes e o cliente não terá mais acesso ao NetSuite e não poderá acessar a sua loja virtual."
+        firstName: 
+          title: "Nome"
+          type: "string"
+          description: "Insira o nome deste cliente."
+          nullable: "true"
+        thirdPartyAcct: 
+          title: "Número da conta de cobrança de terceiros"
+          type: "string"
+          description: "Insira o número da conta FedEx® ou UPS® deste cliente no campo Número da Conta de Cobrança de Terceiros. Este número de conta é utilizado se você selecionar Faturamento de Consignatário em atendimentos de itens utilizando UPS ou se selecionar Destinatário da Fatura utilizando FedEx."
+          nullable: "true"
+        homePhone: 
+          title: "Telefone residencial"
+          type: "string"
+          description: "Insira um número de telefone residencial para esta pessoa."
+          nullable: "true"
+        custentity_psg_ei_auto_select_temp_sm: 
+          title: "Seleção automática do método de envio e modelo"
+          type: "boolean"
+          x-ns-custom-field: "true"
+        estimatedBudget: 
+          title: "Orçamento estimado"
+          type: "number"
+          description: "Insira o orçamento estimado que o prospect ou cliente possui para esta oportunidade."
+          format: "double"
+          nullable: "true"
+        custentity_ns_cli_on_sal_lead_id: 
+          title: "OnlineSalesLeadID"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        title: 
+          title: "Cargo"
+          type: "string"
+          description: "Insira o cargo da posição desta pessoa na empresa."
+          nullable: "true"
+        custentity_edoc_gen_trans_pdf: 
+          title: "Gerar PDF"
+          type: "boolean"
+          x-ns-custom-field: "true"
+        defaultShippingAddress: 
+          title: "Endereço de expedição padrão"
+          type: "string"
+          description: "Returns the customer&apos;s default shipping address, if one is entered on the customer record."
+          nullable: "true"
+        negativeNumberFormat: 
+          type: "object"
+          properties: 
+            id: 
+              title: "Internal identifier"
+              type: "string"
+              enum: 
+              - "0"
+              - "1"
+            refName: 
+              title: "Reference Name"
+              type: "string"
+        shippingCarrier: 
+          type: "object"
+          properties: 
+            id: 
+              title: "Internal identifier"
+              type: "string"
+              enum: 
+              - "ups"
+              - "nonups"
+            refName: 
+              title: "Reference Name"
+              type: "string"
+        aging2: 
+          title: "31-60 dias"
+          type: "number"
+          description: "O saldo de CR vencido é exibido aqui, com os totais do saldo para cada período de vencimento."
+          format: "double"
+          nullable: "true"
+        aging3: 
+          title: "61-90 dias"
+          type: "number"
+          description: "O saldo de CR vencido é exibido aqui, com os totais do saldo para cada período de vencimento."
+          format: "double"
+          nullable: "true"
+        aging1: 
+          title: "1-30 dias"
+          type: "number"
+          description: "O saldo de CR vencido é exibido aqui, com os totais do saldo para cada período de vencimento."
+          format: "double"
+          nullable: "true"
+        aging4: 
+          title: "Acima de 90 dias"
+          type: "number"
+          description: "O saldo de CR vencido é exibido aqui, com os totais do saldo para cada período de vencimento."
+          format: "double"
+          nullable: "true"
+        defaultTaxReg: 
+          title: "Número reg. imposto padrão"
+          type: "string"
+          description: "Select the default tax registration number for this entity."
+          nullable: "true"
+        comments: 
+          title: "Comentários"
+          type: "string"
+          description: "Insira qualquer outra informação a rastrear para este cliente."
+          nullable: "true"
+        accountNumber: 
+          title: "Conta"
+          type: "string"
+          description: "Se você atribui contas a seus clientes, insira aqui um número de conta para este cliente."
+          nullable: "true"
+        reminderDays: 
+          title: "Dias de lembrete"
+          type: "integer"
+          description: "Insira a quantidade de dias antes da data de término para que você seja lembrado de que o contrato deste cliente ou serviço precisa ser renovado. Você pode definir o lembrete a exibir no portlet Lembretes, nas suas páginas Inicial, Listas e Transações, clicando em Personalizar Página, em cada página. Na aba Layout, clique na sub-aba Conteúdo do Lado Direito e marque a caixa Lembretes. Depois, clique na sub-aba Lembretes e marque a caixa Clientes para Análise. Clique em Salvar."
+          format: "int64"
+          nullable: "true"
+        lastModifiedDate: 
+          title: "Data da última alteração"
+          type: "string"
+          description: "Returns the date on which the customer record was last modified."
+          format: "date-time"
+          nullable: "true"
+        middleName: 
+          title: "Nome do meio"
+          type: "string"
+          description: "Returns the customer&apos;s middle name or initial, if one is entered on the customer record."
+          nullable: "true"
+        printTransactions: 
+          title: "Imprimir transações"
+          type: "boolean"
+          description: "Defina um método preferencial de entrega das transações para este cliente. Escolha enviar as transações por correio, e-mail, fax ou uma combinação destas três opções. Dessa forma, quando selecionar o cliente numa transação, o método preferencial de envio é marcado por padrão. * E-mail – Marque esta opção para que a opção Envio por E-mail seja marcada por padrão nas transações em que este cliente for selecionado. * Impressão – Marque esta opção para que a caixa Para Impressão seja marcada por padrão em transações quando este cliente é selecionado. * Fax – Marque esta opção para que a opção Envio por Fax seja marcada por padrão nas transações em que este cliente for selecionado. Quando você inserir estas configurações no registro do cliente, estas caixas estarão marcadas por padrão para transações criadas a partir do registro do cliente ou para transações que forem copiadas ou convertidas. Observação: Estas configurações substituirão qualquer configuração personalizada nos formulários de transação utilizados. Há também preferências para configurar valores padrão para registros de cliente novos em Configurações &gt; Empresa &gt; Preferências &gt; Preferências de Impressão, Fax e E-mail. Na sub-aba Impressão, Fax ou E-mail, marque Padrão de Clientes para [Imprimir/Enviar por Fax/Enviar por E-mail] as Transações. Estes campos também podem ser definidos utilizando a função Atualização em Massa. Vá para Listas &gt; Atualizações em Massa &gt; Atualizações em Massa &gt; Geral e clique em Cliente."
+        custentity_edoc_ws_id: 
+          title: "ID do web service"
+          type: "string"
+          nullable: "true"
+          x-ns-custom-field: "true"
+        syncPartnerTeams: 
+          title: "Atualizar transações"
+          type: "boolean"
+          description: "Marque esta caixa se quiser atualizar as transações deste cliente para refletir as alterações feitas na equipe do parceiro."
+        daysOverdue: 
+          title: "Dias"
+          type: "integer"
+          description: "O número de dias em débito deste saldo é exibido aqui."
+          format: "int64"
+          nullable: "true"
+        creditLimit: 
+          title: "Limite de crédito"
+          type: "number"
+          description: "Digite um limite de crédito para definir o valor em moeda máximo que o cliente pode acumular em contas a receber pendentes. Quando você atingir ou exceder o limite desse cliente ao digitar transações, o NetSuite poderá avisá-lo ou bloquear a transação. Para definir preferências para o tratamento de limites de crédito, um administrador deve acessar Configuração &gt; Contabilidade &gt; Preferências contábeis &gt; Geral &gt; Tratamento do limite de crédito do cliente. Para obter mais informações, clique em Ajuda na parte superior da página e busque o tópico sobre limites de crédito e retenções de clientes."
+          format: "double"
+          nullable: "true"
+        refName: 
+          title: "Reference Name"
+          type: "string"
+        links: 
+          title: "Links"
+          type: "array"
+          readOnly: "true"
+          items: 
+            $ref: "#/components/schemas/nsLink"
+        campaigns: 
+          $ref: "#/components/schemas/customer-campaignsCollection"
+        buyingReason: 
+          $ref: "#/components/schemas/nsResource"
+        contact: 
+          $ref: "#/components/schemas/nsResource"
+        terms: 
+          $ref: "#/components/schemas/nsResource"
+        custentity_ns_cli_portfolio: 
+          $ref: "#/components/schemas/nsResource"
+        custentity_edoc_ws_sender: 
+          oneOf: 
+          - $ref: "#/components/schemas/customer"
+          - $ref: "#/components/schemas/nsResource"
+        defaultBankAccount: 
+          $ref: "#/components/schemas/nsResource"
+        custentity_fte_entity_l_taxregime: 
+          $ref: "#/components/schemas/nsResource"
+        partner: 
+          $ref: "#/components/schemas/nsResource"
+        partners: 
+          $ref: "#/components/schemas/customer-partnersCollection"
+        receivablesAccount: 
+          $ref: "#/components/schemas/nsResource"
+        salesReadiness: 
+          $ref: "#/components/schemas/nsResource"
+        groupPricing: 
+          $ref: "#/components/schemas/customer-groupPricingCollection"
+        category: 
+          $ref: "#/components/schemas/nsResource"
+        prefCcProcessor: 
+          $ref: "#/components/schemas/nsResource"
+        custentity_brr_entity_l_nature_withheld: 
+          $ref: "#/components/schemas/nsResource"
+        salesRep: 
+          $ref: "#/components/schemas/nsResource"
+        custentity_fte_entity_l_lob: 
+          $ref: "#/components/schemas/nsResource"
+        shippingItem: 
+          $ref: "#/components/schemas/nsResource"
+        openingBalanceAccount: 
+          $ref: "#/components/schemas/nsResource"
+        campaignCategory: 
+          $ref: "#/components/schemas/nsResource"
+        leadSource: 
+          $ref: "#/components/schemas/nsResource"
+        subsidiary: 
+          $ref: "#/components/schemas/nsResource"
+        custentity_ns_cli_vertical: 
+          $ref: "#/components/schemas/nsResource"
+        custentity_psg_ei_email_template: 
+          $ref: "#/components/schemas/nsResource"
+        territory: 
+          $ref: "#/components/schemas/nsResource"
+        itemPricing: 
+          $ref: "#/components/schemas/customer-itemPricingCollection"
+        buyingTimeFrame: 
+          $ref: "#/components/schemas/nsResource"
+        custentity_brl_entity_l_def_pay_method: 
+          $ref: "#/components/schemas/nsResource"
+        entityStatus: 
+          $ref: "#/components/schemas/nsResource"
+        custentity_ns_cli_tp_fat: 
+          $ref: "#/components/schemas/nsResource"
+        currencyList: 
+          $ref: "#/components/schemas/customer-currencyListCollection"
+        billingRateCard: 
+          $ref: "#/components/schemas/nsResource"
+        campaignEvent: 
+          $ref: "#/components/schemas/nsResource"
+        topLevelParent: 
+          $ref: "#/components/schemas/customer"
+        contactList: 
+          $ref: "#/components/schemas/nsResourceCollection"
+        currency: 
+          $ref: "#/components/schemas/nsResource"
+        parent: 
+          $ref: "#/components/schemas/customer"
+        taxRegistration: 
+          $ref: "#/components/schemas/customer-taxRegistrationCollection"
+        priceLevel: 
+          $ref: "#/components/schemas/nsResource"
+        image: 
+          $ref: "#/components/schemas/nsResource"
+        salesGroup: 
+          $ref: "#/components/schemas/nsResource"
+        custentity_ns_cli_squad: 
+          $ref: "#/components/schemas/nsResource"
+        addressBook: 
+          $ref: "#/components/schemas/customer-addressBookCollection"
+        custentity_psg_ei_entity_edoc_standard: 
+          $ref: "#/components/schemas/nsResource"
+      x-ns-filterable: 
+      - "custentity_brr_entity_l_nature_withheld"
+      - "parent"
+      - "custentity_ns_cli_portfolio"
+      - "emailTransactions"
+      - "startDate"
+      - "lastSaleDate"
+      - "custentity_edoc_use_sender_list"
+      - "custentity_brl_entity_t_state_tx_reg"
+      - "custentity_psg_ei_entity_edoc_standard"
+      - "thirdPartyCountry"
+      - "topLevelParent"
+      - "unsubscribe"
+      - "terms"
+      - "buyingReason"
+      - "printOnCheckAs"
+      - "id"
+      - "fax"
+      - "custentity_brl_entity_t_municip_tx_reg"
+      - "thirdPartyZipCode"
+      - "custentity_ns_cli_id_plataforma"
+      - "dateCreated"
+      - "custentity_edoc_sender_domain"
+      - "buyingTimeFrame"
+      - "custentity_atlas_churn_date"
+      - "billingRateCard"
+      - "alcoholRecipientType"
+      - "lastName"
+      - "endDate"
+      - "phone"
+      - "companyName"
+      - "custentity_atlas_customer_invoice_email"
+      - "salesReadiness"
+      - "custentity_brl_entity_t_suframa_reg"
+      - "custentity_brl_entity_l_def_pay_method"
+      - "custentity_ns_cli_cus_inv_txt"
+      - "custentity_ns_cli_dt_legado"
+      - "creditHoldOverride"
+      - "receivablesAccount"
+      - "isPerson"
+      - "currency"
+      - "custentity_psg_ei_peppol_id"
+      - "email"
+      - "salesRep"
+      - "campaignEvent"
+      - "custentity_brl_entity_t_int_tax_reg"
+      - "lastOrderDate"
+      - "url"
+      - "custentity_ns_cli_google_acc_id"
+      - "firstSaleDate"
+      - "partner"
+      - "shipComplete"
+      - "custentity_edoc_ws_sender"
+      - "thirdPartyCarrier"
+      - "shippingItem"
+      - "externalId"
+      - "custentity_fte_entity_l_taxregime"
+      - "entityId"
+      - "language"
+      - "emailPreference"
+      - "defaultBankAccount"
+      - "numberFormat"
+      - "isBudgetApproved"
+      - "contact"
+      - "mobilePhone"
+      - "custentity_brl_entity_t_fed_tax_reg"
+      - "priceLevel"
+      - "searchStage"
+      - "altPhone"
+      - "firstOrderDate"
+      - "faxTransactions"
+      - "globalSubscriptionStatus"
+      - "custentity_psg_ei_email_template"
+      - "altEmail"
+      - "defaultOrderPriority"
+      - "custentity_atlas_customer_probability"
+      - "leadSource"
+      - "salutation"
+      - "isInactive"
+      - "firstName"
+      - "thirdPartyAcct"
+      - "custentity_ns_cli_squad"
+      - "homePhone"
+      - "contactList"
+      - "custentity_psg_ei_auto_select_temp_sm"
+      - "estimatedBudget"
+      - "custentity_ns_cli_on_sal_lead_id"
+      - "title"
+      - "custentity_edoc_gen_trans_pdf"
+      - "entityStatus"
+      - "defaultShippingAddress"
+      - "custentity_fte_entity_l_lob"
+      - "negativeNumberFormat"
+      - "shippingCarrier"
+      - "custentity_ns_cli_vertical"
+      - "defaultTaxReg"
+      - "comments"
+      - "accountNumber"
+      - "reminderDays"
+      - "lastModifiedDate"
+      - "middleName"
+      - "printTransactions"
+      - "custentity_ns_cli_tp_fat"
+      - "custentity_edoc_ws_id"
+      - "creditLimit"
+      - "category"
+      - "prefCcProcessor"
+      - "territory"
+    customer-campaignsCollection: 
+      type: "object"
+      properties: 
+        links: 
+          title: "Links"
+          type: "array"
+          readOnly: "true"
+          items: 
+            $ref: "#/components/schemas/nsLink"
+        totalResults: 
+          title: "Total Results"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        count: 
+          title: "Count"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        hasMore: 
+          title: "Has More Results"
+          type: "boolean"
+          readOnly: "true"
+        offset: 
+          title: "Query Offset"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        items: 
+          type: "array"
+          items: 
+            $ref: "#/components/schemas/customer-campaignsElement"
+    customerCollection: 
+      type: "object"
+      properties: 
+        totalResults: 
+          title: "Total Results"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        items: 
+          title: "Items"
+          type: "array"
+          description: "An array field that represents a collection of elements, for example, sublist lines, multiselect items, or search results."
+          items: 
+            $ref: "#/components/schemas/customer"
+        links: 
+          title: "Links"
+          type: "array"
+          readOnly: "true"
+          items: 
+            $ref: "#/components/schemas/nsLink"
+        count: 
+          title: "Count"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        hasMore: 
+          title: "Has More Results"
+          type: "boolean"
+          readOnly: "true"
+        offset: 
+          title: "Query Offset"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+    customer-currencyListElement: 
+      type: "object"
+      properties: 
+        links: 
+          title: "Links"
+          type: "array"
+          readOnly: "true"
+          items: 
+            $ref: "#/components/schemas/nsLink"
+        overrideCurrencyFormat: 
+          title: "Substituir formato da moeda"
+          type: "boolean"
+        balance: 
+          title: "Saldo"
+          type: "number"
+          format: "double"
+          nullable: "true"
+        depositBalance: 
+          title: "Saldo do depósito"
+          type: "number"
+          format: "double"
+          nullable: "true"
+        unbilledOrders: 
+          title: "Pedidos não faturados"
+          type: "number"
+          format: "double"
+          nullable: "true"
+        symbolPlacement: 
+          type: "object"
+          properties: 
+            id: 
+              title: "Internal identifier"
+              type: "string"
+              enum: 
+              - "1"
+              - "2"
+            refName: 
+              title: "Reference Name"
+              type: "string"
+        overdueBalance: 
+          title: "Saldo após o vencimento"
+          type: "number"
+          format: "double"
+          nullable: "true"
+        displaySymbol: 
+          title: "Símbolo"
+          type: "string"
+          nullable: "true"
+        refName: 
+          title: "Reference Name"
+          type: "string"
+        currency: 
+          $ref: "#/components/schemas/nsResource"
+      x-ns-sublistkey: 
+        present: "true"
+        value: 
+          new: 
+          - "currency"
+          existing: 
+          - "currency"
+      x-ns-filterable: 
+    customer-addressBookCollection: 
+      type: "object"
+      properties: 
+        links: 
+          title: "Links"
+          type: "array"
+          readOnly: "true"
+          items: 
+            $ref: "#/components/schemas/nsLink"
+        totalResults: 
+          title: "Total Results"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        count: 
+          title: "Count"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        hasMore: 
+          title: "Has More Results"
+          type: "boolean"
+          readOnly: "true"
+        offset: 
+          title: "Query Offset"
+          type: "integer"
+          format: "int64"
+          readOnly: "true"
+        items: 
+          type: "array"
+          items: 
+            $ref: "#/components/schemas/customer-addressBookElement"
+  securitySchemes: 
+    OAuth_1.0_authorization: 
+      type: "apiKey"
+      description: "OAuth 1.0 - https://tools.ietf.org/html/rfc5849"
+      name: "authorization"
+      in: "header"

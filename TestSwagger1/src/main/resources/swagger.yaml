@@ -1,0 +1,29 @@
+openapi: 3.0.3
+info:
+  title: Mi API de Ejemplo
+  version: '1.0'
+servers:
+  - url: https://api.ejemplo.com/v1
+paths:
+  /pets:
+    get:
+      summary: Lista todas las mascotas
+      operationId: listPets
+      responses:
+        '200':
+          description: Lista de mascotas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+components:
+  schemas:
+    Pet:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string

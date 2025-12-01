@@ -1,0 +1,25 @@
+
+begin
+{
+  [method]
+  {
+    less-than *>
+  }
+}
+
+less-than{<}
+greater-than{>}
+<**{<*}
+<*>{%}
+
+temp1
+{
+ begin
+
+ t2{
+begin
+[method] m1{their}
+}
+}
+
+ 

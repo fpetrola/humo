@@ -17,89 +17,120 @@ import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
-public class ProductionsParserListener extends DefaultParserListener implements ParserListener
-{
-    private DefaultMutableTreeNode root;
-    private Map<CharSequence, DefaultMutableTreeNode> nodes;
-    private int productionsCount= 0;
-    protected JTree productionsTree;
-    private DebuggerParserListener debugDelegator;
+public class ProductionsParserListener extends DefaultParserListener implements ParserListener {
+  private DefaultMutableTreeNode root;
+  private Map<CharSequence, DefaultMutableTreeNode> nodes;
+  private int productionsCount = 0;
+  protected JTree productionsTree;
+  private DebuggerParserListener debugDelegator;
+  private FilteredTreeModel filteredTreeModel;
+  private boolean updatesPaused = false;
+  private CharSequence lastProductionName = null;
 
-    public ProductionsParserListener(DebuggerParserListener debugDelegator)
-    {
-	this.debugDelegator= debugDelegator;
-	debugDelegator.setVisibilityListener(new VisibilityListener()
-	{
-	    public void invisibleChanged(boolean invisible)
-	    {
-		updateTreeUI();
-	    }
-	});
+  public ProductionsParserListener(DebuggerParserListener debugDelegator) {
+    this.debugDelegator = debugDelegator;
+    debugDelegator.setVisibilityListener(new VisibilityListener() {
+      public void invisibleChanged(boolean invisible) {
+        updateTreeUI();
+      }
+    });
+  }
+
+  public void init(String filename, boolean createComponents) {
+    nodes = new HashMap<CharSequence, DefaultMutableTreeNode>();
+    this.root = new DefaultMutableTreeNode("Productions of: " + filename);
+
+    if (createComponents) {
+      productionsTree = new JTree(root);
+      ProductionTreeCellRenderer renderer = new ProductionTreeCellRenderer();
+      productionsTree.setCellRenderer(renderer);
     }
 
-    public void init(String filename, boolean createComponents)
-    {
-	nodes= new HashMap<CharSequence, DefaultMutableTreeNode>();
-	this.root= new DefaultMutableTreeNode("Productions of: " + filename);
+    filteredTreeModel = new FilteredTreeModel(root);
+    productionsTree.setModel(filteredTreeModel);
+  }
 
-	if (createComponents)
-	{
-	    productionsTree= new JTree(root);
-	    DefaultTreeCellRenderer renderer= new DefaultTreeCellRenderer();
-	    Icon customOpenIcon= new ImageIcon(HumoTester.class.getResource("/images/scalarvar.gif"));
-	    Icon customClosedIcon= new ImageIcon(HumoTester.class.getResource("/images/genericvariable.gif"));
-	    renderer.setOpenIcon(customOpenIcon);
-	    renderer.setClosedIcon(customClosedIcon);
-	    productionsTree.setCellRenderer(renderer);
-	}
+  public JTree getProductionsTree() {
+    return productionsTree;
+  }
 
-	productionsTree.setModel(new DefaultTreeModel(root));
+  public void setProductionFilter(boolean hideFiltered, String... filterPrefix) {
+    if (filteredTreeModel != null) {
+      filteredTreeModel.setFilter(hideFiltered, filterPrefix);
+    }
+  }
+
+  public void afterParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar, CharSequence name, CharSequence value) {
+    productionsCount++;
+
+    DefaultMutableTreeNode node = nodes.get(name);
+    DefaultMutableTreeNode child = new DefaultMutableTreeNode(value + " (count:" + productionsCount + ")");
+    if (node != null)
+      // Insertar al inicio (índice 0) para mostrar las versiones más recientes primero
+      node.insert(child, 0);
+    else {
+      DefaultMutableTreeNode parent = new DefaultMutableTreeNode(name);
+      root.add(parent);
+      parent.insert(child, 0);
+      nodes.put(name, parent);
     }
 
-    public JTree getProductionsTree()
-    {
-	return productionsTree;
+    updateTreeUI();
+  }
+
+  public DefaultMutableTreeNode getRoot() {
+    return root;
+  }
+
+  public void setRoot(DefaultMutableTreeNode productionsRoot) {
+    this.root = productionsRoot;
+  }
+
+  private void updateTreeUI() {
+    if (!updatesPaused && !debugDelegator.isTotallyInvisible())
+      SwingUtilities.invokeLater(new Runnable() {
+        public void run() {
+          productionsTree.updateUI();
+        }
+      });
+  }
+
+  public void selectAndExpandProduction(CharSequence productionName) {
+    // Si las actualizaciones están pausadas, solo guardar el nombre para hacerlo después
+    if (updatesPaused) {
+      lastProductionName = productionName;
+      return;
     }
 
-    public void afterParseProductionBody(StringBuilder sourcecode, int first, int current, int last, char currentChar, CharSequence name, CharSequence value)
-    {
-	productionsCount++;
+    //find in nodes but trimming node text
+    String string = productionName.toString();
+    nodes.keySet().forEach(key -> {
+      if (key.toString().trim().equals(string.trim())) {
+        SwingUtilities.invokeLater(new Runnable() {
+          public void run() {
+            TreePath path = new TreePath(nodes.get(key).getPath());
+            productionsTree.setSelectionPath(path);
+            productionsTree.expandPath(path);
+            productionsTree.scrollPathToVisible(path);
+          }
+        });
+      }
+    });
+  }
 
-	DefaultMutableTreeNode node= nodes.get(name);
-	DefaultMutableTreeNode child= new DefaultMutableTreeNode(value + " (count:" + productionsCount + ")");
-	if (node != null)
-	    node.add(child);
-	else
-	{
-	    DefaultMutableTreeNode parent= new DefaultMutableTreeNode(name);
-	    root.add(parent);
-	    parent.add(child);
-	    nodes.put(name, parent);
-	}
+  public void pauseUpdates() {
+    updatesPaused = true;
+  }
 
-	updateTreeUI();
+  public void resumeUpdates() {
+    updatesPaused = false;
+    updateTreeUI();
+    // Seleccionar la última producción visitada si existe
+    if (lastProductionName != null) {
+      selectAndExpandProduction(lastProductionName);
+      lastProductionName = null;
     }
-    public DefaultMutableTreeNode getRoot()
-    {
-	return root;
-    }
-
-    public void setRoot(DefaultMutableTreeNode productionsRoot)
-    {
-	this.root= productionsRoot;
-    }
-
-    private void updateTreeUI()
-    {
-	if (!debugDelegator.isTotallyInvisible())
-	    SwingUtilities.invokeLater(new Runnable()
-	    {
-		public void run()
-		{
-		    productionsTree.updateUI();
-		}
-	    });
-    }
+  }
 }

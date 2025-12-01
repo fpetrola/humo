@@ -1,0 +1,129 @@
+(beg{(be}
+in){gin)}
+(en{(e}
+d){nd)}
+(met{(me}
+hod){thod)}
+
+[method]{<*(method)}
+[begin]{<*(begin)}
+[end]{<*(end)}
+def:{<}
+
+
+<*(begin)
+{
+	def:**(method)
+	{
+		<***>
+	}
+	
+	def:**(end)
+	{
+		def:*****(method)
+		{
+			<**>
+		}
+
+		def:***(end)
+		{
+			def:*******(method)
+			{
+				<*>
+			}
+		}
+
+	}
+	
+	def:**(begin)
+	{
+		def:***(method)
+		{
+			<*****>
+	  	}
+	  
+		def:***(begin)
+		{
+			def:****(method)
+			{
+				<*******>
+		  	}
+		  
+			def:****(end)
+			{
+				def:*****(method)
+				{
+					<*******>
+				}
+				
+				def:*****(end)
+				{
+					def:******(method)
+					{
+						<*******>
+					}
+					
+					def:******(end)
+					{
+						def:*******(method)
+						{
+							<*******>
+						}
+					}
+				}
+				
+			}
+		}
+		
+		def:***(end)
+		{
+			def:******(method)
+			{
+				<***>
+			}
+		}
+	}
+}
+
+
+<**{<*}
+<*>{%}
+(*){*}
+
+[te{[t}mp]{emp]}  
+[re{[r}m]{em]}  
+
+temp1
+{
+	[temp][begin] 
+	{
+		[method] m1a{code1}
+	
+		[temp][begin]
+		{
+			[method] m2a{code2}
+
+			[temp][begin]
+			{
+				[method] m3a{code2a}
+				[method] m3b{code2a}
+				[method] m3c{code2a}
+			}
+			[temp][end]
+			
+			[method] m2b{code2b}
+
+		}
+		[temp][end]
+	
+		[method] m1b{code3}
+	
+	}
+	[temp][end]
+}
+
+
+[temp]
+{
+	temp1
+}

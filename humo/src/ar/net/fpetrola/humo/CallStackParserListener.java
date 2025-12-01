@@ -15,6 +15,7 @@ public class CallStackParserListener extends DefaultParserListener implements Pa
     protected Stack<DefaultMutableTreeNode> usedProductionsStack;
     protected StacktraceTreeNode usedProductionsStackRoot;
     private final DebuggerParserListener debugDelegator;
+    private ProductionsParserListener productionsParserListener;
 
     public CallStackParserListener(DebuggerParserListener debugDelegator)
     {
@@ -35,6 +36,9 @@ public class CallStackParserListener extends DefaultParserListener implements Pa
 	usedProductionsStackRoot.add(usedProductionsStack.peek());
 	if (!debugDelegator.isTotallyInvisible())
 	    ((DefaultTreeModel) stacktraceTree.getModel()).reload();
+	// Seleccionar la producción en el árbol de producciones
+	if (productionsParserListener != null)
+	    productionsParserListener.selectAndExpandProduction(name);
     }
 
     public void beforeProductionReplacement(StringBuilder sourcecode, int first, int current, int last, char currentChar, StringBuilder value, int startPosition, int endPosition, StringBuilder name)
@@ -45,6 +49,12 @@ public class CallStackParserListener extends DefaultParserListener implements Pa
 	    usedProductionsStack.pop();
 	    if (!debugDelegator.isTotallyInvisible())
 		((DefaultTreeModel) stacktraceTree.getModel()).reload();
+	    // Seleccionar la producción del nuevo nivel activo
+	    if (productionsParserListener != null && usedProductionsStack.size() > 1)
+	    {
+		DefaultMutableTreeNode topNode= usedProductionsStack.peek();
+		productionsParserListener.selectAndExpandProduction((CharSequence) topNode.getUserObject());
+	    }
 	}
     }
 
@@ -89,5 +99,10 @@ public class CallStackParserListener extends DefaultParserListener implements Pa
     public void setUsedProductionsStackRoot(StacktraceTreeNode usedProductionsStackRoot)
     {
 	this.usedProductionsStackRoot= usedProductionsStackRoot;
+    }
+
+    public void setProductionsParserListener(ProductionsParserListener productionsParserListener)
+    {
+	this.productionsParserListener= productionsParserListener;
     }
 }

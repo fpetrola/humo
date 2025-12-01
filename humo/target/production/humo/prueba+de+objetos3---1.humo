@@ -1,0 +1,349 @@
+programa
+{
+
+	sistema:macros de sintaxis
+	{
+		<funcion>{}
+		<procedimiento>{%}
+		<metodo>{%}
+		<clase>{nuevo}
+		<cierra clase>{termina_de_crear_la_clase_}
+	}
+
+	sistema:ayudantes1
+	{
+		[te{[t}mp]{emp]}  
+		[re{[r}m]{em]}  
+		[nada]{}
+		<*>{%}
+		<**{<*}
+	}
+		
+	<clase> del
+	{ 
+		<metodo> del=>( %del::head %del::tail )
+		{
+			head=>%del::head %del::tail tail=>%del::head %del::tail
+			{
+				head2=>%del::head %del::tail tail2=>%del::head %del::tail
+			}
+		}
+	
+		head=>%del::head %del::tail {%del::head}
+		tail=>%del::head %del::tail {%del::tail}
+		head2=>%del::head %del::tail {h}
+		tail2=>%del::head %del::tail {ead=>%del::head %del::tail tail=>%del::head %del::tail}
+	}
+	<cierra clase> del
+	{
+		%del=>({%del->(}head=>{head->}tail=>{tail->}ead=>{ead->}head2=>{head2->}tail2=>{tail2->}
+	}
+
+	<clase> math
+	{
+		<metodo> math.incr 
+		{
+			<**>resultado{%incr::valor.incr}
+		}
+		<metodo> math.decr 
+		{
+			<**>resultado{%decr::valor.decr}
+		}
+
+		<funcion> 000+ {<**>resultado{0} <**>acarreo{0}} 
+		<funcion> 001+ {<**>resultado{1} <**>acarreo{0}} 
+		<funcion> 010+ {<**>resultado{1} <**>acarreo{0}} 
+		<funcion> 011+ {<**>resultado{0} <**>acarreo{1}} 
+		
+		<funcion> 100+ {<**>resultado{1} <**>acarreo{0}}
+		<funcion> 101+ {<**>resultado{0} <**>acarreo{1}}
+		<funcion> 110+ {<**>resultado{0} <**>acarreo{1}}
+		<funcion> 111+ {<**>resultado{1} <**>acarreo{1}}
+
+		15.decr{14}14.decr{13}13.decr{12}12.decr{11}11.decr{10}10.decr{9}9.decr{8}8.decr{7}7.decr{6}6.decr{5}5.decr{4}4.decr{3}3.decr{2}2.decr{1}1.decr{0}0.decr{15}
+		0.incr{1}1.incr{2}2.incr{3}3.incr{4}4.incr{5}5.incr{6}6.incr{7}7.incr{8}8.incr{9}9.incr{10}10.incr{11}11.incr{12}12.incr{13}13.incr{14}14.incr{15}15.incr{0}
+		0.esCero{true}1.esCero{false}2.esCero{false}3.esCero{false}4.esCero{false}5.esCero{false}6.esCero{false}7.esCero{false}8.esCero{false}9.esCero{false}10.esCero{false}11.esCero{false}12.esCero{false}13.esCero{false}14.esCero{false}15.esCero{false}
+
+		true.not {false}
+		false.not {true}
+
+		<*>del::head{%resul} <*>del::tail{tado} [temp]{nuevo del}
+	}
+	
+	sistema:ayudantes2
+	{
+		sistema:abro_corchete{[}
+
+		#0 {<**>vector::valor{0} agrega_digito}
+		#1 {<**>vector::valor{1} agrega_digito}
+		agrega_digito {<**>llama_add {%vector_actual.agregar}<*>llama_add}
+	}
+
+
+	<clase> vector
+	{
+		[temp]defino_dels
+		{
+			<**>del::head{%vector:} <**>del::tail{:valor}	[temp]{<**>nuevo del}
+			<**>del::head{%vector:} <**>del::tail{:posicion}[temp]{<**>nuevo del}
+		}
+
+		[temp]borro_parametros
+		{
+			[temp]borro_valor{<*>del->(%vector::valor)}
+			[temp]borro_posicion{<*>del->(%vector::posicion)}
+		}
+
+		<metodo> vector::nombre.agregar
+		{
+			<***>vector::posicion {%vector::nombre.indice.getValor}
+			[temp]cambio_el_valor{<*>vector::nombre.cambio}
+			<*>vector::nombre.indice.inc
+		} 
+
+		<metodo> vector::nombre.cambio 
+		{
+			<*>vector::nombre <*>sistema:abro_corchete <*>vector::posicion ]{%vector::valor}
+		}
+
+
+		<metodo> vector::nombre.inicio
+		{
+			<***>nibble::numero {0} 
+			<*>vector::nombre.indice.setValor
+		}
+		
+		[temp]creo_nibble 
+		{
+			<**>nibble::nombre {<*>vector::nombre.indice} 
+			nuevo nibble
+		}
+		[temp]pongo_en_cero 
+		{
+			<**>nibble::numero {0} 
+			<**>vector::temp{<*>vector::nombre.indice.setValor}<*>vector::temp
+		}
+
+		<metodo> vector::nombre%[{<*>vector::nombre[}
+	}
+
+	<clase> nibble
+	{
+		[temp]defino_dels
+		{
+			<**>del::head{<*>nibble::nombre} <**>del::tail{.getValor} 	[temp]{<**>nuevo del}
+			<**>del::head{<*>nibble::nombre} <**>del::tail{.dec} 			[temp]{<**>nuevo del}
+			<**>del::head{<*>nibble::nombre} <**>del::tail{.inc} 			[temp]{<**>nuevo del}
+			<**>del::head{<*>nibble::nombre} <**>del::tail{.esCero} 		[temp]{<**>nuevo del}
+			<**>del::head{%nibble:} 			<**>del::tail{:numero} 		[temp]{<**>nuevo del}
+		}
+		
+		[temp]borro_parametros
+		{
+			<*>del->(%nibble::numero)
+		}
+		
+		<metodo> nibble::nombre.setValor
+		{
+			[temp]borra_metodos
+			{
+				[temp]{<*>del=>(%nibble::nombre.getValor)}
+				[temp]{<*>del=>(%nibble::nombre.dec)}
+				[temp]{<*>del=>(%nibble::nombre.inc)}
+				[temp]{<*>del=>(%nibble::nombre.esCero)}
+			}
+	
+			<metodo> nibble::nombre.dec
+			{
+				<****>decr::valor {<*>nibble::nombre.getValor}
+				[temp]{<***>math.decr}
+				[temp]borra_getValor{<**>del=>(%nibble::nombre.getValor)}
+				<*>nibble::nombre.getValor {<***>resultado}
+				[temp]borra_resultado{<***>del->(%resultado)}
+			} 
+			[temp]borra_getValor {<*>del=>(%nibble::nombre.getValor)}
+
+			<metodo> nibble::nombre.inc
+			{
+				<****>incr::valor {<*>nibble::nombre.getValor}
+				[temp]{<***>math.incr}
+				[temp]borra_getValor{<**>del=>(%nibble::nombre.getValor)}
+				<*>nibble::nombre.getValor {<***>resultado}
+				[temp]borra_resultado{<***>del->(%resultado)}
+			} 
+			[temp]borra_getValor {<*>del=>(%nibble::nombre.getValor)}
+			
+			<metodo> nibble::nombre.esCero
+			{
+				<*>nibble::nombre.getValor.esCero
+			}
+			
+			<metodo> nibble::nombre.getValor
+			{
+				%nibble::numero
+			}
+		}
+	}
+
+
+	; 
+	{
+		[rem]{<*>params.inicio}
+		[rem]{<*>messages.inicio}
+
+		<**>existCurrentObject {false}
+		
+		[rem] llamo y borro mensajes
+		{
+			<**>llamada{<*>currentObject %messages[0] %messages[1] %messages[2]}
+			[rem]borro mensajes {%borrarMensajes}
+			[rem]lo llamo {<*>llamada}
+		}
+
+		[rem]borro parametros {%borrarParametros}
+	}
+
+	[rem]{<*>vector::nombre{%namedParams}}
+	[rem]{nuevo vector}
+
+	[rem]{<*>vector::nombre{%params}}
+	[rem]{nuevo vector}
+
+	[rem]{<*>vector::nombre{%messages}}
+	[rem]{nuevo vector}
+	
+
+	begin: {<***>}
+
+
+	<*>borrarMensajes
+	{
+		<**>messages[0]{%}
+		<**>messages[1]{%}
+		<**>messages[2]{%}
+		<**>messages[3]{%}
+		<**>messages[4]{%}
+	}
+
+	<*>borrarParametros
+	{
+		<**>params[0]{}
+		<**>params[1]{}
+		<**>params[2]{}
+		<**>params[3]{}
+		<**>params[4]{}
+	}
+
+	[rem]borro mensajes {%borrarMensajes}
+	[rem]borro parametros {%borrarParametros}
+
+
+	true.ifTrueFalse {%trueBlock}
+	false.ifTrueFalse {%falseBlock}
+
+	name->{name.}
+	<*>existCurrentObject {false}
+
+	add one message
+	{
+		%objectName (dos)%message1 (dos)%message2 (dos)%message3
+		{
+			%messageBlock
+		}
+	}
+
+	add message
+	{
+		(dos)(dos)%objectName (dos)%message1 (dos)%message2 (dos)%message3
+		{
+			%messageBlock
+		}
+
+		[temp] creo mensajes
+		{
+			%message1
+			{
+				[rem]nombre vector messages{<***>vector::valor{(dos)%message1}}
+				[rem]agrego a messages{<**> messages.agregar}
+			}
+			%message2
+			{
+				[rem]nombre vector messages{<***>vector::valor{(dos)%message2}}
+				[rem]agrego a messages{<**> messages.agregar}
+			}
+			%message3
+			{
+				[rem]nombre vector messages{<***>vector::valor{(dos)%message3}}
+				[rem]agrego a messages{<**> messages.agregar}
+			}
+		}
+
+
+		%objectName
+		{
+			<***> trueBlock
+			{
+				[rem]nombre vector params{<****>vector::valor{(seis)%objectName}}
+				[rem]agrego a params{<***> params.agregar}
+
+				[rem]nombre vector params{<****>vector::valor{(cinco)(dos)%objectName}}
+				[rem]agrego a params{<***> namedParams.agregar}
+			}
+		
+			<***> falseBlock
+			{
+				<****> existCurrentObject {true}
+				<****> currentObject {(tres)(dos)%objectName}
+			}
+
+			<***>si existe {<**>existCurrentObject.ifTrueFalse} <**>siexiste
+		}
+
+		<**>message1{} 
+		<**>message2{}	
+		<**>message3{}
+	}
+
+	<*>message1{} 
+	<*>message2{}	
+	<*>message3{}
+
+	(seis) {<******>}	(cinco) {<*****>}	(cuatro) {<****>}	(tres) {<***>}	(dos) {<**>} 
+	
+	
+	<*>objectName{asignador}
+	<*>messageBlock 
+	{
+		<***>message1{} <***>message2{}	<***>message3{}
+		<***>objectName{namedParams[0]}
+		<***>messageBlock{params[1]}
+		add one message
+	}
+	[rem]agrego mensaje{add message}
+
+	
+	<*>objectName{auto}
+	<*>message1{arrancar} <*>message2{con}
+	<*>messageBlock 
+	{
+		begin: 
+			params[0] girar;
+	}
+	[rem]agrego mensaje{add message}
+
+	<*>objectName{llave}
+	<*>message1{girar}
+	<*>messageBlock 
+	{
+		begin:	
+			arranco!!!
+	}
+	[rem]agrego mensaje{add message}
+
+
+	[rem]llamo al objeto
+	{
+		arrancar auto con llave;
+	}
+	
+}
