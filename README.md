@@ -8,6 +8,42 @@ Live demo: [Humo IDE](http://fpetrola.github.io/humo/humo-ide.html?file=https://
 
 <img src="humo3.png" alt="HumoVM"	title="Humo VM in QR" style="width: 300px; image-rendering: auto;  image-rendering: crisp-edges;  image-rendering: pixelated;" />
 
+# Humo: A Dynamic String-Rewriting System
+
+**Humo** is a computational model proven to be **Turing Complete**, built entirely upon **string rewriting** and **recursive substitution**. It differs fundamentally from traditional interpreters by operating only on a single, continuous string of text and possessing no internal keywords or reserved memory structures.
+
+## Theoretical Foundation
+
+Formally, Humo functions as a **Dynamic Semi-Thue System** where the set of substitution rules evolves during execution.
+
+### The Axiom: `pattern{replacement}`
+
+The engine recognizes only one primitive operation: the **Rule Definition**.
+
+1.  **Definition Phase:** When the engine encounters `pattern{replacement}`, it registers that the string `pattern` maps to `replacement`.
+2.  **Expansion Phase:** When the engine encounters `pattern` later, it replaces it with `replacement`.
+
+The core principle is **recursive expansion**: the output of a substitution is immediately re-scanned. This capability is what allows the program to **dynamically modify its own rule set** (meta-programming) and create complex control flow. Crucially, all standard syntax (e.g., `[run]`, `$`) is **user-defined convention**, not part of the engine itself.
+
+---
+
+## Turing Completeness
+Humo has been empirically proven to be Turing Complete.
+
+By utilizing the mechanisms described above—specifically the infinite tape simulation via dynamic variables (tape_n), conditional state transitions (RULE_q_sym), and recursive control flow—we have successfully implemented a full Universal Turing Machine within Humo.
+
+Proof of Concept: A functional implementation of a Decimal-to-Binary Converter was built using Humo. This implementation replicates the state table of a standard Turing Machine, handling:
+
+Infinite tape traversal (Left/Right movements).
+
+Symbol reading and writing via string concatenation (tape_ + position).
+
+State changes via dynamic rule dispatch (RULE_ + state + symbol).
+
+This demonstrates that despite having only a single "instruction" (text substitution), Humo is capable of computing any algorithm that a Turing Machine can run.
+
+---
+
 **Complete interpreter implementation code** (the following code executes any Humo program) :
 ``` Java
 /*
