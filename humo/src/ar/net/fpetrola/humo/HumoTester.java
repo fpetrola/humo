@@ -52,6 +52,7 @@ public class HumoTester
 	if (args.length == 0) {
 		String s = "not-nested/tm-dec-to-bin.humo";
 //		s= "not-nested/tm-invert.humo";
+		s= "3.humo";
 		args= new String[] {s};
 	}
 

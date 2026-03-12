@@ -1,0 +1,396 @@
+[comm{[com}ent]{ment]}
+[comment] {=============================================================}
+[comment] {======= MAQUINA DE TURING (DEC -> BIN) CON CINTA INFINITA =======}
+[comment] {=============================================================}
+[comment] {
+[comment] { Misma maquina que 1.humo pero la cinta es una LISTA DOBLEMENTE ENLAZADA }
+[comment] { que crece bajo demanda. No hay limites de celdas ni aritmetica de posicion. }
+[comment] {
+[comment] { Cada celda tiene un ID unico basado en palotes entre parentesis: }
+[comment] {   ()   = celda 0 }
+[comment] {   (I)  = celda 1 }
+[comment] {   (II) = celda 2 }
+[comment] {   (III)= celda 3 ... }
+[comment] {
+[comment] { Propiedades de cada celda: }
+[comment] {
+[comment] {   v(XX) = valor de la celda }
+[comment] {   r(XX) = ID del vecino derecho (palotes, o nil) }
+[comment] {   l(XX) = ID del vecino izquierdo (palotes, o nil) }
+[comment] {
+[comment] { Los parentesis garantizan que ningun nombre es prefijo de otro: }
+[comment] {   v(I) tiene 4 chars, v(II) tiene 5 chars -> sin colision. }
+[comment] {=============================================================}
+[te{[t}mp]{emp]}
+[sent{[sen}ence]{tence]}
+[exec]{[run]}
+[run]{[sentence]}
+[vari{[var}able]{iable]}
+[exec{[exe}ute]{cute]}
+[cre{[cr}ate]{eate]}
+[field]{[variable]$instance:name.}
+#class{new}
+#method:{[me][thod]<*>instance:name.}
+#property:{[prop][erty]<*>instance:name.}
+#this.{[do][llar]<*>instance:name.}
+<--{<-}
+<->{@}
+<**{<*}
+<*>{$}
+[dollar]{$}
+[do]{[do}
+[llar]{llar]}
+[method]{$}
+[me]{[me}
+[thod]{thod]}
+[property]{$}
+[prop]{[prop}
+[erty]{erty]}
+
+[_x{[_}
+_]{x_]}
+
+
+@{}
+@a(a)
+@b(b)
+@e(e)
+@t(t)
+@v(v)
+@u(u)
+@r(r)
+@l(l)
+@$($)
+
+#begin-construction {
+[run]{<-->{@vari{<*>}<-->@able{}}}
+[run]{<-->{@exec{<-->@ute{}}}
+[run]{<-->{@cre{<-->@ate{new}}}
+}
+#end-construction {
+[run]{<*>instance:name{<*>instance:name}}
+[run]{<-->{@vari{[var]<-->@able{}}}
+[run]{<-->{@exec{[exe]<-->@ute{}}}
+[run]{<-->{@cre{[cr]<-->@ate{<-->@eate{}}}}
+}
+
+[comment] {=============================================================}
+[comment] {======= HELPERS PARA CINTA INFINITA =======}
+[comment] {=============================================================}
+
+[comment] { Parentesis como literales para construir nombres }
+open{}
+_close{}
+$($)
+
+[comment] { Deteccion de borde }
+IS_NIL_nil{yes}
+
+
+[comment] {=============================================================}
+[comment] {======= REGLAS DE LA MAQUINA DE TURING (DEC -> BIN) =======}
+[comment] {=============================================================}
+[comment] {
+[comment] { Identicas a 1.humo - no dependen de como se indexa la cinta }
+[comment] {
+[comment] { ESTADO qinit: Mover el cabezal al final del numero }
+$RULE_qinit_0{ [run]{ <*> nextState{qinit} } [run]{ <> writeVal{0} } [run]{ <*> moveDir{R} } }
+$RULE_qinit_1{ [run]{ <*> nextState{qinit} } [run]{ <> writeVal{1} } [run]{ <*> moveDir{R} } }
+$RULE_qinit_2{ [run]{ <*> nextState{qinit} } [run]{ <> writeVal{2} } [run]{ <*> moveDir{R} } }
+$RULE_qinit_3{ [run]{ <*> nextState{qinit} } [run]{ <> writeVal{3} } [run]{ <*> moveDir{R} } }
+$RULE_qinit_4{ [run]{ <*> nextState{qinit} } [run]{ <> writeVal{4} } [run]{ <*> moveDir{R} } }
+$RULE_qinit_5{ [run]{ <*> nextState{qinit} } [run]{ <> writeVal{5} } [run]{ <*> moveDir{R} } }
+$RULE_qinit_6{ [run]{ <*> nextState{qinit} } [run]{ <> writeVal{6} } [run]{ <*> moveDir{R} } }
+$RULE_qinit_7{ [run]{ <*> nextState{qinit} } [run]{ <> writeVal{7} } [run]{ <*> moveDir{R} } }
+$RULE_qinit_8{ [run]{ <*> nextState{qinit} } [run]{ <> writeVal{8} } [run]{ <*> moveDir{R} } }
+$RULE_qinit_9{ [run]{ <*> nextState{qinit} } [run]{ <> writeVal{9} } [run]{ <*> moveDir{R} } }
+$RULE_qinit__{ [run]{ <*> nextState{halve} } [run]{ <> writeVal{0} } [run]{ <*> moveDir{L} } }
+[comment] { ESTADO halve: Dividir el digito actual por 2 }
+$RULE_halve_0{ [run]{ <*> nextState{halve} } [run]{ <> writeVal{0} } [run]{ <*> moveDir{L} } }
+$RULE_halve_1{ [run]{ <*> nextState{addHalf} } [run]{ <> writeVal{0} } [run]{ <*> moveDir{R} } }
+$RULE_halve_2{ [run]{ <*> nextState{halve} } [run]{ <> writeVal{1} } [run]{ <*> moveDir{L} } }
+$RULE_halve_3{ [run]{ <*> nextState{addHalf} } [run]{ <> writeVal{1} } [run]{ <*> moveDir{R} } }
+$RULE_halve_4{ [run]{ <*> nextState{halve} } [run]{ <> writeVal{2} } [run]{ <*> moveDir{L} } }
+$RULE_halve_5{ [run]{ <*> nextState{addHalf} } [run]{ <> writeVal{2} } [run]{ <*> moveDir{R} } }
+$RULE_halve_6{ [run]{ <*> nextState{halve} } [run]{ <> writeVal{3} } [run]{ <*> moveDir{L} } }
+$RULE_halve_7{ [run]{ <*> nextState{addHalf} } [run]{ <> writeVal{3} } [run]{ <*> moveDir{R} } }
+$RULE_halve_8{ [run]{ <*> nextState{halve} } [run]{ <> writeVal{4} } [run]{ <*> moveDir{L} } }
+$RULE_halve_9{ [run]{ <*> nextState{addHalf} } [run]{ <> writeVal{4} } [run]{ <*> moveDir{R} } }
+$RULE_halve__{ [run]{ <*> nextState{removezero} } [run]{ <> writeVal{4} } [run]{ <*> moveDir{R} } }
+[comment] { ESTADO addHalf: Sumar 5 al digito siguiente }
+$RULE_addHalf_0{ [run]{ <*> nextState{jump} } [run]{ <> writeVal{5} } [run]{ <*> moveDir{L} } }
+$RULE_addHalf_1{ [run]{ <*> nextState{jump} } [run]{ <> writeVal{7} } [run]{ <*> moveDir{L} } }
+$RULE_addHalf_2{ [run]{ <*> nextState{jump} } [run]{ <> writeVal{8} } [run]{ <*> moveDir{L} } }
+$RULE_addHalf_3{ [run]{ <*> nextState{jump} } [run]{ <> writeVal{9} } [run]{ <*> moveDir{L} } }
+$RULE_addHalf_4{ [run]{ <*> nextState{jump} } [run]{ <> writeVal{9} } [run]{ <*> moveDir{L} } }
+[comment] { ESTADO jump: Volver atras }
+$RULE_jump_0{ [run]{ <*> nextState{halve} } [run]{ <> writeVal{0} } [run]{ <*> moveDir{L} } }
+$RULE_jump_1{ [run]{ <*> nextState{halve} } [run]{ <> writeVal{1} } [run]{ <*> moveDir{L} } }
+$RULE_jump_2{ [run]{ <*> nextState{halve} } [run]{ <> writeVal{2} } [run]{ <*> moveDir{L} } }
+$RULE_jump_3{ [run]{ <*> nextState{halve} } [run]{ <> writeVal{3} } [run]{ <*> moveDir{L} } }
+$RULE_jump_4{ [run]{ <*> nextState{halve} } [run]{ <> writeVal{4} } [run]{ <*> moveDir{L} } }
+[comment] { ESTADO removezero: Limpiar ceros a la izquierda }
+$RULE_removezero_0{ [run]{ <*> nextState{goBack} } [run]{ <> writeVal{_} } [run]{ <*> moveDir{R} } }
+$RULE_removezero_1{ [run]{ <*> nextState{goBack} } [run]{ <> writeVal{1} } [run]{ <*> moveDir{R} } }
+$RULE_removezero_2{ [run]{ <*> nextState{goBack} } [run]{ <> writeVal{2} } [run]{ <*> moveDir{R} } }
+$RULE_removezero_3{ [run]{ <*> nextState{goBack} } [run]{ <> writeVal{3} } [run]{ <*> moveDir{R} } }
+$RULE_removezero_4{ [run]{ <*> nextState{goBack} } [run]{ <> writeVal{4} } [run]{ <*> moveDir{R} } }
+$RULE_removezero_5{ [run]{ <*> nextState{goBack} } [run]{ <> writeVal{5} } [run]{ <*> moveDir{R} } }
+$RULE_removezero_6{ [run]{ <*> nextState{goBack} } [run]{ <> writeVal{6} } [run]{ <*> moveDir{R} } }
+$RULE_removezero_7{ [run]{ <*> nextState{goBack} } [run]{ <> writeVal{7} } [run]{ <*> moveDir{R} } }
+$RULE_removezero_8{ [run]{ <*> nextState{goBack} } [run]{ <> writeVal{8} } [run]{ <*> moveDir{R} } }
+$RULE_removezero_9{ [run]{ <*> nextState{goBack} } [run]{ <> writeVal{9} } [run]{ <*> moveDir{R} } }
+$RULE_removezero__{ [run]{ <*> nextState{qfin} } [run]{ <> writeVal{9} } [run]{ <*> moveDir{R} } }
+[comment] { ESTADO goBack: Mover a la derecha hasta el final del numero }
+$RULE_goBack_0{ [run]{ <*> nextState{goBack} } [run]{ <> writeVal{0} } [run]{ <*> moveDir{R} } }
+$RULE_goBack_1{ [run]{ <*> nextState{goBack} } [run]{ <> writeVal{1} } [run]{ <*> moveDir{R} } }
+$RULE_goBack_2{ [run]{ <*> nextState{goBack} } [run]{ <> writeVal{2} } [run]{ <*> moveDir{R} } }
+$RULE_goBack_3{ [run]{ <*> nextState{goBack} } [run]{ <> writeVal{3} } [run]{ <*> moveDir{R} } }
+$RULE_goBack_4{ [run]{ <*> nextState{goBack} } [run]{ <> writeVal{4} } [run]{ <*> moveDir{R} } }
+$RULE_goBack_5{ [run]{ <*> nextState{goBack} } [run]{ <> writeVal{5} } [run]{ <*> moveDir{R} } }
+$RULE_goBack_6{ [run]{ <*> nextState{goBack} } [run]{ <> writeVal{6} } [run]{ <*> moveDir{R} } }
+$RULE_goBack_7{ [run]{ <*> nextState{goBack} } [run]{ <> writeVal{7} } [run]{ <*> moveDir{R} } }
+$RULE_goBack_8{ [run]{ <*> nextState{goBack} } [run]{ <> writeVal{8} } [run]{ <*> moveDir{R} } }
+$RULE_goBack_9{ [run]{ <*> nextState{goBack} } [run]{ <> writeVal{9} } [run]{ <*> moveDir{R} } }
+$RULE_goBack_{ [run]{ <*> nextState{rest} } [run]{ <*> writeVal{} } [run]{ <**> moveDir{L} } }
+[comment] { ESTADO rest: Determinar bit menos significativo }
+$RULE_rest_0{ [run]{ <*> nextState{rest0} } [run]{ <> writeVal{0} } [run]{ <*> moveDir{R} } }
+$RULE_rest_5{ [run]{ <*> nextState{rest1} } [run]{ <> writeVal{_} } [run]{ <*> moveDir{R} } }
+$RULE_rest0_{ [run]{ <*> nextState{setrest0} } [run]{ <> writeVal{0} } [run]{ <*> moveDir{R} } }
+$RULE_rest1_{ [run]{ <*> nextState{setrest1} } [run]{ <> writeVal{1} } [run]{ <*> moveDir{R} } }
+$RULE_setrest0_0{ [run]{ <*> nextState{setrest0} } [run]{ <> writeVal{0} } [run]{ <*> moveDir{R} } }
+$RULE_setrest0_1{ [run]{ <*> nextState{setrest0} } [run]{ <> writeVal{1} } [run]{ <*> moveDir{R} } }
+$RULE_setrest0__{ [run]{ <*> nextState{continue} } [run]{ <> writeVal{0} } [run]{ <*> moveDir{L} } }
+$RULE_setrest1_0{ [run]{ <*> nextState{setrest1} } [run]{ <> writeVal{0} } [run]{ <*> moveDir{R} } }
+$RULE_setrest1_1{ [run]{ <*> nextState{setrest1} } [run]{ <> writeVal{1} } [run]{ <*> moveDir{R} } }
+$RULE_setrest1__{ [run]{ <*> nextState{continue} } [run]{ <> writeVal{1} } [run]{ <*> moveDir{L} } }
+$RULE_continue_0{ [run]{ <*> nextState{continue} } [run]{ <> writeVal{0} } [run]{ <*> moveDir{L} } }
+$RULE_continue_1{ [run]{ <*> nextState{continue} } [run]{ <> writeVal{1} } [run]{ <*> moveDir{L} } }
+$RULE_continue_{ [run]{ <*> nextState{continue2} } [run]{ <*> writeVal{} } [run]{ <**> moveDir{L} } }
+$RULE_continue2_{ [run]{ <*> nextState{halve} } [run]{ <> writeVal{0} } [run]{ <*> moveDir{L} } }
+
+[comment] {=============================================================}
+[comment] {======= LOGICA DE LA MAQUINA (adaptada para lista enlazada) =======}
+[comment] {=============================================================}
+
+#class TuringMachine {
+#begin-construction
+#method:init {
+[run]{ [variable] tm:posId{$tm:initPosId} }
+[run]{ [variable] tm:headPos{$tm:initHeadPos} }
+[run]{ [variable] tm:currentState{qinit} }
+[run]{ [variable] tm:running{true} }
+}
+#method:ran {
+[run]{ [variable] isRunning{#this.running} }
+[run]{ [variable] bl{[execute]action_} }
+[run]{ [variable] nextAction{[execute]bl $isRunning} }
+[run]{ [execute] nextAction }
+}
+#method:step {
+[comment] { 1. LEER CINTA: construir v(posId) y leer su valor }
+[run]{ [variable] _wk{[execute]@v_open $tm:posId _close} }
+[run]{ [variable] currentSym{<**>_wk} }
+
+[comment] { 2. BUSCAR REGLA }
+[run]{ [variable] state{#this.currentState_} }
+[run]{ [variable] rule{[execute]RULE_} }
+[run]{ [variable] ruleName{[execute]rule $state $currentSym} }
+
+[comment] { 3. EJECUTAR REGLA }
+[run]{ [execute] ruleName }
+
+[comment] { 4. ESCRIBIR EN CINTA: redefinir v(posId) }
+[run]{ [variable] _wk{[execute]@v_open $tm:posId _close} }
+[run]{ [variable] _wk{$writeVal} }
+
+[comment] { 5. MOVER CABEZAL (lista enlazada con auto-extension) }
+[run]{ [variable] dir{$moveDir} }
+[run]{ [variable] move{[execute]MOVE_} }
+[run]{ [variable] moveCmd{[execute]move $dir} }
+[run]{ [execute] moveCmd }
+
+[comment] { 6. ACTUALIZAR ESTADO }
+[run]{ [field] currentState{$nextState} }
+
+[comment] { 7. VERIFICAR HALT }
+[run]{ [variable] check_halt{[execute]CHECK_HALT_} }
+[run]{ [variable] checker{[execute]check_halt_ $nextState} }
+[run]{ [execute] checker }
+
+[comment] { 8. RECURSION }
+[run]{ [execute] tml.ran }
+}
+#property:headPos { [execute] tm:headPos }
+#property:posId { [execute] tm:posId }
+#property:currentState { [execute] tm:currentState }
+#property:running { [execute] tm:running }
+}
+#end-construction
+
+[comment] {=============================================================}
+[comment] {======= HELPERS DE CONTROL =======}
+[comment] {=============================================================}
+
+$action_true{ $tml.step }
+$action_false{ }
+
+$CHECK_HALT_qfin{ [run]{ <**> tm:running{false} } }
+
+[comment] {=============================================================}
+[comment] {======= MOVE CON LISTA ENLAZADA Y AUTO-EXTENSION =======}
+[comment] {=============================================================}
+
+$MOVE_R{
+[comment] { 1. Construir clave right: r(posId) }
+[run]{ <**> _cur{$tm:headPos} }
+[run]{ <**> _curId{$tm:posId} }
+[run]{ <**> _rkey{[execute]@r_open $tm:posId _close} }
+
+[comment] { 2. Leer ID del vecino derecho (palotes, o nil) }
+[run]{ <*> _rid{<*>_rkey} }
+
+[comment] { 3. Si es nil, extender }
+[run]{ <**> isNil{[execute]IS_NIL $rid} }
+[run]{ <**> doExt{[execute]EXTEND_R $_isNil} }
+[run]{ [execute] _doExt }
+
+[comment] { 4. Construir nombre del vecino: (rid) }
+[run]{ <**> _rname{[execute]_open $rid _close} }
+
+[comment] { 5. Mover cabezal }
+[run]{ <**> tm:headPos{$_rname} }
+[run]{ <**> tm:posId{$rid} }
+}
+
+$EXTEND_R_yes{
+[comment] { Generar nuevo ID: agregar un palote al contador }
+[run]{ <**> _newId{$tm:cc I} }
+[run]{ <**> tm:cc{$_newId} }
+
+[comment] { Definir valor = blanco }
+[run]{ <**> _nvk{[execute]@v_open $_newId _close} }
+[run]{ $nvk{} }
+
+[comment] { Definir right = nil }
+[run]{ <**> _nrk{[execute]@r_open $_newId _close} }
+[run]{ $_nrk{nil} }
+
+[comment] { Definir left = ID de celda actual }
+[run]{ <**> _nlk{[execute]@l_open $_newId _close} }
+[run]{ $_nlk{$_curId} }
+
+[comment] { Enlazar celda actual -> nueva (guardar ID, no nombre) }
+[run]{ $_rkey{$_newId} }
+
+[comment] { Propagar ID para que MOVE_R lo use }
+[run]{ <**> _rid{$_newId} }
+}
+
+$MOVE_L{
+[comment] { 1. Construir clave left: l(posId) }
+[run]{ <**> _cur{$tm:headPos} }
+[run]{ <**> _curId{$tm:posId} }
+[run]{ <**> _lkey{[execute]@l_open $tm:posId _close} }
+
+[comment] { 2. Leer ID del vecino izquierdo (palotes, o nil) }
+[run]{ <*> _lid{<*>_lkey} }
+
+[comment] { 3. Si es nil, extender }
+[run]{ <**> isNil{[execute]IS_NIL $lid} }
+[run]{ <**> doExt{[execute]EXTEND_L $_isNil} }
+[run]{ [execute] _doExt }
+
+[comment] { 4. Construir nombre del vecino: (lid) }
+[run]{ <**> _lname{[execute]_open $lid _close} }
+
+[comment] { 5. Mover cabezal }
+[run]{ <**> tm:headPos{$_lname} }
+[run]{ <**> tm:posId{$lid} }
+}
+
+$EXTEND_L_yes{
+[comment] { Generar nuevo ID }
+[run]{ <**> _newId{$tm:cc I} }
+[run]{ <**> tm:cc{$_newId} }
+
+[comment] { Definir valor = blanco }
+[run]{ <**> _nvk{[execute]@v_open $_newId _close} }
+[run]{ $nvk{} }
+
+[comment] { Definir right = ID de celda actual }
+[run]{ <**> _nrk{[execute]@r_open $_newId _close} }
+[run]{ $_nrk{$_curId} }
+
+[comment] { Definir left = nil }
+[run]{ <**> _nlk{[execute]@l_open $_newId _close} }
+[run]{ $_nlk{nil} }
+
+[comment] { Enlazar celda actual -> nueva }
+[run]{ $_lkey{$_newId} }
+
+[comment] { Propagar ID para que MOVE_L lo use }
+[run]{ <**> _lid{$_newId} }
+}
+
+$MOVE_N{
+
+[comment] {=============================================================}
+[comment] {======= MAIN: Convertir decimal 10 a binario =======}
+[comment] {=============================================================}
+
+[comment] {
+[comment] { Cinta inicial (lista enlazada): }
+[comment] {
+[comment] {   nil - (I) -> (II) -> (III) -> (IIII) - nil }
+[comment] {
+[comment] {   _     1      0      _ }
+[comment] {
+[comment] { El cabezal empieza en (II) que tiene el digito '1' de "10". }
+[comment] { La cinta se extiende automaticamente cuando el cabezal llega a nil. }
+[comment] { Resultado esperado: 1010 (binario de 10) }
+[comment] {
+#class Main {
+#begin-construction
+#method:execute {
+[comment] { Inicializar contador de celdas }
+[run]{ [variable] tm:cc{III} }
+
+[comment] { ====== Crear las 4 celdas iniciales manualmente ====== }
+
+[comment] { Celda (I): blanco a la izquierda del numero }
+[run]{ [variable] v(I){_} }
+[run]{ [variable] r(I){II} }
+[run]{ [variable] l(I){nil} }
+
+[comment] { Celda (II): digito '1' de "10" }
+[run]{ [variable] v(II){1} }
+[run]{ [variable] r(II){III} }
+[run]{ [variable] l(II){I} }
+
+[comment] { Celda (III): digito '0' de "10" }
+[run]{ [variable] v(III){0} }
+[run]{ [variable] r(III){IIII} }
+[run]{ [variable] l(III){II} }
+
+[comment] { Celda (IIII): blanco a la derecha del numero }
+[run]{ [variable] v(IIII){_} }
+[run]{ [variable] r(IIII){nil} }
+[run]{ [variable] l(IIII){III} }
+
+[comment] { ====== Cabezal empieza en (II) = digito '1' ====== }
+[run]{ [variable] tm:initPosId{II} }
+
+[comment] { Crear y ejecutar la maquina }
+[run]{ [variable] instance:name{tm1} }
+[run]{ [create] TuringMachine }
+[run]{ [execute] tm1.init }
+[run]{ [execute] tm1.ran }
+}
+#end-construction
+}
+[temp] {
+[run]{ $instance:name{mainApp} }
+[run]{ new Main }
+[run]{ $mainApp.execute }
+}
