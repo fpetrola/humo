@@ -237,6 +237,108 @@ $RULE_continue2_{ [run]{ <**> nextState{halve} } [run]{ <**> writeVal{0} } [run]
         [comment] { 8. RECURSION }
         [run]{ [execute] tm1.ran }
     }
+
+    <**>MOVE_R{
+        [comment] { 1. Construir clave right: r(posId) }
+        [run]{ [variable] uno{[execute]@r} }
+        [run]{ [variable] dos{[execute]open} }
+        [run]{ [variable] tres{[execute]tm:posId} }
+        [run]{ [variable] cuatro{[execute]close} }
+        [run]{ [variable] _rkey{[execute]uno $dos $tres $cuatro} }
+
+        [comment] { 2. Leer ID del vecino derecho (palotes, o nil) }
+        [run]{ [variable] rid{[execute]_rkey} }
+
+        [comment] { 3. Si es nil, extender }
+        [run]{ [variable] uno{[direct]_} }
+        [run]{ [variable] dos{[execute]EXTEND_R} }
+        [run]{ [variable] doExt{[execute]dos $uno $rid} }
+        [run]{ [execute] doExt }
+
+        [comment] { 4. Construir nombre del vecino: (rid) }
+        [run]{ [variable] dos{[execute]open} }
+        [run]{ [variable] tres{[execute]tm:posId} }
+        [run]{ [variable] cuatro{[execute]close} }
+        [run]{ [variable] _rname{[execute]dos $rid $cuatro} }
+
+        [comment] { 5. Mover cabezal }
+        [run]{ [variable]  tm:headPos{[execute]_rname} }
+        [run]{ [variable]  tm:posId{[execute]rid} }
+    }
+
+    $MOVE_L{
+        [comment] { 1. Construir clave left: l(posId) }
+        [run]{ <**> _cur{$tm:headPos} }
+        [run]{ <**> _curId{$tm:posId} }
+        [run]{ <**> _lkey{[execute]@l_open $tm:posId _close} }
+
+        [comment] { 2. Leer ID del vecino izquierdo (palotes, o nil) }
+        [run]{ <**> _lid{<*>_lkey} }
+
+        [comment] { 3. Si es nil, extender }
+        [run]{ <**> _isNil{[execute]IS_NIL $_lid} }
+        [run]{ <**> _doExt{[execute]EXTEND_L_ $_isNil} }
+        [run]{ [execute] _doExt }
+
+        [comment] { 4. Construir nombre del vecino: (lid) }
+        [run]{ <**> _lname{[execute]_open $_lid _close} }
+
+        [comment] { 5. Mover cabezal }
+        [run]{ <**> tm:headPos{$_lname} }
+        [run]{ <**> tm:posId{$_lid} }
+    }
+
+    $EXTEND_R_nil{
+        [comment] { Generar nuevo ID: agregar un palote al contador }
+        [run]{ <**> _newId{$tm:cc_r I} }
+        [run]{ <**> tm:cc_r{$_newId} }
+
+        [comment] { Definir valor = blanco }
+        [run]{ [variable] uno{[execute]v} }
+        [run]{ [variable] dos{[execute]open} }
+        [run]{ [variable] tres{[execute]_newId} }
+        [run]{ [variable] cuatro{[execute]close} }
+        [run]{ [execute]uno $dos $tres $cuatro{_} }
+
+        [comment] { Definir right = nil }
+        [run]{ [variable] uno{[execute]r} }
+        [run]{ [execute]uno $dos $tres $cuatro{nil} }
+
+        [comment] { Definir left = ID de celda actual }
+        [run]{ <**> _nlk{[execute]@l_open $_newId _close} }
+        [run]{ _$_nlk{$_curId} }
+
+        [comment] { Enlazar celda actual -> nueva (guardar ID, no nombre) }
+        [run]{ _$_rkey{$_newId} }
+
+        [comment] { Propagar ID para que MOVE_R lo use }
+        [run]{ <**> _rid{$_newId} }
+    }
+
+    $EXTEND_L_nil{
+        [comment] { Generar nuevo ID }
+        [run]{ <**> _newId{$tm:cc I} }
+        [run]{ <**> tm:cc{$_newId} }
+
+        [comment] { Definir valor = blanco }
+        [run]{ <**> _nvk{[execute]@v_open $_newId _close} }
+        [run]{ _$_nvk{_} }
+
+        [comment] { Definir right = ID de celda actual }
+        [run]{ <**> _nrk{[execute]@r_open $_newId _close} }
+        [run]{ _$_nrk{$_curId} }
+
+        [comment] { Definir left = nil }
+        [run]{ <**> _nlk{[execute]@l_open $_newId _close} }
+        [run]{ _$_nlk{nil} }
+
+        [comment] { Enlazar celda actual -> nueva }
+        [run]{ _$_lkey{$_newId} }
+
+        [comment] { Propagar ID para que MOVE_L lo use }
+        [run]{ <**> _lid{$_newId} }
+    }
+
     #property:headPos { [execute] tm:headPos }
     #property:posId { [execute] tm:posId }
     #property:currentState { [execute] tm:currentState }
@@ -257,99 +359,8 @@ $CHECK_HALT_qfin{ [run]{ <**> tm:running{false} } }
 [comment] {======= MOVE CON LISTA ENLAZADA Y AUTO-EXTENSION =======}
 [comment] {=============================================================}
 
-$MOVE_R{
-    [comment] { 1. Construir clave right: r(posId) }
-    [run]{ <**> _cur{$tm:headPos} }
-    [run]{ <**> _curId{$tm:posId} }
-    [run]{ <**> _rkey{[execute]@r_open $tm:posId _close} }
 
-    [comment] { 2. Leer ID del vecino derecho (palotes, o nil) }
-    [run]{ <**> _rid{<*>_rkey} }
-
-    [comment] { 3. Si es nil, extender }
-    [run]{ <**> isNil{[execute]IS_NIL $_rid} }
-    [run]{ <**> doExt{[execute]EXTEND_R $_isNil} }
-    [run]{ [execute] _doExt }
-
-    [comment] { 4. Construir nombre del vecino: (rid) }
-    [run]{ <**> _rname{[execute]_open $_rid _close} }
-
-    [comment] { 5. Mover cabezal }
-    [run]{ <**> tm:headPos{$_rname} }
-    [run]{ <**> tm:posId{$_rid} }
-}
-
-$EXTEND_R_yes{
-    [comment] { Generar nuevo ID: agregar un palote al contador }
-    [run]{ <**> _newId{$tm:cc I} }
-    [run]{ <**> tm:cc{$_newId} }
-
-    [comment] { Definir valor = blanco }
-    [run]{ <**> _nvk{[execute]@v_open $_newId _close} }
-    [run]{ _$_nvk{_} }
-
-    [comment] { Definir right = nil }
-    [run]{ <**> _nrk{[execute]@r_open $_newId _close} }
-    [run]{ _$_nrk{nil} }
-
-    [comment] { Definir left = ID de celda actual }
-    [run]{ <**> _nlk{[execute]@l_open $_newId _close} }
-    [run]{ _$_nlk{$_curId} }
-
-    [comment] { Enlazar celda actual -> nueva (guardar ID, no nombre) }
-    [run]{ _$_rkey{$_newId} }
-
-    [comment] { Propagar ID para que MOVE_R lo use }
-    [run]{ <**> _rid{$_newId} }
-}
-
-$MOVE_L{
-    [comment] { 1. Construir clave left: l(posId) }
-    [run]{ <**> _cur{$tm:headPos} }
-    [run]{ <**> _curId{$tm:posId} }
-    [run]{ <**> _lkey{[execute]@l_open $tm:posId _close} }
-
-    [comment] { 2. Leer ID del vecino izquierdo (palotes, o nil) }
-    [run]{ <**> _lid{<*>_lkey} }
-
-    [comment] { 3. Si es nil, extender }
-    [run]{ <**> _isNil{[execute]IS_NIL $_lid} }
-    [run]{ <**> _doExt{[execute]EXTEND_L_ $_isNil} }
-    [run]{ [execute] _doExt }
-
-    [comment] { 4. Construir nombre del vecino: (lid) }
-    [run]{ <**> _lname{[execute]_open $_lid _close} }
-
-    [comment] { 5. Mover cabezal }
-    [run]{ <**> tm:headPos{$_lname} }
-    [run]{ <**> tm:posId{$_lid} }
-}
-
-$EXTEND_L_yes{
-    [comment] { Generar nuevo ID }
-    [run]{ <**> _newId{$tm:cc I} }
-    [run]{ <**> tm:cc{$_newId} }
-
-    [comment] { Definir valor = blanco }
-    [run]{ <**> _nvk{[execute]@v_open $_newId _close} }
-    [run]{ _$_nvk{_} }
-
-    [comment] { Definir right = ID de celda actual }
-    [run]{ <**> _nrk{[execute]@r_open $_newId _close} }
-    [run]{ _$_nrk{$_curId} }
-
-    [comment] { Definir left = nil }
-    [run]{ <**> _nlk{[execute]@l_open $_newId _close} }
-    [run]{ _$_nlk{nil} }
-
-    [comment] { Enlazar celda actual -> nueva }
-    [run]{ _$_lkey{$_newId} }
-
-    [comment] { Propagar ID para que MOVE_L lo use }
-    [run]{ <**> _lid{$_newId} }
-}
-
-$MOVE_N{
+$MOVE_N{}
 
 [comment] {=============================================================}
 [comment] {======= MAIN: Convertir decimal 10 a binario =======}
@@ -370,7 +381,8 @@ $MOVE_N{
     #begin-construction
     #method:execute {
         [comment] { Inicializar contador de celdas }
-        [run]{ [variable] tm:cc{III} }
+        [run]{ [variable] tm:cc_r{II} }
+        [run]{ [variable] tm:cc_l{I} }
 
         [comment] { ====== Crear las 4 celdas iniciales manualmente ====== }
 
@@ -381,18 +393,8 @@ $MOVE_N{
 
         [comment] { Celda (II): digito '1' de "10" }
         [run]{ [variable] v(II){1} }
-        [run]{ [variable] r(II){III} }
+        [run]{ [variable] r(II){nil} }
         [run]{ [variable] l(II){I} }
-
-        [comment] { Celda (III): digito '0' de "10" }
-        [run]{ [variable] v(III){0} }
-        [run]{ [variable] r(III){IIII} }
-        [run]{ [variable] l(III){II} }
-
-        [comment] { Celda (IIII): blanco a la derecha del numero }
-        [run]{ [variable] v(IIII){_} }
-        [run]{ [variable] r(IIII){nil} }
-        [run]{ [variable] l(IIII){III} }
 
         [comment] { ====== Cabezal empieza en (II) = digito '1' ====== }
         [run]{ [variable] tm:initPosId{II} }
