@@ -268,24 +268,30 @@ $RULE_continue2_{ [run]{ <**> nextState{halve} } [run]{ <**> writeVal{0} } [run]
 
     $MOVE_L{
         [comment] { 1. Construir clave left: l(posId) }
-        [run]{ <**> _cur{$tm:headPos} }
-        [run]{ <**> _curId{$tm:posId} }
-        [run]{ <**> _lkey{[execute]@l_open $tm:posId _close} }
+        [run]{ [variable] uno{[execute]@l} }
+        [run]{ [variable] dos{[execute]open} }
+        [run]{ [variable] tres{[execute]tm:posId} }
+        [run]{ [variable] cuatro{[execute]close} }
+        [run]{ [variable] _lkey{[execute]uno $dos $tres $cuatro} }
 
         [comment] { 2. Leer ID del vecino izquierdo (palotes, o nil) }
-        [run]{ <**> _lid{<*>_lkey} }
+        [run]{ [variable] lid{[execute]_lkey} }
 
         [comment] { 3. Si es nil, extender }
-        [run]{ <**> _isNil{[execute]IS_NIL $_lid} }
-        [run]{ <**> _doExt{[execute]EXTEND_L_ $_isNil} }
-        [run]{ [execute] _doExt }
+        [run]{ [variable] uno{[direct]_} }
+        [run]{ [variable] dos{[execute]EXTEND_L} }
+        [run]{ [variable] doExt{[execute]dos $uno $lid} }
+        [run]{ [execute] doExt }
 
         [comment] { 4. Construir nombre del vecino: (lid) }
-        [run]{ <**> _lname{[execute]_open $_lid _close} }
+        [run]{ [variable] dos{[execute]open} }
+        [run]{ [variable] tres{[execute]lid} }
+        [run]{ [variable] cuatro{[execute]close} }
+        [run]{ [variable] _lname{[execute]dos $lid $cuatro} }
 
         [comment] { 5. Mover cabezal }
-        [run]{ <**> tm:headPos{$_lname} }
-        [run]{ <**> tm:posId{$_lid} }
+        [run]{ [variable] tm:headPos{[execute]_lname} }
+        [run]{ [variable] tm:posId{[execute]lid} }
     }
 
     $EXTEND_R_nil{
@@ -317,8 +323,8 @@ $RULE_continue2_{ [run]{ <**> nextState{halve} } [run]{ <**> writeVal{0} } [run]
 
     $EXTEND_L_nil{
         [comment] { Generar nuevo ID }
-        [run]{ <**> _newId{$tm:cc I} }
-        [run]{ <**> tm:cc{$_newId} }
+        [run]{ <**> _newId{$tm:cc_l I} }
+        [run]{ <**> tm:cc_l{$_newId} }
 
         [comment] { Definir valor = blanco }
         [run]{ <**> _nvk{[execute]@v_open $_newId _close} }
@@ -381,7 +387,8 @@ $MOVE_N{}
     #begin-construction
     #method:execute {
         [comment] { Inicializar contador de celdas }
-        [run]{ [variable] tm:cc{III} }
+        [run]{ [variable] tm:cc_r{II} }
+        [run]{ [variable] tm:cc_l{I} }
 
         [comment] { ====== Crear las 4 celdas iniciales manualmente ====== }
 
@@ -394,16 +401,6 @@ $MOVE_N{}
         [run]{ [variable] v(II){1} }
         [run]{ [variable] r(II){III} }
         [run]{ [variable] l(II){I} }
-
-        [comment] { Celda (III): digito '0' de "10" }
-        [run]{ [variable] v(III){0} }
-        [run]{ [variable] r(III){IIII} }
-        [run]{ [variable] l(III){II} }
-
-        [comment] { Celda (IIII): blanco a la derecha del numero }
-        [run]{ [variable] v(IIII){_} }
-        [run]{ [variable] r(IIII){nil} }
-        [run]{ [variable] l(IIII){III} }
 
         [comment] { ====== Cabezal empieza en (II) = digito '1' ====== }
         [run]{ [variable] tm:initPosId{II} }
