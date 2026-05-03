@@ -1,12 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="12dae5b1-b99e-4b52-a3c7-3286eae67f55" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/tests/test-simple-3.humo" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.classpath" beforeDir="false" afterPath="$PROJECT_DIR$/.classpath" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/humo.jar" beforeDir="false" afterPath="$PROJECT_DIR$/demo/humo.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/HumoTester.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/HumoTester.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test-simple-2.humo" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test-simple-2.humo" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/humo-lsp.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/HumoInterpreter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/DesktopLauncher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/OrbitCameraController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/Spectrum3DScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/humo.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/humo.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/HumoDebugAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/HumoDebugAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/production/humo/1e.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/1e.humo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/production/humo/1e2.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/1e2.humo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/production/humo/1f.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/1f.humo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/production/humo/1g.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/1g.humo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/production/humo/1h---1.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/1h---1.humo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/production/humo/1h---2.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/1h---2.humo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/production/humo/1h.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/1h.humo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/production/humo/1i.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/1i.humo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/production/humo/prueba+de+objetos.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/prueba+de+objetos.humo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/production/humo/prueba+de+objetos2.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/prueba+de+objetos2.humo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/production/humo/prueba+de+objetos3---1.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/prueba+de+objetos3---1.humo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/production/humo/prueba+de+objetos3.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/prueba+de+objetos3.humo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/not-nested/tm-dec-to-bin.humo" beforeDir="false" afterPath="$PROJECT_DIR$/tests/not-nested/tm-dec-to-bin.humo" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,9 +41,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 8
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="2rYk6cKch7L6GF6KPcozSEKhNjN" />
   <component name="ProjectViewState">
     <option name="autoscrollFromSource" value="true" />
@@ -29,11 +54,47 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.DesktopLauncher.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "/home/fernando/detodo/desarrollo/m/old/humo/humo"
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "lsp",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/fernando/IdeaProjects/humo/humo",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RunManager">
+    <configuration name="DesktopLauncher" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="ar.net.fpetrola.humo.lsp.DesktopLauncher" />
+      <module name="humo-lsp" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ar.net.fpetrola.humo.lsp.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.DesktopLauncher" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -42,7 +103,22 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1736743221810</updated>
+      <workItem from="1777834009091" duration="2409000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

@@ -12,6 +12,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <gdx.version>1.12.1</gdx.version>
   </properties>
 
   <dependencies>
@@ -49,8 +50,29 @@
       <version>2.13.2-rc1</version>
       <scope>compile</scope>
     </dependency>
+      <!-- Core -->
+      <dependency>
+        <groupId>com.badlogicgames.gdx</groupId>
+        <artifactId>gdx</artifactId>
+        <version>${gdx.version}</version>
+      </dependency>
 
-  </dependencies>
+      <!-- Backend LWJGL3 -->
+      <dependency>
+        <groupId>com.badlogicgames.gdx</groupId>
+        <artifactId>gdx-backend-lwjgl3</artifactId>
+        <version>${gdx.version}</version>
+      </dependency>
+
+      <!-- Nativos Desktop -->
+      <dependency>
+        <groupId>com.badlogicgames.gdx</groupId>
+        <artifactId>gdx-platform</artifactId>
+        <version>${gdx.version}</version>
+        <classifier>natives-desktop</classifier>
+      </dependency>
+    </dependencies>
+
   <build>
     <plugins>
       <plugin>
