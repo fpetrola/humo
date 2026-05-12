@@ -71,6 +71,13 @@
         <version>${gdx.version}</version>
         <classifier>natives-desktop</classifier>
       </dependency>
+
+      <!-- LWJGL3 AWT integration for embedding GL in Swing -->
+      <dependency>
+        <groupId>org.lwjglx</groupId>
+        <artifactId>lwjgl3-awt</artifactId>
+        <version>0.2.2</version>
+      </dependency>
     </dependencies>
 
   <build>

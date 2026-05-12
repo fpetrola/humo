@@ -4,34 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="12dae5b1-b99e-4b52-a3c7-3286eae67f55" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/humo-lsp.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/HumoInterpreter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/DesktopLauncher.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/OrbitCameraController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/Spectrum3DScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/humo.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/humo.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="12dae5b1-b99e-4b52-a3c7-3286eae67f55" name="Changes" comment="3d">
+      <change afterPath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/interpreter/TrieArrayInterpreter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/HumoDebugAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/HumoDebugAdapter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/1e.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/1e.humo" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/1e2.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/1e2.humo" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/1f.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/1f.humo" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/1g.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/1g.humo" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/1h---1.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/1h---1.humo" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/1h---2.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/1h---2.humo" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/1h.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/1h.humo" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/1i.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/1i.humo" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/prueba+de+objetos.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/prueba+de+objetos.humo" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/prueba+de+objetos2.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/prueba+de+objetos2.humo" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/prueba+de+objetos3---1.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/prueba+de+objetos3---1.humo" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/prueba+de+objetos3.humo" beforeDir="false" afterPath="$PROJECT_DIR$/target/production/humo/prueba+de+objetos3.humo" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/not-nested/tm-dec-to-bin.humo" beforeDir="false" afterPath="$PROJECT_DIR$/tests/not-nested/tm-dec-to-bin.humo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/App.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,30 +29,44 @@
     <option name="showLibraryContents" value="true" />
     <option name="showScratchesAndConsoles" value="false" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.DesktopLauncher.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "lsp",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/fernando/IdeaProjects/humo/humo",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.App.executor&quot;: &quot;Run&quot;,
+    &quot;Application.DesktopLauncher.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;lsp&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/fernando/detodo/realidaad/test3&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
-  <component name="RunManager">
+}</component>
+  <component name="RunManager" selected="Application.App">
+    <configuration name="App" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="ar.net.fpetrola.humo.lsp.App" />
+      <module name="humo-lsp" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ar.net.fpetrola.humo.lsp.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="DesktopLauncher" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="ar.net.fpetrola.humo.lsp.DesktopLauncher" />
       <module name="humo-lsp" />
@@ -91,6 +82,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.App" />
         <item itemvalue="Application.DesktopLauncher" />
       </list>
     </recent_temporary>
@@ -103,8 +95,19 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1736743221810</updated>
-      <workItem from="1777834009091" duration="2409000" />
+      <workItem from="1777834009091" duration="4736000" />
+      <workItem from="1778115345563" duration="65000" />
+      <workItem from="1778115453565" duration="2018000" />
     </task>
+    <task id="LOCAL-00001" summary="3d">
+      <option name="closed" value="true" />
+      <created>1777852767572</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1777852767572</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -120,5 +123,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="3d" />
+    <option name="LAST_COMMIT_MESSAGE" value="3d" />
   </component>
 </project>
