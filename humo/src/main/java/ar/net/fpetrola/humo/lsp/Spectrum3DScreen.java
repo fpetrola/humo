@@ -41,6 +41,12 @@ public class Spectrum3DScreen extends ApplicationAdapter {
     private PointLight spotLight;
     private float spotlightTimer = 0f;
     private static final float SPOTLIGHT_SPEED = 0.08f;
+    private float fogIntensity = 0f;
+    private static final float FOG_OSCILLATION_SPEED = 0.5f;
+
+    private Array<ModelInstance> voxelObjects;
+    private float voxelObjectTimer = 0f;
+    private static final float VOXEL_SPAWN_INTERVAL = 3f;
 
     private static final Color[] PALETTE = {
         new Color(0,    0,    0,    1),
@@ -91,6 +97,8 @@ public class Spectrum3DScreen extends ApplicationAdapter {
         }
 
         renderScene(0);
+
+        voxelObjects = new Array<>();
 
         controller = new OrbitCameraController(camera, new Vector3(W / 2f, H / 2f, 0));
         controller.setDistance(350f);
@@ -433,6 +441,49 @@ public class Spectrum3DScreen extends ApplicationAdapter {
         }
     }
 
+    private ModelInstance createSphere(float x, float y, float z, float radius, Color color) {
+        ModelBuilder mb = new ModelBuilder();
+        Model sphere = mb.createSphere(radius, radius, radius, 16, 16,
+            new Material(ColorAttribute.createDiffuse(color)),
+            Usage.Position | Usage.Normal);
+        ModelInstance inst = new ModelInstance(sphere);
+        inst.transform.setToTranslation(x, y, z);
+        return inst;
+    }
+
+    private ModelInstance createPacman(float x, float y, float z) {
+        // Pacman amarillo simple (cubo con esquina cortada)
+        ModelBuilder mb = new ModelBuilder();
+        Model pacman = mb.createBox(8f, 8f, 8f,
+            new Material(ColorAttribute.createDiffuse(new Color(1, 1, 0, 1))),
+            Usage.Position | Usage.Normal);
+        ModelInstance inst = new ModelInstance(pacman);
+        inst.transform.setToTranslation(x, y, z);
+        return inst;
+    }
+
+    private ModelInstance createGhost(float x, float y, float z) {
+        // Fantasma blanco simple (cubo)
+        ModelBuilder mb = new ModelBuilder();
+        Model ghost = mb.createBox(8f, 10f, 8f,
+            new Material(ColorAttribute.createDiffuse(new Color(1, 1, 1, 1))),
+            Usage.Position | Usage.Normal);
+        ModelInstance inst = new ModelInstance(ghost);
+        inst.transform.setToTranslation(x, y, z);
+        return inst;
+    }
+
+    private ModelInstance createJetSetWilly(float x, float y, float z) {
+        // Jet Set Willy - figura simple (cubo rojo)
+        ModelBuilder mb = new ModelBuilder();
+        Model willy = mb.createBox(6f, 12f, 6f,
+            new Material(ColorAttribute.createDiffuse(new Color(1, 0, 0, 1))),
+            Usage.Position | Usage.Normal);
+        ModelInstance inst = new ModelInstance(willy);
+        inst.transform.setToTranslation(x, y, z);
+        return inst;
+    }
+
     @Override
     public void render() {
         float dt = Gdx.graphics.getDeltaTime();
@@ -468,11 +519,58 @@ public class Spectrum3DScreen extends ApplicationAdapter {
         spotLight.position.y = H / 2f + MathUtils.sin(angle) * 75f;
         spotLight.position.z = 50f;  // Adelante del espectro
 
+        // Actualizar niebla (oscila lentamente)
+        fogIntensity = 0.5f + 0.3f * MathUtils.sin(spotlightTimer * FOG_OSCILLATION_SPEED);
+        env.set(new ColorAttribute(ColorAttribute.AmbientLight,
+            0.1f + fogIntensity * 0.5f,
+            0.1f + fogIntensity * 0.5f,
+            0.12f + fogIntensity * 0.6f, 1f));
+
+        // Generar objetos voxelizados
+        voxelObjectTimer += dt;
+        if (voxelObjectTimer >= VOXEL_SPAWN_INTERVAL) {
+            voxelObjectTimer = 0;
+            int type = (int) (Math.random() * 4);
+            float startX = W / 2f + (float) (Math.random() - 0.5f) * W;
+            float startY = H / 2f + (float) (Math.random() - 0.5f) * H;
+
+            ModelInstance obj = null;
+            switch (type) {
+                case 0:
+                    obj = createSphere(startX, startY, -100f, 15f, PALETTE[1]);
+                    break;
+                case 1:
+                    obj = createPacman(startX, startY, -100f);
+                    break;
+                case 2:
+                    obj = createGhost(startX, startY, -100f);
+                    break;
+                case 3:
+                    obj = createJetSetWilly(startX, startY, -100f);
+                    break;
+            }
+            if (obj != null) {
+                voxelObjects.add(obj);
+            }
+        }
+
+        // Animar objetos voxelizados (moverse hacia la cámara y salir)
+        for (int i = voxelObjects.size - 1; i >= 0; i--) {
+            ModelInstance obj = voxelObjects.get(i);
+            obj.transform.translate(0, 0, 80 * dt);  // Moverse hacia la cámara
+
+            // Remover si salió demasiado lejos
+            if (obj.transform.getTranslation(new Vector3()).z > 150f) {
+                voxelObjects.removeIndex(i);
+            }
+        }
+
         controller.update();
         ScreenUtils.clear(0.08f, 0.08f, 0.12f, 1f, true);
 
         modelBatch.begin(camera);
         modelBatch.render(pixels, env);
+        modelBatch.render(voxelObjects, env);
         modelBatch.end();
     }
 

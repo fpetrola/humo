@@ -6,9 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="12dae5b1-b99e-4b52-a3c7-3286eae67f55" name="Changes" comment="3d">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/OrbitCameraController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/OrbitCameraController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/Spectrum3DScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/Spectrum3DScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/spotlight.frag" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/spotlight.frag" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/spotlight.vert" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/spotlight.vert" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -155,7 +155,23 @@
       <option name="project" value="LOCAL" />
       <updated>1780322231511</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="3d">
+      <option name="closed" value="true" />
+      <created>1780536974919</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1780536974919</updated>
+    </task>
+    <task id="LOCAL-00005" summary="3d">
+      <option name="closed" value="true" />
+      <created>1780537092198</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1780537092198</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
