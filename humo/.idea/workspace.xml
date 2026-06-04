@@ -5,95 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="12dae5b1-b99e-4b52-a3c7-3286eae67f55" name="Changes" comment="3d">
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/humo-lsp.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/CallStackParserListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/CallStackParserListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/CallStackSelectionListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/CallStackSelectionListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/ClearCharSequence.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/ClearCharSequence.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/DebuggerParserListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/DebuggerParserListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/DefaultParserListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/DefaultParserListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/ExecutionParserListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/ExecutionParserListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/FilteredTreeModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/FilteredTreeModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/HighlighterParserListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/HighlighterParserListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/HumoDemoApplet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/HumoDemoApplet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/HumoInterpreter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/HumoInterpreter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/HumoParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/HumoParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/HumoTester.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/HumoTester.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/ListenedParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/ListenedParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/LoggingMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/LoggingMap.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/ParserListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/ParserListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/ParserListenerMultiplexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/ParserListenerMultiplexer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/ProductionFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/ProductionFrame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/ProductionTreeCellRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/ProductionTreeCellRenderer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/ProductionsParserListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/ProductionsParserListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/StacktraceTreeNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/StacktraceTreeNode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/Stepper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/Stepper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/TextViewHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/TextViewHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/ThreadSafeActionListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/ThreadSafeActionListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/VisibilityListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/VisibilityListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/interpreter/TrieArrayInterpreter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/interpreter/TrieArrayInterpreter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/App.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/DesktopLauncher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/DesktopLauncher.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/ExecutionContext.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/ExecutionContext.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/HumoDebugAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/HumoDebugAdapter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/LspBridgeClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/LspBridgeClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/MinimalLspServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/MinimalLspServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/OrbitCameraController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/OrbitCameraController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/Spectrum3DPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/Spectrum3DPanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/Spectrum3DScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/Spectrum3DScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/SteppableHumoInterpreter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/SteppableHumoInterpreter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ar/net/fpetrola/humo/lsp/VariableInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/VariableInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/badlogic/gdx/backends/lwjgl3/Lwjgl3GL20Factory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/badlogic/gdx/backends/lwjgl3/Lwjgl3GL20Factory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/1.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/1e.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/1e2.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/1f.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/1g.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/1h---1.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/1h---2.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/1h.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/1i.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/3.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/example2.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/example3.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/images/dbrkpnt.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/images/ebrkpnt.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/images/ebrkpnt_green.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/images/epbrkpnt_obj.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/images/genericvariable.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/images/resume.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/images/runtocomp.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/images/scalarvar.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/images/schema_variable.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/images/stckframe.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/images/stepinto.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/images/stepintosp.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/images/stepover.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/images/stepreturn.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/images/threads_obj.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/images/threadt_obj.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/images/treereferencevar.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/images/variable_view.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/not-nested/simple-while.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/not-nested/simple-while2.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/not-nested/test1.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/not-nested/tm-dec-to-bin.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/not-nested/tm-invert.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/prueba+de+objetos.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/prueba+de+objetos2.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/prueba+de+objetos3---1.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/prueba+de+objetos3.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/simple-while.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/test-ni-1.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/test-simple-1.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/test-simple-2.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/test-simple-3.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/test1.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/test2.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/test3.humo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/production/humo/test4.humo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/OrbitCameraController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/OrbitCameraController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/Spectrum3DScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/Spectrum3DScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -232,7 +147,15 @@
       <option name="project" value="LOCAL" />
       <updated>1778592536768</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="3d">
+      <option name="closed" value="true" />
+      <created>1780322231511</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1780322231511</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

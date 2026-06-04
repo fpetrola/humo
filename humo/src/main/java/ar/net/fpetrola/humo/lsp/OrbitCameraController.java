@@ -19,13 +19,18 @@ public class OrbitCameraController extends InputAdapter {
     private static final float MAX_DIST = 2000f;
     private static final float ROT_SPEED = 0.4f;
     private static final float ZOOM_FACTOR = 1.12f;
+    private static final float PAN_SPEED = 1.5f;
 
     private int lastX, lastY;
-    private boolean dragging = false;
+    private int mouseX, mouseY;
+    private boolean rotating = false;
+    private boolean panning = false;
 
     public OrbitCameraController(PerspectiveCamera camera, Vector3 target) {
         this.camera = camera;
         this.target = new Vector3(target);
+        this.mouseX = 0;
+        this.mouseY = 0;
         apply();
     }
 
@@ -41,10 +46,14 @@ public class OrbitCameraController extends InputAdapter {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (isCtrl()) {
+        if (button == Input.Buttons.LEFT) {
             lastX = screenX;
             lastY = screenY;
-            dragging = true;
+            if (isCtrl()) {
+                rotating = true;
+            } else {
+                panning = true;
+            }
             return true;
         }
         return false;
@@ -52,36 +61,89 @@ public class OrbitCameraController extends InputAdapter {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        dragging = false;
+        if (button == Input.Buttons.LEFT) {
+            panning = false;
+            rotating = false;
+        }
         return false;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        if (!dragging || !isCtrl()) { dragging = false; return false; }
+        mouseX = screenX;
+        mouseY = screenY;
+
         int dx = screenX - lastX;
         int dy = screenY - lastY;
         lastX = screenX;
         lastY = screenY;
 
-        azimuth   -= dx * ROT_SPEED;
-        elevation += dy * ROT_SPEED;
-        elevation = MathUtils.clamp(elevation, -89f, 89f);
-        apply();
-        return true;
+        if (panning) {
+            panCamera(dx, dy);
+            return true;
+        } else if (rotating) {
+            azimuth   -= dx * ROT_SPEED;
+            elevation += dy * ROT_SPEED;
+            elevation = MathUtils.clamp(elevation, -89f, 89f);
+            apply();
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean scrolled(float amountX, float amountY) {
-        // amountY > 0 = rueda hacia atrás = zoom out
+        // Calcular posición del cursor normalizada (0-1)
+        int width = Gdx.graphics.getWidth();
+        int height = Gdx.graphics.getHeight();
+        float cursorNormX = (mouseX - width / 2f) / (width / 2f);
+        float cursorNormY = (mouseY - height / 2f) / (height / 2f);
+
+        // Cambiar distancia
+        float oldDistance = distance;
         if (amountY > 0) distance *= ZOOM_FACTOR;
         else distance /= ZOOM_FACTOR;
         distance = MathUtils.clamp(distance, MIN_DIST, MAX_DIST);
+
+        // Calcular cuánto se movió la distancia
+        float distanceDelta = distance - oldDistance;
+
+        // Mover el target hacia el cursor
+        // El FOV es 60 grados, así que tan(30°) = 0.577
+        float worldScale = 2f * distance * MathUtils.tan(MathUtils.degreesToRadians * 30f);
+        float moveX = cursorNormX * worldScale / 2f * (distanceDelta / distance);
+        float moveY = -cursorNormY * worldScale / 2f * (distanceDelta / distance);
+
+        target.x += moveX;
+        target.y += moveY;
+
         apply();
         return true;
     }
 
     public void update() { /* slot para inercia si querés */ }
+
+    private void panCamera(int screenDx, int screenDy) {
+        // Movimiento simple: convertir pixels a mundo basado en la distancia de la cámara
+        // El FOV es 60 grados, así que tan(30°) = 0.577
+        float worldPerPixelX = (distance * 2f * MathUtils.tan(MathUtils.degreesToRadians * 30f)) / camera.viewportWidth;
+        float worldPerPixelY = (distance * 2f * MathUtils.tan(MathUtils.degreesToRadians * 30f)) / camera.viewportHeight;
+
+        // Convertir el movimiento del mouse a movimiento del mundo
+        // Necesito considerar la rotación de la cámara
+        float moveX = -screenDx * worldPerPixelX;
+        float moveY = screenDy * worldPerPixelY;
+
+        // Aplicar rotación del mundo basada en azimuth
+        float az = azimuth * MathUtils.degreesToRadians;
+        float cos = MathUtils.cos(az);
+        float sin = MathUtils.sin(az);
+
+        target.x += moveX * cos - moveY * sin;
+        target.z += moveX * sin + moveY * cos;
+
+        apply();
+    }
 
     private void apply() {
         float az = azimuth * MathUtils.degreesToRadians;

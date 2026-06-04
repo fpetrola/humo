@@ -9,8 +9,10 @@ import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
@@ -36,6 +38,10 @@ public class Spectrum3DScreen extends ApplicationAdapter {
     private float sceneTimer = 0f;
     private static final float SCENE_DURATION = 8f;
 
+    private PointLight spotLight;
+    private float spotlightTimer = 0f;
+    private static final float SPOTLIGHT_SPEED = 0.08f;
+
     private static final Color[] PALETTE = {
         new Color(0,    0,    0,    1),
         new Color(0,    0,    0.85f,1),
@@ -56,8 +62,13 @@ public class Spectrum3DScreen extends ApplicationAdapter {
         modelBatch = new ModelBatch();
 
         env = new Environment();
-        env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.55f, 0.55f, 0.6f, 1f));
-        env.add(new DirectionalLight().set(0.85f, 0.85f, 0.85f, -1f, -0.7f, -0.4f));
+        env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.1f, 0.1f, 0.12f, 1f));
+        env.add(new DirectionalLight().set(0.2f, 0.2f, 0.2f, -1f, -0.7f, -0.4f));
+
+        // Luz tipo spotlight (PointLight intensa con rango muy grande)
+        spotLight = new PointLight();
+        spotLight.set(1.5f, 1.2f, 0.8f, W / 2f, H / 2f, -30f, 2000f);
+        env.add(spotLight);
 
         ModelBuilder mb = new ModelBuilder();
         cubeModel = mb.createBox(PIXEL, PIXEL, PIXEL,
@@ -449,6 +460,13 @@ public class Spectrum3DScreen extends ApplicationAdapter {
             sceneTimer = 0f;
             renderScene(currentScene);
         }
+
+        // Actualizar posición del spotlight (se mueve sobre el espectro)
+        spotlightTimer += dt * SPOTLIGHT_SPEED;
+        float angle = spotlightTimer * MathUtils.PI2;
+        spotLight.position.x = W / 2f + MathUtils.cos(angle) * 100f;
+        spotLight.position.y = H / 2f + MathUtils.sin(angle) * 75f;
+        spotLight.position.z = -30f;  // Frente al espectro
 
         controller.update();
         ScreenUtils.clear(0.08f, 0.08f, 0.12f, 1f, true);
