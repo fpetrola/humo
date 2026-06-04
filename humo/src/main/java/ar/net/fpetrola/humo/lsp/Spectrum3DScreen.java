@@ -38,15 +38,38 @@ public class Spectrum3DScreen extends ApplicationAdapter {
     private float sceneTimer = 0f;
     private static final float SCENE_DURATION = 8f;
 
-    private PointLight spotLight;
-    private ModelInstance lightBulb;
-    private float spotlightTimer = 0f;
-    private static final float SPOTLIGHT_SPEED = 0.08f;
+    private Array<PointLight> multiLights;
+    private Array<ModelInstance> multiBulbs;
+    private float[] multiLightTimers;
+    private static final int NUM_LIGHTS = 5;
 
-    private PointLight spotLight2;
-    private ModelInstance lightBulb2;
-    private float spotlightTimer2 = 0f;
-    private static final float SPOTLIGHT_SPEED_2 = 0.12f;
+    private static final Color[] LIGHT_COLORS = {
+        new Color(1f, 0f, 0f, 1f),      // Rojo
+        new Color(0f, 1f, 0f, 1f),      // Verde
+        new Color(0f, 0f, 1f, 1f),      // Azul
+        new Color(1f, 1f, 0f, 1f),      // Amarillo
+        new Color(1f, 0f, 1f, 1f),      // Magenta
+        new Color(0f, 1f, 1f, 1f),      // Cian
+        new Color(1f, 0.5f, 0f, 1f),    // Naranja
+        new Color(1f, 0.2f, 0.8f, 1f),  // Rosa
+        new Color(0f, 1f, 0.5f, 1f),    // Verde claro
+        new Color(0.3f, 0.7f, 1f, 1f)   // Azul claro
+    };
+
+    private static final float[] LIGHT_SPEEDS = {
+        0.08f, 0.12f, 0.06f, 0.14f, 0.10f,
+        0.09f, 0.13f, 0.07f, 0.11f, 0.15f
+    };
+
+    private static final float[] LIGHT_RADII_X = {
+        120f, 100f, 110f, 90f, 130f,
+        105f, 95f, 115f, 85f, 125f
+    };
+
+    private static final float[] LIGHT_RADII_Y = {
+        85f, 70f, 80f, 95f, 75f,
+        88f, 82f, 78f, 92f, 72f
+    };
 
     private float fogIntensity = 0f;
     private static final float FOG_OSCILLATION_SPEED = 0.5f;
@@ -73,35 +96,34 @@ public class Spectrum3DScreen extends ApplicationAdapter {
         env = new Environment();
         env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0f, 0f, 0f, 1f));
 
-        // Luz tipo bombilla (PointLight intensa - la única fuente de luz)
-        spotLight = new PointLight();
-        spotLight.set(3f, 2.7f, 1.8f, W / 2f, H / 2f, 120f, 3500f);
-        env.add(spotLight);
+        multiLights = new Array<>();
+        multiBulbs = new Array<>();
+        multiLightTimers = new float[NUM_LIGHTS];
 
-        // Crear esfera luminosa visible que orbita (emisiva para que brille)
+        // Crear 10 luces con diferentes colores
         ModelBuilder mb2 = new ModelBuilder();
-        Material bulbMaterial = new Material();
-        bulbMaterial.set(ColorAttribute.createDiffuse(new Color(1f, 0.9f, 0.4f, 1f)));
-        bulbMaterial.set(ColorAttribute.createEmissive(new Color(2f, 1.8f, 1f, 1f)));
-        Model bulbModel = mb2.createSphere(8f, 8f, 8f, 32, 32,
-            bulbMaterial,
-            Usage.Position | Usage.Normal);
-        lightBulb = new ModelInstance(bulbModel);
-        lightBulb.transform.setToTranslation(W / 2f, H / 2f, 120f);
+        for (int i = 0; i < NUM_LIGHTS; i++) {
+            Color color = LIGHT_COLORS[i];
 
-        // Segunda bombilla (luz roja pura)
-        spotLight2 = new PointLight();
-        spotLight2.set(4f, 0.1f, 0.1f, W / 2f, H / 2f, 0f, 3000f);
-        env.add(spotLight2);
+            // Crear PointLight
+            PointLight light = new PointLight();
+            light.set(color.r * 3.5f, color.g * 3.5f, color.b * 3.5f,
+                W / 2f, H / 2f, 0, 3000f);
+            multiLights.add(light);
+            env.add(light);
 
-        Material bulbMaterial2 = new Material();
-        bulbMaterial2.set(ColorAttribute.createDiffuse(new Color(1f, 0.1f, 0.1f, 1f)));
-        bulbMaterial2.set(ColorAttribute.createEmissive(new Color(3f, 0.1f, 0.1f, 1f)));
-        Model bulbModel2 = mb2.createSphere(8f, 8f, 8f, 32, 32,
-            bulbMaterial2,
-            Usage.Position | Usage.Normal);
-        lightBulb2 = new ModelInstance(bulbModel2);
-        lightBulb2.transform.setToTranslation(W / 2f, H / 2f, 0f);
+            // Crear esfera luminosa
+            Material bulbMaterial = new Material();
+            bulbMaterial.set(ColorAttribute.createDiffuse(color));
+            bulbMaterial.set(ColorAttribute.createEmissive(
+                new Color(color.r * 2.5f, color.g * 2.5f, color.b * 2.5f, 1f)));
+            Model bulbModel = mb2.createSphere(8f, 8f, 8f, 32, 32,
+                bulbMaterial, Usage.Position | Usage.Normal);
+            ModelInstance bulb = new ModelInstance(bulbModel);
+            multiBulbs.add(bulb);
+
+            multiLightTimers[i] = 0f;
+        }
 
         ModelBuilder mb = new ModelBuilder();
         cubeModel = mb.createBox(PIXEL, PIXEL, PIXEL,
@@ -494,39 +516,28 @@ public class Spectrum3DScreen extends ApplicationAdapter {
             renderScene(currentScene);
         }
 
-        // Actualizar posición de la bombilla 1 (orbita muy cerca, pasando atrás)
-        spotlightTimer += dt * SPOTLIGHT_SPEED;
-        float angle = spotlightTimer * MathUtils.PI2;
-        float bulbX = W / 2f + MathUtils.cos(angle) * 120f;
-        float bulbY = H / 2f + MathUtils.sin(angle) * 85f;
-        float bulbZ = 70f * MathUtils.sin(angle);  // Oscila adelante y atrás
+        // Actualizar posiciones de todas las 10 luces
+        for (int i = 0; i < NUM_LIGHTS; i++) {
+            multiLightTimers[i] += dt * LIGHT_SPEEDS[i];
+            float angle = multiLightTimers[i] * MathUtils.PI2;
 
-        spotLight.position.x = bulbX;
-        spotLight.position.y = bulbY;
-        spotLight.position.z = bulbZ;
+            // Cada luz tiene una órbita única
+            float bulbX = W / 2f + MathUtils.cos(angle + i * 0.628f) * LIGHT_RADII_X[i];
+            float bulbY = H / 2f + MathUtils.sin(angle * (1f + i * 0.1f)) * LIGHT_RADII_Y[i];
+            float bulbZ = 70f * MathUtils.sin(angle + i * 0.3f);
 
-        lightBulb.transform.setToTranslation(bulbX, bulbY, bulbZ);
-
-        // Actualizar posición de la bombilla 2 (orbita diferente - más rápida y en otro plano)
-        spotlightTimer2 += dt * SPOTLIGHT_SPEED_2;
-        float angle2 = spotlightTimer2 * MathUtils.PI2;
-        float bulbX2 = W / 2f + MathUtils.cos(angle2) * 100f;
-        float bulbY2 = H / 2f + MathUtils.cos(angle2 * 0.7f) * 70f;
-        float bulbZ2 = 80f * MathUtils.cos(angle2);  // Oscila diferente
-
-        spotLight2.position.x = bulbX2;
-        spotLight2.position.y = bulbY2;
-        spotLight2.position.z = bulbZ2;
-
-        lightBulb2.transform.setToTranslation(bulbX2, bulbY2, bulbZ2);
+            multiLights.get(i).position.set(bulbX, bulbY, bulbZ);
+            multiBulbs.get(i).transform.setToTranslation(bulbX, bulbY, bulbZ);
+        }
 
         controller.update();
         ScreenUtils.clear(0f, 0f, 0f, 1f, true);
 
         modelBatch.begin(camera);
         modelBatch.render(pixels, env);
-        modelBatch.render(lightBulb, env);
-        modelBatch.render(lightBulb2, env);
+        for (ModelInstance bulb : multiBulbs) {
+            modelBatch.render(bulb, env);
+        }
         modelBatch.end();
     }
 
