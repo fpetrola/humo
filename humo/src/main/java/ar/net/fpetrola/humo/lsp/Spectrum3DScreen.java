@@ -39,6 +39,7 @@ public class Spectrum3DScreen extends ApplicationAdapter {
     private static final float SCENE_DURATION = 8f;
 
     private PointLight spotLight;
+    private ModelInstance lightBulb;
     private float spotlightTimer = 0f;
     private static final float SPOTLIGHT_SPEED = 0.08f;
     private float fogIntensity = 0f;
@@ -64,13 +65,23 @@ public class Spectrum3DScreen extends ApplicationAdapter {
         modelBatch = new ModelBatch();
 
         env = new Environment();
-        env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.02f, 0.02f, 0.03f, 1f));
-        env.add(new DirectionalLight().set(0.05f, 0.05f, 0.05f, -1f, -0.7f, -0.4f));
+        env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0f, 0f, 0f, 1f));
 
-        // Luz tipo spotlight (PointLight intensa con rango muy grande)
+        // Luz tipo bombilla (PointLight intensa - la única fuente de luz)
         spotLight = new PointLight();
-        spotLight.set(1.5f, 1.2f, 0.8f, W / 2f, H / 2f, 50f, 2000f);
+        spotLight.set(3f, 2.7f, 1.8f, W / 2f, H / 2f, 120f, 3500f);
         env.add(spotLight);
+
+        // Crear esfera luminosa visible que orbita (emisiva para que brille)
+        ModelBuilder mb2 = new ModelBuilder();
+        Material bulbMaterial = new Material();
+        bulbMaterial.set(ColorAttribute.createDiffuse(new Color(1f, 0.9f, 0.4f, 1f)));
+        bulbMaterial.set(ColorAttribute.createEmissive(new Color(2f, 1.8f, 1f, 1f)));
+        Model bulbModel = mb2.createSphere(8f, 8f, 8f, 32, 32,
+            bulbMaterial,
+            Usage.Position | Usage.Normal);
+        lightBulb = new ModelInstance(bulbModel);
+        lightBulb.transform.setToTranslation(W / 2f, H / 2f, 120f);
 
         ModelBuilder mb = new ModelBuilder();
         cubeModel = mb.createBox(PIXEL, PIXEL, PIXEL,
@@ -463,25 +474,27 @@ public class Spectrum3DScreen extends ApplicationAdapter {
             renderScene(currentScene);
         }
 
-        // Actualizar posición del spotlight (se mueve sobre el espectro)
+        // Actualizar posición de la bombilla (orbita muy cerca, pasando atrás)
         spotlightTimer += dt * SPOTLIGHT_SPEED;
         float angle = spotlightTimer * MathUtils.PI2;
-        spotLight.position.x = W / 2f + MathUtils.cos(angle) * 100f;
-        spotLight.position.y = H / 2f + MathUtils.sin(angle) * 75f;
-        spotLight.position.z = 50f;  // Adelante del espectro
+        float bulbX = W / 2f + MathUtils.cos(angle) * 120f;
+        float bulbY = H / 2f + MathUtils.sin(angle) * 85f;
+        float bulbZ = 70f * MathUtils.sin(angle);  // Oscila adelante y atrás
 
-        // Actualizar niebla (oscila lentamente, pero muy sutil)
-        fogIntensity = 0.02f + 0.01f * MathUtils.sin(spotlightTimer * FOG_OSCILLATION_SPEED);
-        env.set(new ColorAttribute(ColorAttribute.AmbientLight,
-            0.02f + fogIntensity * 0.3f,
-            0.02f + fogIntensity * 0.3f,
-            0.03f + fogIntensity * 0.4f, 1f));
+        spotLight.position.x = bulbX;
+        spotLight.position.y = bulbY;
+        spotLight.position.z = bulbZ;
+
+        lightBulb.transform.setToTranslation(bulbX, bulbY, bulbZ);
+
+        // Sin niebla ambiental - solo luz de la esfera
 
         controller.update();
         ScreenUtils.clear(0.08f, 0.08f, 0.12f, 1f, true);
 
         modelBatch.begin(camera);
         modelBatch.render(pixels, env);
+        modelBatch.render(lightBulb, env);
         modelBatch.end();
     }
 
