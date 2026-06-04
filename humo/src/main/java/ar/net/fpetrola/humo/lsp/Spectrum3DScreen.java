@@ -490,7 +490,7 @@ public class Spectrum3DScreen extends ApplicationAdapter {
         // Sin niebla ambiental - solo luz de la esfera
 
         controller.update();
-        ScreenUtils.clear(0.08f, 0.08f, 0.12f, 1f, true);
+        ScreenUtils.clear(0f, 0f, 0f, 1f, true);
 
         modelBatch.begin(camera);
         modelBatch.render(pixels, env);
