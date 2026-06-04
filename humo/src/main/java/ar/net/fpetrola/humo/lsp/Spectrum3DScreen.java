@@ -67,7 +67,7 @@ public class Spectrum3DScreen extends ApplicationAdapter {
 
         // Luz tipo spotlight (PointLight intensa con rango muy grande)
         spotLight = new PointLight();
-        spotLight.set(1.5f, 1.2f, 0.8f, W / 2f, H / 2f, -30f, 2000f);
+        spotLight.set(1.5f, 1.2f, 0.8f, W / 2f, H / 2f, 50f, 2000f);
         env.add(spotLight);
 
         ModelBuilder mb = new ModelBuilder();
@@ -466,7 +466,7 @@ public class Spectrum3DScreen extends ApplicationAdapter {
         float angle = spotlightTimer * MathUtils.PI2;
         spotLight.position.x = W / 2f + MathUtils.cos(angle) * 100f;
         spotLight.position.y = H / 2f + MathUtils.sin(angle) * 75f;
-        spotLight.position.z = -30f;  // Frente al espectro
+        spotLight.position.z = 50f;  // Adelante del espectro
 
         controller.update();
         ScreenUtils.clear(0.08f, 0.08f, 0.12f, 1f, true);
