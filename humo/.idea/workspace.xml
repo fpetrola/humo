@@ -5,7 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="12dae5b1-b99e-4b52-a3c7-3286eae67f55" name="Changes" comment="3d">
-      <change beforePath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/Spectrum3DScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/Spectrum3DScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/interpreter/TrieArrayInterpreter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/interpreter/TrieArrayInterpreter.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

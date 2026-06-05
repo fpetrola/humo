@@ -1,24 +1,23 @@
 package ar.net.fpetrola.humo.interpreter;
 
+/**
+ * Intérprete Humo con Trie puro: lookup O(keyLen), sin backward scan ni for interno.
+ */
 public class TrieArrayInterpreter {
+
     private static boolean isWS(char c) { return c == ' ' || c == '\n' || c == '\r' || c == '\t'; }
 
     public int parse(char[] buffer, int inputLength) {
         int maxNodes = inputLength * 2 + 1;
         int[] trie = new int[maxNodes * 128];
         int[] values = new int[maxNodes];
-        int[] depthStack = new int[Math.min(buffer.length, inputLength + 6) * 3];
+        int[] depthStack = new int[Math.min(buffer.length, inputLength * 6) * 3];
         int[] buildHistory = new int[buffer.length];
         int writePos = inputLength, readPos = 0, depth = 0, keyLength = 0, nodeCount = 1;
         int trieNode = 0, buildNode = 0;
 
         while (readPos!= inputLength) {
-            char c = buffer[readPos];
-            if (isWS(c)) {
-                buffer[writePos++] = buffer[readPos++];
-                continue;
-            }
-            buffer[writePos++] = buffer[readPos++];
+            char c = buffer[writePos++] = buffer[readPos++];
 
             if (c == '{') {
                 int stackIndex = ++depth * 3;
@@ -30,7 +29,8 @@ public class TrieArrayInterpreter {
                 int stackIndex = depth-- * 3;
                 int returnPos = depthStack[stackIndex];
                 if (returnPos!= 0 && (depth == 0 || depthStack[depth * 3]!= 0 || depthStack[depth * 3] < returnPos)) {
-                    writePos--; readPos = returnPos;
+                    writePos--;
+                    readPos = returnPos;
                 } else {
                     int savedBuildNode = depthStack[stackIndex + 2];
                     if (savedBuildNode!= 0) values[savedBuildNode] = depthStack[stackIndex + 1] + 1;
@@ -52,12 +52,7 @@ public class TrieArrayInterpreter {
                             int stackIndex = ++depth * 3;
                             depthStack[stackIndex] = readPos;
                             readPos = values[trieNode];
-                            // Retract writePos by keyLength non-WS chars
-                            int remaining = keyLength;
-                            while (remaining > 0 && writePos > inputLength) {
-                                writePos--;
-                                if (!isWS(buffer[writePos])) remaining--;
-                            }
+                            writePos-= keyLength;
                             buildNode = buildHistory[writePos];
                             keyLength = 0; trieNode = 0;
                         }
