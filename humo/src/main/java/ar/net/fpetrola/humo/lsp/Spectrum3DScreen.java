@@ -74,6 +74,11 @@ public class Spectrum3DScreen extends ApplicationAdapter {
     private float fogIntensity = 0f;
     private static final float FOG_OSCILLATION_SPEED = 0.5f;
 
+    private PointLight fireLight;
+    private ModelInstance flameModel;
+    private float flameTimer = 0f;
+    private static final float FLAME_OSCILLATION_SPEED = 2f;
+
     private static final Color[] PALETTE = {
         new Color(0,    0,    0,    1),
         new Color(0,    0,    0.85f,1),
@@ -125,7 +130,24 @@ public class Spectrum3DScreen extends ApplicationAdapter {
             multiLightTimers[i] = 0f;
         }
 
+        // Crear fuego
+        fireLight = new PointLight();
+        fireLight.set(2f, 1.5f, 0.5f, W / 2f, H / 2f, -50f, 2500f);
+        env.add(fireLight);
+
         ModelBuilder mb = new ModelBuilder();
+        Material flameMaterial = new Material();
+        flameMaterial.set(ColorAttribute.createDiffuse(new Color(1f, 0.4f, 0f, 0.8f)));
+        flameMaterial.set(ColorAttribute.createEmissive(new Color(1f, 0.7f, 0.2f, 1f)));
+        flameMaterial.set(new com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute(
+            com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA, com.badlogic.gdx.graphics.GL20.GL_ONE));
+
+        Model flameGeometryModel = mb.createBox(20f, 40f, 20f, flameMaterial,
+            Usage.Position | Usage.Normal);
+        flameModel = new ModelInstance(flameGeometryModel);
+        flameModel.transform.setToTranslation(W / 2f, H / 2f - 20f, -50f);
+
+        mb = new ModelBuilder();
         cubeModel = mb.createBox(PIXEL, PIXEL, PIXEL,
             new Material(ColorAttribute.createDiffuse(Color.WHITE)),
             Usage.Position | Usage.Normal);
@@ -530,6 +552,12 @@ public class Spectrum3DScreen extends ApplicationAdapter {
             multiBulbs.get(i).transform.setToTranslation(bulbX, bulbY, bulbZ);
         }
 
+        // Actualizar fuego
+        flameTimer += dt * FLAME_OSCILLATION_SPEED;
+        float flameScale = 1f + 0.3f * MathUtils.sin(flameTimer);
+        flameModel.transform.setToTranslation(W / 2f, H / 2f - 20f, -50f);
+        flameModel.transform.scl(flameScale, flameScale * 1.2f, flameScale);
+
         controller.update();
         ScreenUtils.clear(0f, 0f, 0f, 1f, true);
 
@@ -538,6 +566,7 @@ public class Spectrum3DScreen extends ApplicationAdapter {
         for (ModelInstance bulb : multiBulbs) {
             modelBatch.render(bulb, env);
         }
+        modelBatch.render(flameModel, env);
         modelBatch.end();
     }
 

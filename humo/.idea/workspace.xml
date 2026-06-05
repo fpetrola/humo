@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="12dae5b1-b99e-4b52-a3c7-3286eae67f55" name="Changes" comment="3d">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/Spectrum3DScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ar/net/fpetrola/humo/lsp/Spectrum3DScreen.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -185,7 +184,15 @@
       <option name="project" value="LOCAL" />
       <updated>1780547901343</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="3d">
+      <option name="closed" value="true" />
+      <created>1780548222383</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1780548222383</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
