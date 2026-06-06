@@ -107,7 +107,7 @@ Infinite Tape Turing Machine: Dec2Bin converter
 <..{<..}
 <-.>{}
 
-@[{{}]
+@[{[}
 
 #begin-construction {
     [run]{<--><<..>vari{<*>}<...able]>}>}}
