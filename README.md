@@ -27,23 +27,6 @@ The core principle is **recursive expansion**: the output of a substitution is i
 
 ---
 
-## Turing Completeness
-Humo has been empirically proven to be Turing Complete.
-
-By utilizing the mechanisms described above—specifically the infinite tape simulation via dynamic variables (tape_n), conditional state transitions (RULE_q_sym), and recursive control flow—we have successfully implemented a full Universal Turing Machine within Humo.
-
-Proof of Concept: A functional implementation of a Decimal-to-Binary Converter was built using Humo. This implementation replicates the state table of a standard Turing Machine, handling:
-
-Infinite tape traversal (Left/Right movements).
-
-Symbol reading and writing via string concatenation (tape_ + position).
-
-State changes via dynamic rule dispatch (RULE_ + state + symbol).
-
-This demonstrates that despite having only a single "instruction" (text substitution), Humo is capable of computing any algorithm that a Turing Machine can run.
-
----
-
 **Complete interpreter implementation code** (the following code executes any Humo program) :
 
 ``` Java
@@ -81,6 +64,25 @@ public class HumoInterpreter
 }
 ```
 
+---
+
+## Turing Completeness
+Humo has been empirically proven to be Turing Complete.
+
+By utilizing the mechanisms described above—specifically the infinite tape simulation via dynamic variables (tape_n), conditional state transitions (RULE_q_sym), and recursive control flow—we have successfully implemented a full Universal Turing Machine within Humo.
+
+Proof of Concept: A functional implementation of a Decimal-to-Binary Converter was built using Humo. This implementation replicates the state table of a standard Turing Machine, handling:
+
+Infinite tape traversal (Left/Right movements).
+
+Symbol reading and writing via string concatenation (tape_ + position).
+
+State changes via dynamic rule dispatch (RULE_ + state + symbol).
+
+This demonstrates that despite having only a single "instruction" (text substitution), Humo is capable of computing any algorithm that a Turing Machine can run.
+
+---
+
 Infinite Tape Turing Machine: Dec2Bin converter
 
 ```css
@@ -108,17 +110,16 @@ Infinite Tape Turing Machine: Dec2Bin converter
 @[{{}]
 
 #begin-construction {
-[run]{<--><<..>vari{<*>}<...able]>}>}}
-[run]{<--><<..>exec[]{<...}ute]{$}}
+    [run]{<--><<..>vari{<*>}<...able]>}>}}
+    [run]{<--><<..>exec[]{<...}ute]{$}}
 }
 #end-construction {
-[run]{<***>instance:name{<***>instance:name}}
-[run]{<--->[vari{[var]<....>able]{iable}]}
-[run]{<--->[exec{exe}<....>ute]{cute}]}
+    [run]{<***>instance:name{<***>instance:name}}
+    [run]{<--->[vari{[var]<....>able]{iable}]}
+    [run]{<--->[exec{exe}<....>ute]{cute}]}
 }
 
-[comment] {-------------------------------- End Humo Runtime
-[comment] {-------------------------------------------------------------}
+[comment] {-------------------------------- End Humo Runtime -------------------------------------------------------------}
 
 [comment] {---------------- REGLAS DE LA MAQUINA DE TURING (DEC -> BIN) ----------------}
 [comment] { Formato: RULE_Estado_Simbolo -> body que setea nextState, writeVal, moveDir }
