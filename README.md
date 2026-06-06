@@ -45,370 +45,345 @@ This demonstrates that despite having only a single "instruction" (text substitu
 ---
 
 **Complete interpreter implementation code** (the following code executes any Humo program) :
-``` Java
-/*
- * Humo Language 
- * Copyright (C) 2002-2010, Fernando Damian Petrola
- *
- * Distributable under GPL license.
- * See terms of license at gnu.org.
- */
+```css
+[comm{[com]ent}{ment}]
+[comment] {------------------------------------------------ Begin Humo Runtime -------------------------------------------------------------}
 
-package ar.net.fpetrola.humo;
+[run]{[comment]}
+[vari{[var]able}{iable}]
+[exec{[exe]ute}{cute}]
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class HumoInterpreter
-{
-    protected Map<CharSequence, CharSequence> productions = new HashMap<CharSequence, CharSequence>();
-
-    public int parse(StringBuilder sourcecode, int first)
-    {
-        int last = first, current = first;
-
-        for (char currentChar; last < sourcecode.length() && (currentChar = sourcecode.charAt(last++)) != '}';)
-        {
-            if (currentChar == '{')
-            {
-                current = parse(sourcecode, last);
-                productions.put(sourcecode.subSequence(first, last - 1), sourcecode.subSequence(last, current - 1));
-                last = first = current;
-            }
-            
-            CharSequence production = productions.get(sourcecode.subSequence(current, last));
-            if (production != null)
-            {
-                StringBuilder value = new StringBuilder(production);
-                parse(value, 0);
-                sourcecode.replace(current, last, value.toString());
-                last = current += value.length();
-            }
-        }
-
-        return last;
-    }
-}
-```
-
-Coding example:
-``` CartoCSS
-[comm{[com}ent]{ment]} 
-[comment] {----------------------------------------------------- Humo Runtime  -----------------------------------------------------}
-[comment] {-------------------------------------------------------------------------------------------------------------------------}
-[te{[t}mp]{emp]}
-[sent{[sen}ence]{tence]}
-[exec]{[run]}
-[run]{[sentence]}
-[vari{[var}able]{iable]}
-[exec{[exe}ute]{cute]}
-[cre{[cr}ate]{eate]}
-[field]{[variable]$instance:name.}
 #class{new}
-#method:{[me][thod]<*>instance:name.}
-#property:{[prop][erty]<*>instance:name.}
-#this.{[do][llar]<*>instance:name.}
-<--{<-}
+#this.{[execute]<*>instance:name.}
+#method:{#this.}
+#property:[#this.]
+#property->{[variable]$instance:name.}
+
+[v]{<***>}
+<--{<->}
 <->{@}
-<**{<*}
+<**>{#*}
 <*>{$}
-[dollar]{$}
-[do]{[do}
-[llar]{llar]}
-[method]{$}
-[me]{[me}
-[thod]{thod]}
-[property]{$}
-[prop]{[prop}
-[erty]{erty]}
+<..{<..}
+<-.>{}
 
-[_x{[_}
-_]{x_]}
-
-@[{[}
-@a{a}
-@b{b}
-@e{e}
-@t{t}
-@v{v}
-@u{u}
-@r{r}
-@${$}
+@[{{}]
 
 #begin-construction {
-      [run]{<-->[@vari{<*}<-->a@ble]{>}}
-      [run]{<-->[@exec{}<-->u@te]{$}}
-      [run]{<-->@[cre{}<-->@ate]{new}}
+[run]{<--><<..>vari{<*>}<...able]>}>}}
+[run]{<--><<..>exec[]{<...}ute]{$}}
 }
 #end-construction {
-      [run]{<***>instance:name{<****>instance:name}}
-      [run]{<-->[@vari{[var}<-->a@ble]{iable]}}
-      [run]{<-->[@exec{[exe}<-->u@te]{cute]}}
-      [run]{<-->@[cre{@[cr}<-->@ate]{<-->e@ate]}}
+[run]{<***>instance:name{<***>instance:name}}
+[run]{<--->[vari{[var]<....>able]{iable}]}
+[run]{<--->[exec{exe}<....>ute]{cute}]}
 }
 
+[comment] {-------------------------------- End Humo Runtime
+[comment] {-------------------------------------------------------------}
 
-[comment] {------------------- ARITMETICA BASICA (Para el Cabezal) -------------------}
-[comment] { Tablas para mover el indice de la cinta (Head Position) }
-[comment] { -- Valores Hexadecimales Positivos (0-F) -- }
-INC_0{1} INC_1{2} INC_2{3} INC_3{4} INC_4{5} INC_5{6} INC_6{7} INC_7{8} INC_8{9}
-INC_9{A} INC_A{B} INC_B{C} INC_C{D} INC_D{E} INC_E{F} 
+[comment] {---------------- REGLAS DE LA MAQUINA DE TURING (DEC -> BIN) ----------------}
+[comment] { Formato: RULE_Estado_Simbolo -> body que setea nextState, writeVal, moveDir }
+[comment] { ESTADO qinit: Mover al final del numero }
+$RULE_qinit_0{ [v] nextState{qinit} [v] writeVal{0} [v] moveDir{R} }
+$RULE_qinit_1{ [v] nextState{qinit} [v] writeVal{1} [v] moveDir{R} }
+$RULE_qinit_2{ [v] nextState{qinit} [v] writeVal{2} [v] moveDir{R} }
+$RULE_qinit_3{ [v] nextState{qinit} [v] writeVal{3} [v] moveDir{R} }
+$RULE_qinit_4{ [v] nextState{qinit} [v] writeVal{4} [v] moveDir{R} }
+$RULE_qinit_5{ [v] nextState{qinit} [v] writeVal{5} [v] moveDir{R} }
+$RULE_qinit_6{ [v] nextState{qinit} [v] writeVal{6} [v] moveDir{R} }
+$RULE_qinit_7{ [v] nextState{qinit} [v] writeVal{7} [v] moveDir{R} }
+$RULE_qinit_8{ [v] nextState{qinit} [v] writeVal{8} [v] moveDir{R} }
+$RULE_qinit_9{ [v] nextState{qinit} [v] writeVal{9} [v] moveDir{R} }
+$RULE_qinit_{ [v] nextState{halve} [v] writeVal{0} [v] moveDir{L} }
 
-[comment] { -- Valores Negativos Hexadecimales (0 a -F) -- }
-INC_-1{0} INC_-2{-1} INC_-3{-2} INC_-4{-3} INC_-5{-4} INC_-6{-5} INC_-7{-6} INC_-8{-7} INC_-9{-8}
-INC_-A{-9} INC_-B{-A} INC_-C{-B} INC_-D{-C} INC_-E{-D} INC_-F{-E}
+[comment] { ESTADO halve: Dividir digito actual por 2 }
+$RULE_halve_0{ [v] nextState{halve} [v] writeVal{0} [v] moveDir{L} }
+$RULE_halve_1{ [v] nextState{addHalf} [v] writeVal{0} [v] moveDir{R} }
+$RULE_halve_2{ [v] nextState{halve} [v] writeVal{1} [v] moveDir{L} }
+$RULE_halve_3{ [v] nextState{addHalf} [v] writeVal{1} [v] moveDir{R} }
+$RULE_halve_4{ [v] nextState{halve} [v] writeVal{2} [v] moveDir{L} }
+$RULE_halve_5{ [v] nextState{addHalf} [v] writeVal{2} [v] moveDir{R} }
+$RULE_halve_6{ [v] nextState{halve} [v] writeVal{3} [v] moveDir{L} }
+$RULE_halve_7{ [v] nextState{addHalf} [v] writeVal{3} [v] moveDir{R} }
+$RULE_halve_8{ [v] nextState{halve} [v] writeVal{4} [v] moveDir{L} }
+$RULE_halve_9{ [v] nextState{addHalf} [v] writeVal{4} [v] moveDir{R} }
+$RULE_halve_{ [v] nextState{removezero} [v] writeVal{_} [v] moveDir{R} }
 
-[comment] { -- Valores Hexadecimales Positivos (1-F) -- }
-DEC_1{0} DEC_2{1} DEC_3{2} DEC_4{3} DEC_5{4} DEC_6{5} DEC_7{6} DEC_8{7} DEC_9{8} 
-DEC_A{9} DEC_B{A} DEC_C{B} DEC_D{C} DEC_E{D} DEC_F{E}
+[comment] { ESTADO addHalf: Sumar 5 al digito actual (carry de division impar) }
+$RULE_addHalf_0{ [v] nextState{jump} [v] writeVal{5} [v] moveDir{L} }
+$RULE_addHalf_1{ [v] nextState{jump} [v] writeVal{6} [v] moveDir{L} }
+$RULE_addHalf_2{ [v] nextState{jump} [v] writeVal{7} [v] moveDir{L} }
+$RULE_addHalf_3{ [v] nextState{jump} [v] writeVal{8} [v] moveDir{L} }
+$RULE_addHalf_4{ [v] nextState{jump} [v] writeVal{9} [v] moveDir{L} }
 
-[comment] { -- Transicion Cero y Valores Negativos (0 a -F) -- }
-DEC_0{-1} 
-DEC_-1{-2} DEC_-2{-3} DEC_-3{-4} DEC_-4{-5} DEC_-5{-6} DEC_-6{-7} DEC_-7{-8} DEC_-8{-9}
-DEC_-9{-A} DEC_-A{-B} DEC_-B{-C} DEC_-C{-D} DEC_-D{-E} DEC_-E{-F}
+[comment] { ESTADO jump: Volver atras para seguir dividiendo }
+$RULE_jump_0{ [v] nextState{halve} [v] writeVal{0} [v] moveDir{L} }
+$RULE_jump_1{ [v] nextState{halve} [v] writeVal{1} [v] moveDir{L} }
+$RULE_jump_2{ [v] nextState{halve} [v] writeVal{2} [v] moveDir{L} }
+$RULE_jump_3{ [v] nextState{halve} [v] writeVal{3} [v] moveDir{L} }
+$RULE_jump_4{ [v] nextState{halve} [v] writeVal{4} [v] moveDir{L} }
 
+[comment] { ESTADO removezero: Limpiar ceros a la izquierda }
+$RULE_removezero_0{ [v] nextState{removezero} [v] writeVal{_} [v] moveDir{R} }
+$RULE_removezero_1{ [v] nextState{goBack} [v] writeVal{1} [v] moveDir{R} }
+$RULE_removezero_2{ [v] nextState{goBack} [v] writeVal{2} [v] moveDir{R} }
+$RULE_removezero_3{ [v] nextState{goBack} [v] writeVal{3} [v] moveDir{R} }
+$RULE_removezero_4{ [v] nextState{goBack} [v] writeVal{4} [v] moveDir{R} }
+$RULE_removezero_5{ [v] nextState{goBack} [v] writeVal{5} [v] moveDir{R} }
+$RULE_removezero_6{ [v] nextState{goBack} [v] writeVal{6} [v] moveDir{R} }
+$RULE_removezero_7{ [v] nextState{goBack} [v] writeVal{7} [v] moveDir{R} }
+$RULE_removezero_8{ [v] nextState{goBack} [v] writeVal{8} [v] moveDir{R} }
+$RULE_removezero_9{ [v] nextState{goBack} [v] writeVal{9} [v] moveDir{R} }
+$RULE_removezero_{ [v] nextState{qfin} [v] writeVal{_} [v] moveDir{R} }
 
-[comment] {------------------- REGLAS DE LA MAQUINA DE TURING (DEC -> BIN) -------------------}
-[comment] { Formato de la Regla: RULE_EstadoActual_SimboloLeido }
-[comment] { Accion: Establece nuevas variables globales para la siguiente iteracion }
+[comment] { ESTADO goBack: Mover a la derecha hasta el final del numero }
+$RULE_goBack_0{ [v] nextState{goBack} [v] writeVal{0} [v] moveDir{R} }
+$RULE_goBack_1{ [v] nextState{goBack} [v] writeVal{1} [v] moveDir{R} }
+$RULE_goBack_2{ [v] nextState{goBack} [v] writeVal{2} [v] moveDir{R} }
+$RULE_goBack_3{ [v] nextState{goBack} [v] writeVal{3} [v] moveDir{R} }
+$RULE_goBack_4{ [v] nextState{goBack} [v] writeVal{4} [v] moveDir{R} }
+$RULE_goBack_5{ [v] nextState{goBack} [v] writeVal{5} [v] moveDir{R} }
+$RULE_goBack_6{ [v] nextState{goBack} [v] writeVal{6} [v] moveDir{R} }
+$RULE_goBack_7{ [v] nextState{goBack} [v] writeVal{7} [v] moveDir{R} }
+$RULE_goBack_8{ [v] nextState{goBack} [v] writeVal{8} [v] moveDir{R} }
+$RULE_goBack_9{ [v] nextState{goBack} [v] writeVal{9} [v] moveDir{R} }
+$RULE_goBack_{ [v] nextState{rest} [v] writeVal{_} [v] moveDir{L} }
 
-[comment] { ESTADO qinit: Mover el cabezal al final del número para iniciar la división }
-$RULE_qinit_0{ [run]{ <**> nextState{qinit} } [run]{ <**> writeVal{0} } [run]{ <**> moveDir{R} } }
-$RULE_qinit_1{ [run]{ <**> nextState{qinit} } [run]{ <**> writeVal{1} } [run]{ <**> moveDir{R} } }
-$RULE_qinit_2{ [run]{ <**> nextState{qinit} } [run]{ <**> writeVal{2} } [run]{ <**> moveDir{R} } }
-$RULE_qinit_3{ [run]{ <**> nextState{qinit} } [run]{ <**> writeVal{3} } [run]{ <**> moveDir{R} } }
-$RULE_qinit_4{ [run]{ <**> nextState{qinit} } [run]{ <**> writeVal{4} } [run]{ <**> moveDir{R} } }
-$RULE_qinit_5{ [run]{ <**> nextState{qinit} } [run]{ <**> writeVal{5} } [run]{ <**> moveDir{R} } }
-$RULE_qinit_6{ [run]{ <**> nextState{qinit} } [run]{ <**> writeVal{6} } [run]{ <**> moveDir{R} } }
-$RULE_qinit_7{ [run]{ <**> nextState{qinit} } [run]{ <**> writeVal{7} } [run]{ <**> moveDir{R} } }
-$RULE_qinit_8{ [run]{ <**> nextState{qinit} } [run]{ <**> writeVal{8} } [run]{ <**> moveDir{R} } }
-$RULE_qinit_9{ [run]{ <**> nextState{qinit} } [run]{ <**> writeVal{9} } [run]{ <**> moveDir{R} } }
-$RULE_qinit__{ [run]{ <**> nextState{halve} } [run]{ <**> writeVal{0} } [run]{ <**> moveDir{L} } }
+[comment] { ESTADO rest: Determinar bit menos significativo }
+$RULE_rest_0{ [v] nextState{rest0} [v] writeVal{_} [v] moveDir{R} }
+$RULE_rest_5{ [v] nextState{rest1} [v] writeVal{_} [v] moveDir{R} }
 
-[comment] { ESTADO halve: Dividir el dígito actual por 2. Cociente se escribe, residuo se lleva. }
-$RULE_halve_0{ [run]{ <**> nextState{halve} } [run]{ <**> writeVal{0} } [run]{ <**> moveDir{L} } } 
-$RULE_halve_1{ [run]{ <**> nextState{addHalf} } [run]{ <**> writeVal{0} } [run]{ <**> moveDir{R} } } 
-$RULE_halve_2{ [run]{ <**> nextState{halve} } [run]{ <**> writeVal{1} } [run]{ <**> moveDir{L} } } 
-$RULE_halve_3{ [run]{ <**> nextState{addHalf} } [run]{ <**> writeVal{1} } [run]{ <**> moveDir{R} } } 
-$RULE_halve_4{ [run]{ <**> nextState{halve} } [run]{ <**> writeVal{2} } [run]{ <**> moveDir{L} } } 
-$RULE_halve_5{ [run]{ <**> nextState{addHalf} } [run]{ <**> writeVal{2} } [run]{ <**> moveDir{R} } } 
-$RULE_halve_6{ [run]{ <**> nextState{halve} } [run]{ <**> writeVal{3} } [run]{ <**> moveDir{L} } } 
-$RULE_halve_7{ [run]{ <**> nextState{addHalf} } [run]{ <**> writeVal{3} } [run]{ <**> moveDir{R} } } 
-$RULE_halve_8{ [run]{ <**> nextState{halve} } [run]{ <**> writeVal{4} } [run]{ <**> moveDir{L} } } 
-$RULE_halve_9{ [run]{ <**> nextState{addHalf} } [run]{ <**> writeVal{4} } [run]{ <**> moveDir{R} } } 
-$RULE_halve__{ [run]{ <**> nextState{removezero} } [run]{ <**> writeVal{_} } [run]{ <**> moveDir{R} } } 
+[comment] { ESTADOS rest0/rest1: Avanzar al resultado binario }
+$RULE_rest0_{ [v] nextState{setrest0} [v] writeVal{_} [v] moveDir{R} }
+$RULE_rest1_{ [v] nextState{setrest1} [v] writeVal{_} [v] moveDir{R} }
 
-[comment] { ESTADO addHalf: El dígito anterior era impar, debo sumar 5 (0.5 * 10) al dígito actual. }
-$RULE_addHalf_0{ [run]{ <**> nextState{jump} } [run]{ <**> writeVal{5} } [run]{ <**> moveDir{L} } } 
-$RULE_addHalf_1{ [run]{ <**> nextState{jump} } [run]{ <**> writeVal{6} } [run]{ <**> moveDir{L} } } 
-$RULE_addHalf_2{ [run]{ <**> nextState{jump} } [run]{ <**> writeVal{7} } [run]{ <**> moveDir{L} } } 
-$RULE_addHalf_3{ [run]{ <**> nextState{jump} } [run]{ <**> writeVal{8} } [run]{ <**> moveDir{L} } } 
-$RULE_addHalf_4{ [run]{ <**> nextState{jump} } [run]{ <**> writeVal{9} } [run]{ <**> moveDir{L} } } 
+[comment] { ESTADOS setrest0/setrest1: Moverse al final del resultado binario y escribir bit }
+$RULE_setrest0_0{ [v] nextState{setrest0} [v] writeVal{0} [v] moveDir{R} }
+$RULE_setrest0_1{ [v] nextState{setrest0} [v] writeVal{1} [v] moveDir{R} }
+$RULE_setrest0_{ [v] nextState{continue} [v] writeVal{0} [v] moveDir{L} }
 
-[comment] { ESTADO jump: Simplemente moverse hacia atrás para seguir con la division (halve) }
-$RULE_jump_0{ [run]{ <**> nextState{halve} } [run]{ <**> writeVal{0} } [run]{ <**> moveDir{L} } }
-$RULE_jump_1{ [run]{ <**> nextState{halve} } [run]{ <**> writeVal{1} } [run]{ <**> moveDir{L} } }
-$RULE_jump_2{ [run]{ <**> nextState{halve} } [run]{ <**> writeVal{2} } [run]{ <**> moveDir{L} } }
-$RULE_jump_3{ [run]{ <**> nextState{halve} } [run]{ <**> writeVal{3} } [run]{ <**> moveDir{L} } }
-$RULE_jump_4{ [run]{ <**> nextState{halve} } [run]{ <**> writeVal{4} } [run]{ <**> moveDir{L} } }
+$RULE_setrest1_0{ [v] nextState{setrest1} [v] writeVal{0} [v] moveDir{R} }
+$RULE_setrest1_1{ [v] nextState{setrest1} [v] writeVal{1} [v] moveDir{R} }
+$RULE_setrest1_{ [v] nextState{continue} [v] writeVal{1} [v] moveDir{L} }
 
-[comment] { ESTADO removezero: Limpiar ceros a la izquierda y el digito final. }
-$RULE_removezero_0{ [run]{ <**> nextState{removezero} } [run]{ <**> writeVal{_} } [run]{ <**> moveDir{R} } } 
-$RULE_removezero_1{ [run]{ <**> nextState{goBack} } [run]{ <**> writeVal{1} } [run]{ <**> moveDir{R} } } 
-$RULE_removezero_2{ [run]{ <**> nextState{goBack} } [run]{ <**> writeVal{2} } [run]{ <**> moveDir{R} } }
-$RULE_removezero_3{ [run]{ <**> nextState{goBack} } [run]{ <**> writeVal{3} } [run]{ <**> moveDir{R} } }
-$RULE_removezero_4{ [run]{ <**> nextState{goBack} } [run]{ <**> writeVal{4} } [run]{ <**> moveDir{R} } }
-$RULE_removezero_5{ [run]{ <**> nextState{goBack} } [run]{ <**> writeVal{5} } [run]{ <**> moveDir{R} } }
-$RULE_removezero_6{ [run]{ <**> nextState{goBack} } [run]{ <**> writeVal{6} } [run]{ <**> moveDir{R} } }
-$RULE_removezero_7{ [run]{ <**> nextState{goBack} } [run]{ <**> writeVal{7} } [run]{ <**> moveDir{R} } }
-$RULE_removezero_8{ [run]{ <**> nextState{goBack} } [run]{ <**> writeVal{8} } [run]{ <**> moveDir{R} } }
-$RULE_removezero_9{ [run]{ <**> nextState{goBack} } [run]{ <**> writeVal{9} } [run]{ <**> moveDir{R} } }
-$RULE_removezero__{ [run]{ <**> nextState{qfin} } [run]{ <**> writeVal{_} } [run]{ <**> moveDir{R} } } 
+[comment] { ESTADO continue: volver al inicio del numero decimal }
+$RULE_continue_0{ [v] nextState{continue} [v] writeVal{0} [v] moveDir{L} }
+$RULE_continue_1{ [v] nextState{continue} [v] writeVal{1} [v] moveDir{L} }
+$RULE_continue_{ [v] nextState{continue2} [v] writeVal{_} [v] moveDir{L} }
 
-[comment] { ESTADO goBack: Mover a la derecha hasta el final del numero. }
-$RULE_goBack_0{ [run]{ <**> nextState{goBack} } [run]{ <**> writeVal{0} } [run]{ <**> moveDir{R} } }
-$RULE_goBack_1{ [run]{ <**> nextState{goBack} } [run]{ <**> writeVal{1} } [run]{ <**> moveDir{R} } }
-$RULE_goBack_2{ [run]{ <**> nextState{goBack} } [run]{ <**> writeVal{2} } [run]{ <**> moveDir{R} } }
-$RULE_goBack_3{ [run]{ <**> nextState{goBack} } [run]{ <**> writeVal{3} } [run]{ <**> moveDir{R} } }
-$RULE_goBack_4{ [run]{ <**> nextState{goBack} } [run]{ <**> writeVal{4} } [run]{ <**> moveDir{R} } }
-$RULE_goBack_5{ [run]{ <**> nextState{goBack} } [run]{ <**> writeVal{5} } [run]{ <**> moveDir{R} } }
-$RULE_goBack_6{ [run]{ <**> nextState{goBack} } [run]{ <**> writeVal{6} } [run]{ <**> moveDir{R} } }
-$RULE_goBack_7{ [run]{ <**> nextState{goBack} } [run]{ <**> writeVal{7} } [run]{ <**> moveDir{R} } }
-$RULE_goBack_8{ [run]{ <**> nextState{goBack} } [run]{ <**> writeVal{8} } [run]{ <**> moveDir{R} } }
-$RULE_goBack_9{ [run]{ <**> nextState{goBack} } [run]{ <**> writeVal{9} } [run]{ <**> moveDir{R} } }
-$RULE_goBack__{ [run]{ <**> nextState{rest} } [run]{ <**> writeVal{_} } [run]{ <**> moveDir{L} } }
+[comment] { ESTADO continue2: Delimitador, volver a dividir }
+$RULE_continue2_{ [v] nextState{halve} [v] writeVal{0} [v] moveDir{L} }
 
-[comment] { ESTADO rest: Determinar el bit menos significativo del número original (0 o 1). }
-$RULE_rest_0{ [run]{ <**> nextState{rest0} } [run]{ <**> writeVal{_} } [run]{ <**> moveDir{R} } } 
-$RULE_rest_5{ [run]{ <**> nextState{rest1} } [run]{ <**> writeVal{_} } [run]{ <**> moveDir{R} } } 
-
-[comment] { ESTADOS rest0/rest1: Avanzar, limpiando el dígito final, para escribir el bit de residuo. }
-$RULE_rest0__{ [run]{ <**> nextState{setrest0} } [run]{ <**> writeVal{_} } [run]{ <**> moveDir{R} } }
-$RULE_rest1__{ [run]{ <**> nextState{setrest1} } [run]{ <**> writeVal{_} } [run]{ <**> moveDir{R} } }
-
-[comment] { ESTADOS setrest0/setrest1: Moverse al final del resultado (binario) }
-$RULE_setrest0_0{ [run]{ <**> nextState{setrest0} } [run]{ <**> writeVal{0} } [run]{ <**> moveDir{R} } }
-$RULE_setrest0_1{ [run]{ <**> nextState{setrest0} } [run]{ <**> writeVal{1} } [run]{ <**> moveDir{R} } }
-$RULE_setrest0__{ [run]{ <**> nextState{continue} } [run]{ <**> writeVal{0} } [run]{ <**> moveDir{L} } } 
-
-$RULE_setrest1_0{ [run]{ <**> nextState{setrest1} } [run]{ <**> writeVal{0} } [run]{ <**> moveDir{R} } }
-$RULE_setrest1_1{ [run]{ <**> nextState{setrest1} } [run]{ <**> writeVal{1} } [run]{ <**> moveDir{R} } }
-$RULE_setrest1__{ [run]{ <**> nextState{continue} } [run]{ <**> writeVal{1} } [run]{ <**> moveDir{L} } } 
-
-[comment] { ESTADO continue: Mover al inicio del número decimal para seguir dividiendo }
-$RULE_continue_0{ [run]{ <**> nextState{continue} } [run]{ <**> writeVal{0} } [run]{ <**> moveDir{L} } }
-$RULE_continue_1{ [run]{ <**> nextState{continue} } [run]{ <**> writeVal{1} } [run]{ <**> moveDir{L} } }
-$RULE_continue__{ [run]{ <**> nextState{continue2} } [run]{ <**> writeVal{_} } [run]{ <**> moveDir{L} } }
-
-[comment] { ESTADO continue2: Delimitador, ir a la división de nuevo }
-$RULE_continue2__{ [run]{ <**> nextState{halve} } [run]{ <**> writeVal{0} } [run]{ <**> moveDir{L} } }
-
-[comment] { ESTADO qfin: Estado de aceptación. El resultado está escrito después del número original. }
-
-
-[comment] {------------------- LOGICA DE LA MAQUINA -------------------}
-
-#class TuringMachine {
-            #begin-construction
-
-            [comment] { --- Inicializacion --- }
-            #method:init {
-                        [run]{ [variable] tm:headPos{0} }
-                        [run]{ [variable] tm:currentState{qinit} }
-                        [run]{ [variable] tm:running{true} }
-            }
-
-            [comment] { --- Ciclo Principal (Recursivo) --- }
-            #method:ran {
-                        [run]{ [variable] isRunning{#this.running} }
-                            
-                        [comment] { Despacho dinamico: si isRunning es true, llama a step, si no, para }
-                        [run]{ [variable] b1{[execute]action_} }
-                        [run]{ [variable] nextAction{[execute]b1 $isRunning} }     
-                        [run]{ [execute] nextAction }
-            }
-
-            [comment] { --- Un paso de la maquina --- }
-            #method:step {
-                        [comment] { 1. LEER CINTA }
-                        [run]{ [variable] pos{#this.headPos} }
-                        [run]{ [variable] _tape_{[execute]tape_} }
-                        [run]{ [variable] currentSym{[execute]_tape_ $pos} }
-                            
-                        [comment] { 2. BUSCAR REGLA (Transition Function) }
-                        [run]{ [variable] state{#this.currentState_} }
-                        [run]{ [variable] _rule_{[execute]RULE_} }
-                        [run]{ [variable] ruleName{[execute]_rule_ $state $currentSym} }
-                            
-                        [comment] { 3. EJECUTAR REGLA (Esto carga nextState, writeVal y moveDir) }
-                        [run]{ [execute] ruleName }
-                            
-                        [comment] { 4. ESCRIBIR EN CINTA }
-                        [run]{ [variable] valToWrite{$writeVal} }
-                        [run]{ [execute] _tape_ $pos{$valToWrite} }
-                            
-                        [comment] { 5. MOVER CABEZAL }
-                        [run]{ [variable] dir{$moveDir} }
-                        [run]{ [variable] _move_{[execute]MOVE_} }
-                        [run]{ [variable] moveCmd{[execute]_move_ $dir} }
-                        [run]{ [execute] moveCmd }
-                            
-                        [comment] { 6. ACTUALIZAR ESTADO }
-                        [run]{ [field] currentState{$nextState} }
-                            
-                        [comment] { 7. VERIFICAR HALT }
-                        [run]{ [variable] _check_halt_{[execute]CHECK_HALT_} }
-                        [run]{ [variable] checker{[execute]_check_halt_ $nextState} }
-                        [run]{ [execute] checker }
-                            
-                        [comment] { 8. RECURSION (Bucle Infinito) }
-                        [run]{ [execute] tm1.ran }
-            }
-                
-            #property:headPos                  { [execute] tm:headPos }
-            #property:currentState { [execute] tm:currentState }
-            #property:running                  { [execute] tm:running }
-                
-            #end-construction
-}
+[comment] { ESTADO qfin: Aceptacion }
 
 [comment] {------------------- HELPERS DE CONTROL -------------------}
 
-[comment] { Helpers para el bucle while }
-$action_true{      $tm1.step }
-$action_false{ [comment] { Termino el programa } }
+[comment] { While-loop dispatch }
+$action_true{$tml.step}
+$action_false{}
 
-[comment] { Helpers para mover el cabezal }
-$MOVE_R{     
-            [run]{ <**> _position_{$tm:headPos} }
-            [run]{ <**> _inc_{INC_} }
-            [run]{ <**> temp1{<*>_inc_ $_position_} }
-            [run]{ <**> tm:headPos{<*> temp1} }
+[comment] { Halt detection }
+$CHECK_HALT_qfin{ [v] tm:running{false} }
+
+[comment] {------------------- CLASE TuringMachine (con cinta infinita v2) -------------------}
+#class TuringMachine {
+    #begin-construction
+
+    #method:init {
+        [comment] {--- Tape ---}
+        [variable] tb:head{I}
+        [variable] _cellPrefix_{I()}
+        [variable] _rightLinkPrefix_{right_T()}
+        [variable] _leftLinkPrefix_{left_T()}
+        [variable] _modeRightPrefix_{mR()}
+        [variable] _modeLeftPrefix_{mL()}
+        [variable] _doRightPrefix_{#this._doRight_}
+        [variable] _doLeftPrefix_{#this._doLeft_}
+        [execute] _cellPrefix_ I) {_}
+        [execute] _cellPrefix_ -I) {_}
+        [execute] _rightLinkPrefix_ -I) {I}
+        [execute] _leftLinkPrefix_ I) {-I}
+        [execute] _rightLinkPrefix_ -I ) {I}
+        [execute] _leftLinkPrefix_ I ) {-I}
+        [execute] _modeRightPrefix_ I ) {c}
+        [execute] _modeRightPrefix_ -I ) {m}
+        [execute] _modeLeftPrefix_ I ) {m}
+        [execute] _modeLeftPrefix_ -I ) {c}
+        [comment] {--- TM ---}
+        [variable] tm:currentState{qinit}
+        [variable] tm:running{true}
+        [variable] _moveDispatch_{#this._move_}
+        [variable] _skipDispatch_{#this._skip_}
+        [variable] _readBitsPrefix_{#this._readBit}
+    }
+    [comment] {--- Tape: mover derecha/izquierda con crear-o-navegar ---}
+    #method:_move_R {
+        [run]{ [variable] _mode_{#this.modeR} }
+        [run]{ [variable] _method_{[execute]_doRightPrefix_ $_mode_} }
+        [run]{ [execute] _method_ }
+    }
+    #method:_doRight_c {
+        [run]{ [variable] _next_{$tb:headI} }
+        [execute] _cellPrefix_ $_next_ ) {_}
+        [execute] _rightLinkPrefix_ $tb:head ) {$_next_}
+        [execute] _leftLinkPrefix_ $_next_ ) {$tb:head}
+        [execute] _modeRightPrefix_ $tb:head ) {m}
+        [execute] _modeRightPrefix_ $_next_ ) {c}
+        [execute] _modeLeftPrefix_ $_next_ ) {m}
+        [variable] tb:head{$_next_}
+    }
+    #method:_doRight_m {
+        [variable] tb:head{#this.rightNeighbor}
+    }
+    #method:_move_L {
+        [run]{ [variable] _mode_{#this.model} }
+        [run]{ [variable] _method_{[execute]_doLeftPrefix_ $_mode_} }
+        [run]{ [execute] _method_ }
+    }
+    #method:_doLeft_c {
+        [execute] _cellPrefix_ $_next_ ) {_}
+        [execute] _leftLinkPrefix_ $tb:head ) {$_next_}
+        [execute] _rightLinkPrefix_ $_next_ ) {$tb:head}
+        [execute] _modeLeftPrefix_ $tb:head ) {m}
+        [execute] _modeLeftPrefix_ $_next_ ) {c}
+        [execute] _modeRightPrefix_ $_next_ ) {m}
+        [variable] tb:head{$_next_}
+    }
+    #method:_doLeft_m {
+        [variable] tb:head{#this.leftNeighbor}
+    }
+    #method:_move_N { }
+
+    [comment] {--- Escribir en celda actual ---}
+    #method:_write_0 { [execute] _cellPrefix_ $tb:head ) {0} }
+    #method:_write_1 { [execute] _cellPrefix_ $tb:head ) {1} }
+    #method:_write_2 { [execute] _cellPrefix_ $tb:head ) {2} }
+    #method:_write_3 { [execute] _cellPrefix_ $tb:head ) {3} }
+    #method:_write_4 { [execute] _cellPrefix_ $tb:head ) {4} }
+    #method:_write_5 { [execute] _cellPrefix_ $tb:head ) {5} }
+    #method:_write_6 { [execute] _cellPrefix_ $tb:head ) {6} }
+    #method:_write_7 { [execute] _cellPrefix_ $tb:head ) {7} }
+    #method:_write_8 { [execute] _cellPrefix_ $tb:head ) {8} }
+    #method:_write_9 { [execute] _cellPrefix_ $tb:head ) {9} }
+    #method:_write_{ [execute] _cellPrefix_ $tb:head ) {_} }
+
+    [comment] {--- While-loop ---}
+    #method:ran {
+        [run]{ [variable] isRunning{#this.running} }
+        [run]{ [variable] b1{[execute]action_} }
+        [run]{ [variable] nextAction{[execute]b1 $isRunning} }
+        [run]{ [execute] nextAction }
+    }
+
+    [comment] {--- Step: un paso de la TM ---}
+    #method:step {
+        [comment] { 1. LEER celda actual }
+        [run]{ [variable] currentSym{#this.cellVal} }
+
+        [comment] { 2. BUSCAR regla por (estado, simbolo) }
+        [run]{ [variable] state{#this.currentState_} }
+        [run]{ [variable] _rule_{[execute]RULE_} }
+        [run]{ [variable] ruleName{[execute]_rule_ $state $currentSym} }
+
+        [comment] { 3. EJECUTAR regla (setea nextState, writeVal, moveDir) }
+        [run]{ [execute] ruleName }
+
+        [comment] { 4. ESCRIBIR en celda actual }
+        [run]{ [execute] _cellPrefix_ $tb:head ) {$writeVal} }
+
+        [comment] { 5. MOVER cabezal }
+        [run]{ [variable] _moveMethod_{[execute]_moveDispatch_ $moveDir} }
+        [run]{ [execute] _moveMethod_ }
+
+        [comment] { 6. ACTUALIZAR estado }
+        [run]{ #property-> currentState{$nextState} }
+
+        [comment] { 7. VERIFICAR halt }
+        [run]{ [variable] _haltCheck_{[execute]CHECK_HALT_} }
+        [run]{ [variable] _haltAction_{[execute]_haltCheck_ $nextState} }
+        [run]{ [execute] _haltAction_ }
+
+        [comment] { 8. CONTINUAR (recursion) }
+        [run]{ [execute] tml.ran }
+    }
+
+    [comment] {--- Mostrar resultado: saltar blanks y leer bits ---}
+    #method:showResult {
+        [run]{ [variable] tb:head{I} }
+        [run]{ [variable] _symbol_{#this.cellVal} }
+        [run]{ [variable] _skipMethod_{[execute]_skipDispatch_ $_symbol_} }
+        [run]{ [execute] _skipMethod_ }
+    }
+    #method:_skip_ {
+        [run]{ [variable] tb:head{#this.rightNeighbor} }
+        [run]{ [variable] _symbol_{#this.cellVal} }
+        [run]{ [variable] _skipMethod_{[execute]_skipDispatch_ $_symbol_} }
+        [run]{ [execute] _skipMethod_ }
+    }
+    [comment] { Al encontrar 0 o 1: leer los bits del resultado }
+    #method:_skip_0 {
+        [run]{ [variable] _readMethod_{[execute]_readBitsPrefix_ s} }
+        [run]{ [execute] _readMethod_ }
+    }
+    #method:_skip_1 {
+        [run]{ [variable] _readMethod_{[execute]_readBitsPrefix_ s} }
+        [run]{ [execute] _readMethod_ }
+    }
+    #method:_readBits {
+        [run]{ [variable] _cellName_{#this.cellVal} }
+        [run]{ [variable] RESULT_BIT0{[execute]_cellName_} }
+        [run]{ [variable] tb:head{#this.rightNeighbor} }
+        [run]{ [variable] _cellName_{#this.cellVal} }
+        [run]{ [variable] RESULT_BIT1{[execute]_cellName_} }
+        [run]{ [variable] tb:head{#this.rightNeighbor} }
+        [run]{ [variable] _cellName_{#this.cellVal} }
+        [run]{ [variable] RESULT_BIT2{[execute]_cellName_} }
+        [run]{ [variable] tb:head{#this.rightNeighbor} }
+        [run]{ [variable] _cellName_{#this.cellVal} }
+        [run]{ [variable] RESULT_BIT3{[execute]_cellName_} }
+        [run]{ [variable] tb:head{#this.rightNeighbor} }
+        [run]{ [variable] _cellName_{#this.cellVal} }
+        [run]{ [variable] RESULT_BIT4{[execute]_cellName_} }
+        [run]{ [variable] tb:head{#this.rightNeighbor} }
+        [run]{ [variable] _cellName_{#this.cellVal} }
+        [run]{ [variable] RESULT_BIT5{[execute]_cellName_} }
+        [run]{ [variable] tb:head{#this.rightNeighbor} }
+        [run]{ [variable] _cellName_{#this.cellVal} }
+        [run]{ [variable] RESULT_BIT6{[execute]_cellName_} }
+        [run]{ [variable] tb:head{#this.rightNeighbor} }
+        [run]{ [variable] _cellName_{#this.cellVal} }
+        [run]{ [variable] RESULT_BIT7{[execute]_cellName_} }
+    }
+
+    [comment] {--- Properties ---}
+    #property:cellVal { [execute] _cellPrefix_ $tb:head ) }
+    #property:rightNeighbor { [execute] _rightLinkPrefix_ $tb:head ) }
+    #property:leftNeighbor { [execute] _leftLinkPrefix_ $tb:head ) }
+    #property:modeR { [execute] _modeRightPrefix_ $tb:head ) }
+    #property:model { [execute] _modeLeftPrefix_ $tb:head ) }
+    #property:currentState { [execute] tm:currentState }
+    #property:running { [execute] tm:running }
+
+    #end-construction
 }
-$MOVE_L{     
-            [run]{ <**> _position_{$tm:headPos} }
-            [run]{ <**> _dec_{DEC_} }
-            [run]{ <**> temp1{<*>_dec_ $_position_} }
-            [run]{ <**> tm:headPos{<*> temp1} }
-}
-$MOVE_N{ }
 
-[comment] { Helper para detectar estado de parada }
-$CHECK_HALT_qfin{ [run]{ <**> tm:running{false} } }
+[comment] {------------------- MAIN ---------------------}
+[run] {
+    [run] { $instance:name{tm1} }
+    [run] { new TuringMachine }
+    [run] { $tm1.init }
 
-[comment] {------------------- MAIN -------------------}
+    [comment] { Escribir input "11" (decimal once): T(I)=1, T(II)=1 }
+    [run] { $tm1._write_1 }
+    [run] { $tm1._move_R }
+    [run] { $tm1._write_1 }
+    [run] { $tm1._move_L }
 
-#class Main {
-            #begin-construction
-            #method:execute {
-                        [comment] { 1. Configurar Cinta Inicial: Ampliada para índices negativos y positivos }
-                        [comment] { Cinta Negativa (Indexación Lógica) }
-                        [run]{ [variable] tape_-9{_} }
-                        [run]{ [variable] tape_-8{_} }
-                        [run]{ [variable] tape_-7{_} }
-                        [run]{ [variable] tape_-6{_} }
-                        [run]{ [variable] tape_-5{_} } 
-                        [run]{ [variable] tape_-4{_} }
-                        [run]{ [variable] tape_-3{_} }
-                        [run]{ [variable] tape_-2{_} } 
-                        [run]{ [variable] tape_-1{_} } 
-                        [run]{ [variable] tape_0{1} }
-                        [run]{ [variable] tape_1{0} }
-                        [run]{ [variable] tape_2{_} } 
-                        [run]{ [variable] tape_3{_} } 
-                        [run]{ [variable] tape_4{_} } 
-                        [run]{ [variable] tape_5{_} } 
-                        [run]{ [variable] tape_6{_} } 
-                        [run]{ [variable] tape_7{_} } 
-                        [run]{ [variable] tape_8{_} } 
-                        [run]{ [variable] tape_9{_} } 
+    [comment] { Ejecutar TM }
+    [run] { $tm1.ran }
 
-                        [comment] { 2. Crear Maquina }
-                        [run]{ [variable] instance:name{tm1} }
-                        [run]{ [create] TuringMachine }
-                        [run]{ [execute] tm1.init }
-                            
-                        [comment] { 3. Ejecutar }
-                        [run]{ [execute] tm1.ran }
-                            
-                        [comment] { 4. Ver Resultado (Deberia ser 1101, a partir de tape_3) }
-                        [run]{ [variable] res0{$tape_0} }
-                        [run]{ [variable] res1{$tape_1} }
-                        [run]{ [variable] res2{$tape_2} }
-                        [run]{ [variable] res3{$tape_3} }
-                        [run]{ [variable] res4{$tape_4} }
-                        [run]{ [variable] res5{$tape_5} }
-                        [run]{ [variable] res6{$tape_6} }
-                        [run]{ [variable] res7{$tape_7} }
-                        [run]{ [variable] res8{$tape_8} }
-                        [run]{ [variable] res9{$tape_9} }
-            }
-            #end-construction
-}
-
-[temp] {
-      [run]{ $instance:name{mainApp} }
-      [run]{ new Main }
-      [run]{ $mainApp.execute }
+    [comment] { Mostrar resultado }
+    [run] { $tm1.showResult }
 }
 ```
