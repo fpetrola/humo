@@ -45,6 +45,44 @@ This demonstrates that despite having only a single "instruction" (text substitu
 ---
 
 **Complete interpreter implementation code** (the following code executes any Humo program) :
+
+``` Java
+public class HumoInterpreter
+{
+    protected Map<CharSequence, CharSequence> productions = new HashMap<CharSequence, CharSequence>();
+
+    public int parse(StringBuilder sourcecode, int first)
+    {
+        int last = first, current = first;
+
+        for (char currentChar; last < sourcecode.length() && (currentChar = sourcecode.charAt(last++)) != '}';)
+        {
+            if (currentChar == '{')
+            {
+                current = parse(sourcecode, last);
+                productions.put(sourcecode.subSequence(first, last - 1), sourcecode.subSequence(last, current));
+                last = first = ++current;
+            }
+            else
+            {
+                CharSequence production = productions.get(sourcecode.subSequence(current, last));
+                if (production != null)
+                {
+                    StringBuilder value = new StringBuilder(production);
+                    parse(value, 0);
+                    sourcecode.replace(current, last, value.toString());
+                    last = current += value.length();
+                }
+            }
+        }
+
+        return last - 1;
+    }
+}
+```
+
+Infinite Tape Turing Machine: Dec2Bin converter
+
 ```css
 [comm{[com]ent}{ment}]
 [comment] {------------------------------------------------ Begin Humo Runtime -------------------------------------------------------------}
