@@ -96,11 +96,11 @@ Infinite Tape Turing Machine: Dec2Bin converter
 #class{new}
 #this.{[execute]<*>instance:name.}
 #method:{#this.}
-#property:[#this.]
+#property:{#this.}
 #property->{[variable]$instance:name.}
 
 [v]{<***>}
-<--{<->}
+<--{<-}
 <->{@}
 <**{<*}
 <*>{$}
