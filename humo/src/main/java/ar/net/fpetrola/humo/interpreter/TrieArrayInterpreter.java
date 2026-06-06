@@ -5,63 +5,60 @@ package ar.net.fpetrola.humo.interpreter;
  */
 public class TrieArrayInterpreter {
 
-    private static boolean isWS(char c) { return c == ' ' || c == '\n' || c == '\r' || c == '\t'; }
+    public int parse(char[] in, int l) {
+        int mN = l * 2 + 1;
+        int[] tr = new int[mN * 128];
+        int[] v = new int[mN];
+        int[] dS = new int[Math.min(in.length, l * 6) * 3];
+        int[] h = new int[in.length];
+        int w = l, r = 0, d = 0, k = 0, n = 1, t = 0, b = 0, i, m, p, s;
 
-    public int parse(char[] buffer, int inputLength) {
-        int maxNodes = inputLength * 2 + 1;
-        int[] trie = new int[maxNodes * 128];
-        int[] values = new int[maxNodes];
-        int[] depthStack = new int[Math.min(buffer.length, inputLength * 6) * 3];
-        int[] buildHistory = new int[buffer.length];
-        int writePos = inputLength, readPos = 0, depth = 0, keyLength = 0, nodeCount = 1;
-        int trieNode = 0, buildNode = 0;
-
-        while (readPos!= inputLength) {
-            char c = buffer[writePos++] = buffer[readPos++];
+        while (r!= l) {
+            char c = in[w++] = in[r++];
 
             if (c == '{') {
-                int stackIndex = ++depth * 3;
-                depthStack[stackIndex] = 0;
-                depthStack[stackIndex + 1] = writePos - 1;
-                depthStack[stackIndex + 2] = buildNode;
-                keyLength = 0; trieNode = 0; buildNode = 0;
+                i = ++d * 3;
+                dS[i] = 0;
+                dS[i + 1] = w - 1;
+                dS[i + 2] = b;
+                k = t = b = 0;
             } else if (c == '}') {
-                int stackIndex = depth-- * 3;
-                int returnPos = depthStack[stackIndex];
-                if (returnPos!= 0 && (depth == 0 || depthStack[depth * 3]!= 0 || depthStack[depth * 3] < returnPos)) {
-                    writePos--;
-                    readPos = returnPos;
+                i = d-- * 3;
+                p = dS[i];
+                if (p!= 0 && (d == 0 || dS[d * 3]!= 0 || dS[d * 3] < p)) {
+                    w--;
+                    r = p;
                 } else {
-                    int savedBuildNode = depthStack[stackIndex + 2];
-                    if (savedBuildNode!= 0) values[savedBuildNode] = depthStack[stackIndex + 1] + 1;
-                    buildNode = 0;
+                    s = dS[i + 2];
+                    if (s!= 0) v[s] = dS[i + 1] + 1;
+                    b = 0;
                 }
-                keyLength = 0; trieNode = 0;
+                k = t = 0;
             } else {
-                keyLength++;
-                buildHistory[writePos - 1] = buildNode;
-                int trieIndex = buildNode * 128 + (c & 0x7F);
-                if (trie[trieIndex] == 0) trie[trieIndex] = nodeCount++;
-                buildNode = trie[trieIndex];
+                k++;
+                h[w - 1] = b;
+                i = b * 128 + (c & 0x7F);
+                if (tr[i] == 0) tr[i] = n++;
+                b = tr[i];
 
-                if (trieNode >= 0) {
-                    int nextNode = trie[trieNode * 128 + (c & 0x7F)];
-                    if (nextNode!= 0) {
-                        trieNode = nextNode;
-                        if (values[trieNode]!= 0) {
-                            int stackIndex = ++depth * 3;
-                            depthStack[stackIndex] = readPos;
-                            readPos = values[trieNode];
-                            writePos-= keyLength;
-                            buildNode = buildHistory[writePos];
-                            keyLength = 0; trieNode = 0;
+                if (t >= 0) {
+                    m = tr[t * 128 + (c & 0x7F)];
+                    if (m!= 0) {
+                        t = m;
+                        if (v[t]!= 0) {
+                            i = ++d * 3;
+                            dS[i] = r;
+                            r = v[t];
+                            w-= k;
+                            b = h[w];
+                            k = t = 0;
                         }
                     } else {
-                        trieNode = -1; // miss: no hay prefijo válido, esperar reset estructural
+                        t = -1;
                     }
                 }
             }
         }
-        return writePos;
+        return w;
     }
 }
