@@ -110,8 +110,8 @@ Infinite Tape Turing Machine: Dec2Bin converter
 @[{[}
 
 #begin-construction {
-    [run]{<--><<..>vari{<*>}<...able]>}>}}
-    [run]{<--><<..>exec[]{<...}ute]{$}}
+    [run]{<--><..>[vari{<*>}<...>able]{}}}
+    [run]{<--><..>[exec{<...>}ute]{$}}
 }
 #end-construction {
     [run]{<***>instance:name{<***>instance:name}}
